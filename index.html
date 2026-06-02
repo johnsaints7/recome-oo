@@ -16,7 +16,1841 @@
 
 <!-- Apple Touch Icons -->
 <link rel="apple-touch-icon" href="icon-192.png">
-<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href=<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recomeço — App</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #4CAF50;
+    --green-dark: #2E7D32;
+    --green-glow: rgba(76,175,80,0.25);
+    --red: #E53935;
+    --bg: #0A0A0F;
+    --surface: #13131A;
+    --card: #1A1A25;
+    --card2: #20202E;
+    --border: rgba(255,255,255,0.07);
+    --text: #F0F0F5;
+    --muted: #7A7A9A;
+    --accent: #6EE7B7;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    background: #060608;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Sora', sans-serif;
+    padding: 20px;
+  }
+
+  /* PHONE FRAME */
+  .phone-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .phone {
+    width: 390px;
+    height: 844px;
+    background: var(--bg);
+    border-radius: 48px;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    overflow: hidden;
+    position: relative;
+    box-shadow:
+      0 0 0 6px #0d0d12,
+      0 0 0 8px rgba(255,255,255,0.06),
+      0 60px 120px rgba(0,0,0,0.9),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  /* NOTCH */
+  .phone::before {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 34px;
+    background: #0A0A0F;
+    border-radius: 20px;
+    z-index: 100;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+  }
+
+  /* NAV TABS */
+  .nav-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 500px;
+  }
+
+  .nav-tab {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: #1A1A25;
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #7A7A9A;
+    font-size: 12px;
+    font-family: 'Sora', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+
+  .nav-tab:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+  .nav-tab.active { background: var(--green-dark); color: #fff; border-color: var(--green); }
+
+  /* SCREENS */
+  .screen {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: var(--bg);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 80px;
+    scrollbar-width: none;
+  }
+  .screen::-webkit-scrollbar { display: none; }
+  .screen.active { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+  /* STATUS BAR */
+  .status-bar {
+    height: 54px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 28px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.2px;
+  }
+
+  .status-icons { display: flex; gap: 6px; align-items: center; }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 80px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    padding-top: 12px;
+    justify-content: space-around;
+    z-index: 50;
+    backdrop-filter: blur(20px);
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: opacity 0.2s;
+    font-size: 10px;
+    color: var(--text);
+    letter-spacing: 0.3px;
+  }
+  .nav-item.active { opacity: 1; color: var(--green); }
+  .nav-item svg { width:22px; height:22px; }
+
+  /* TYPOGRAPHY */
+  .screen-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+
+  .screen-sub {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    padding: 20px;
+  }
+
+  .card-sm {
+    background: var(--card);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 16px;
+  }
+
+  /* BUTTONS */
+  .btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: var(--green);
+    border: none;
+    border-radius: 14px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Sora', sans-serif;
+    cursor: pointer;
+    letter-spacing: 0.2px;
+    transition: all 0.2s;
+    box-shadow: 0 8px 24px rgba(76,175,80,0.3);
+  }
+  .btn-primary:active { transform: scale(0.98); }
+
+  .btn-outline {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Sora', sans-serif;
+    cursor: pointer;
+    letter-spacing: 0.2px;
+    transition: all 0.2s;
+  }
+
+  /* PROGRESS BAR */
+  .progress-bar {
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green-dark), var(--green));
+    border-radius: 6px;
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* BADGES */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .badge-green { background: rgba(76,175,80,0.15); color: var(--green); border: 1px solid rgba(76,175,80,0.3); }
+  .badge-yellow { background: rgba(255,193,7,0.15); color: #FFC107; border: 1px solid rgba(255,193,7,0.3); }
+  .badge-red { background: rgba(229,57,53,0.15); color: var(--red); border: 1px solid rgba(229,57,53,0.3); }
+
+  /* SECTION */
+  .section { padding: 0 24px; margin-bottom: 20px; }
+
+  /* ===================== SCREEN 1: SPLASH ===================== */
+  #screen-splash {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at 50% 30%, rgba(46,125,50,0.3) 0%, transparent 60%), var(--bg);
+  }
+
+  .splash-logo {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--green-dark), var(--green));
+    border-radius: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 28px;
+    box-shadow: 0 20px 60px rgba(76,175,80,0.4);
+    font-size: 36px;
+  }
+
+  .splash-name {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+
+  .splash-tagline {
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    margin-bottom: 60px;
+  }
+
+  .splash-dots {
+    display: flex;
+    gap: 8px;
+  }
+
+  .splash-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(76,175,80,0.3);
+    animation: pulse-dot 1.5s infinite;
+  }
+  .splash-dot:nth-child(2) { animation-delay: 0.2s; }
+  .splash-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes pulse-dot {
+    0%,100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.4); opacity: 1; background: var(--green); }
+  }
+
+  /* ===================== SCREEN 2: ONBOARDING ===================== */
+  #screen-onboarding {
+    padding: 0;
+  }
+
+  .onboarding-header {
+    padding: 70px 24px 24px;
+    background: linear-gradient(180deg, rgba(46,125,50,0.15) 0%, transparent 100%);
+  }
+
+  .ob-step {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--green);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .ob-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 24px;
+    margin: 24px 0;
+  }
+
+  .ob-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    background: var(--card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .ob-option:hover { border-color: var(--green); background: rgba(76,175,80,0.08); }
+  .ob-option.selected { border-color: var(--green); background: rgba(76,175,80,0.12); }
+  .ob-icon { font-size: 22px; }
+
+  /* ===================== SCREEN 3: DASHBOARD ===================== */
+  #screen-dashboard {
+    padding: 0;
+  }
+
+  .dash-header {
+    padding: 60px 24px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .user-greeting { flex: 1; }
+  .greeting-sub { font-size: 12px; color: var(--muted); font-weight: 400; margin-bottom: 2px; }
+  .greeting-name { font-size: 18px; font-weight: 700; color: var(--text); }
+
+  .header-avatar {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--green-dark), var(--green));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    position: relative;
+  }
+  .header-notif {
+    position: absolute;
+    top: -2px; right: -2px;
+    width: 12px; height: 12px;
+    background: var(--red);
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+  }
+
+  /* BIG COUNTER */
+  .counter-card {
+    margin: 0 24px 16px;
+    background: linear-gradient(135deg, rgba(46,125,50,0.4) 0%, rgba(30,50,35,0.6) 100%);
+    border-radius: 24px;
+    border: 1px solid rgba(76,175,80,0.3);
+    padding: 32px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .counter-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 150px; height: 150px;
+    background: radial-gradient(circle, rgba(76,175,80,0.2) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .counter-days {
+    font-size: 80px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+    letter-spacing: -4px;
+    text-shadow: 0 0 40px rgba(76,175,80,0.5);
+  }
+
+  .counter-label {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 6px;
+    margin-bottom: 20px;
+  }
+
+  .counter-meta {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+  }
+
+  .counter-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .counter-stat-val { font-size: 18px; font-weight: 700; color: var(--text); }
+  .counter-stat-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .counter-divider {
+    width: 1px; height: 32px;
+    background: rgba(255,255,255,0.1);
+    align-self: center;
+  }
+
+  /* MOTIVATIONAL */
+  .motivational {
+    margin: 0 24px 16px;
+    padding: 14px 18px;
+    background: rgba(110,231,183,0.06);
+    border-radius: 14px;
+    border: 1px solid rgba(110,231,183,0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 400;
+    line-height: 1.4;
+    font-style: italic;
+  }
+
+  .motivational-icon { font-size: 20px; flex-shrink: 0; }
+
+  /* RISK CARD */
+  .risk-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 0 24px 16px;
+  }
+
+  .risk-card {
+    background: var(--card);
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    padding: 16px;
+  }
+
+  .risk-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .risk-value { font-size: 16px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 6px; }
+  .risk-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .risk-dot.low { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .risk-dot.med { background: #FFC107; box-shadow: 0 0 8px #FFC107; }
+
+  /* QUICK ACTIONS */
+  .quick-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin: 0 24px 16px;
+  }
+
+  .qa-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.3;
+  }
+  .qa-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+  .qa-btn.emergency { border-color: rgba(229,57,53,0.3); background: rgba(229,57,53,0.08); color: var(--red); }
+  .qa-btn-icon { font-size: 24px; }
+
+  /* PROGRESS SECTION */
+  .progress-card {
+    margin: 0 24px 16px;
+    background: var(--card);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    padding: 20px;
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .progress-title { font-size: 14px; font-weight: 600; color: var(--text); }
+  .progress-sub { font-size: 12px; color: var(--muted); }
+  .progress-pct { font-size: 18px; font-weight: 800; color: var(--green); }
+
+  /* ===================== SCREEN 4: CHECK-IN ===================== */
+  #screen-checkin {
+    padding: 0;
+  }
+
+  .checkin-header {
+    padding: 64px 24px 24px;
+    text-align: center;
+    background: linear-gradient(180deg, rgba(76,175,80,0.1) 0%, transparent 100%);
+  }
+
+  .emotions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 0 24px 24px;
+  }
+
+  .emotion-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .emotion-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+  .emotion-btn.selected { border-color: var(--green); background: rgba(76,175,80,0.1); color: var(--text); }
+  .emotion-emoji { font-size: 28px; }
+
+  .checkin-question {
+    margin: 0 24px 24px;
+    text-align: center;
+  }
+  .checkin-q-text { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+
+  .yn-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .btn-no {
+    padding: 18px;
+    background: rgba(76,175,80,0.15);
+    border: 1.5px solid var(--green);
+    border-radius: 14px;
+    color: var(--green);
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Sora', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-yes {
+    padding: 18px;
+    background: rgba(229,57,53,0.1);
+    border: 1.5px solid rgba(229,57,53,0.5);
+    border-radius: 14px;
+    color: var(--red);
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Sora', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  /* SLIDER */
+  .slider-section { margin: 0 24px 24px; }
+  .slider-label { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+  .slider-val { font-size: 20px; font-weight: 800; color: var(--green); }
+
+  input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 12px rgba(76,175,80,0.6);
+    cursor: pointer;
+  }
+
+  /* ===================== SCREEN 5: EVOLUÇÃO ===================== */
+  #screen-evolucao { padding: 0; }
+
+  .evolucao-header {
+    padding: 64px 24px 24px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 0 24px 20px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 14px 12px;
+    text-align: center;
+  }
+
+  .stat-number { font-size: 24px; font-weight: 800; color: var(--text); line-height: 1; }
+  .stat-unit { font-size: 11px; color: var(--green); font-weight: 600; margin-top: 2px; }
+  .stat-desc { font-size: 10px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* CHART MOCK */
+  .chart-card {
+    margin: 0 24px 16px;
+    background: var(--card);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    padding: 20px;
+  }
+
+  .chart-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .chart-period { font-size: 11px; color: var(--muted); margin-bottom: 16px; }
+
+  .chart-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 80px;
+  }
+
+  .bar-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    height: 100%;
+    justify-content: flex-end;
+  }
+
+  .bar-fill {
+    width: 100%;
+    border-radius: 6px 6px 0 0;
+    transition: height 0.5s ease;
+  }
+  .bar-fill.clean { background: linear-gradient(180deg, var(--green), var(--green-dark)); }
+  .bar-fill.relapse { background: linear-gradient(180deg, rgba(229,57,53,0.8), rgba(229,57,53,0.4)); }
+
+  .bar-day { font-size: 10px; color: var(--muted); }
+
+  /* INSIGHT CARD */
+  .insight-card {
+    margin: 0 24px 16px;
+    padding: 16px;
+    background: rgba(255,193,7,0.06);
+    border-radius: 16px;
+    border: 1px solid rgba(255,193,7,0.2);
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .insight-icon { font-size: 20px; flex-shrink: 0; }
+  .insight-title { font-size: 13px; font-weight: 600; color: #FFC107; margin-bottom: 4px; }
+  .insight-text { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+  /* IMPROVEMENT */
+  .improvement-card {
+    margin: 0 24px 16px;
+    background: var(--card);
+    border-radius: 20px;
+    border: 1px solid rgba(110,231,183,0.2);
+    padding: 20px;
+    text-align: center;
+  }
+
+  .improvement-pct {
+    font-size: 56px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -2px;
+    line-height: 1;
+    text-shadow: 0 0 30px rgba(110,231,183,0.4);
+  }
+
+  .improvement-label { font-size: 12px; color: var(--muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 1px; }
+  .improvement-sub { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.4; }
+
+  /* ===================== SCREEN 6: MENTOR IA ===================== */
+  #screen-ia { padding: 0; }
+
+  .ia-header {
+    padding: 64px 24px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .ia-avatar {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, #1A237E, #3949AB);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 0 20px rgba(57,73,171,0.5);
+  }
+
+  .ia-name { font-size: 16px; font-weight: 700; color: var(--text); }
+  .ia-status { font-size: 12px; color: var(--green); display: flex; align-items: center; gap: 4px; }
+  .ia-online-dot { width: 7px; height: 7px; background: var(--green); border-radius: 50%; animation: blink 2s infinite; }
+
+  @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+  .chat-area {
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 280px;
+  }
+
+  .chat-bubble {
+    max-width: 82%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 13px;
+    line-height: 1.5;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .bubble-ia {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-bottom-left-radius: 4px;
+    align-self: flex-start;
+  }
+
+  .bubble-user {
+    background: rgba(76,175,80,0.2);
+    border: 1px solid rgba(76,175,80,0.3);
+    color: var(--text);
+    border-bottom-right-radius: 4px;
+    align-self: flex-end;
+  }
+
+  .bubble-time {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 4px;
+    text-align: right;
+  }
+
+  .quick-chips {
+    display: flex;
+    gap: 8px;
+    padding: 0 24px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 12px;
+  }
+  .quick-chips::-webkit-scrollbar { display: none; }
+
+  .chip {
+    padding: 8px 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: 'Sora', sans-serif;
+    color: var(--muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .chip:hover { border-color: var(--green); color: var(--green); }
+
+  .chat-input-row {
+    display: flex;
+    gap: 10px;
+    padding: 0 24px;
+    margin-top: 8px;
+  }
+
+  .chat-input {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 12px 18px;
+    font-size: 13px;
+    font-family: 'Sora', sans-serif;
+    color: var(--text);
+    outline: none;
+  }
+  .chat-input::placeholder { color: var(--muted); }
+
+  .send-btn {
+    width: 46px; height: 46px;
+    background: var(--green);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(76,175,80,0.4);
+  }
+
+  /* ===================== SCREEN 7: METAS ===================== */
+  #screen-metas { padding: 0; }
+
+  .metas-header {
+    padding: 64px 24px 24px;
+  }
+
+  .meta-item {
+    margin: 0 24px 12px;
+    background: var(--card);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    padding: 20px;
+    transition: all 0.2s;
+  }
+
+  .meta-item.active-meta { border-color: var(--green); background: rgba(76,175,80,0.06); }
+  .meta-item.completed-meta { border-color: rgba(110,231,183,0.3); opacity: 0.7; }
+
+  .meta-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .meta-title { font-size: 16px; font-weight: 700; color: var(--text); }
+  .meta-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .meta-badge-days {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--green);
+    letter-spacing: -1px;
+    text-align: right;
+  }
+  .meta-badge-label { font-size: 10px; color: var(--muted); text-align: right; text-transform: uppercase; }
+
+  .meta-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .meta-pct { font-size: 12px; font-weight: 700; color: var(--green); min-width: 36px; }
+
+  /* CONQUISTAS */
+  .achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 0 24px 16px;
+  }
+
+  .achievement {
+    background: var(--card);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 16px 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .achievement.unlocked { border-color: rgba(255,193,7,0.4); background: rgba(255,193,7,0.05); }
+  .achievement.locked { opacity: 0.35; }
+
+  .ach-medal { font-size: 28px; }
+  .ach-title { font-size: 11px; font-weight: 600; color: var(--text); }
+  .ach-xp { font-size: 10px; color: #FFC107; }
+
+  /* ===================== SCREEN 8: EMERGÊNCIA ===================== */
+  #screen-emergencia {
+    background: radial-gradient(ellipse at 50% 30%, rgba(229,57,53,0.3) 0%, var(--bg) 60%);
+    padding: 0;
+    padding-bottom: 40px;
+  }
+
+  .emerg-header {
+    padding: 64px 24px 32px;
+    text-align: center;
+  }
+
+  .emerg-pulse {
+    width: 80px; height: 80px;
+    margin: 0 auto 24px;
+    background: rgba(229,57,53,0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    position: relative;
+  }
+
+  .emerg-pulse::before, .emerg-pulse::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(229,57,53,0.5);
+    animation: pulse-ring 2s infinite;
+  }
+  .emerg-pulse::after { animation-delay: 0.5s; }
+
+  @keyframes pulse-ring {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+
+  .emerg-title { font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+  .emerg-sub { font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+  .emerg-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 0 24px;
+    margin-bottom: 20px;
+  }
+
+  .emerg-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 20px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+    line-height: 1.3;
+  }
+  .emerg-btn:hover { border-color: var(--red); background: rgba(229,57,53,0.08); }
+  .emerg-btn-icon { font-size: 28px; }
+
+  .emerg-partner {
+    margin: 0 24px;
+    padding: 16px 20px;
+    background: rgba(229,57,53,0.12);
+    border-radius: 16px;
+    border: 1px solid rgba(229,57,53,0.4);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+  }
+
+  .partner-avatar {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, #1A237E, #5C6BC0);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .partner-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .partner-role { font-size: 12px; color: var(--muted); }
+  .partner-call { margin-left: auto; font-size: 22px; }
+
+  /* GAMIFICATION */
+  .level-card {
+    margin: 0 24px 20px;
+    background: linear-gradient(135deg, rgba(255,193,7,0.15) 0%, rgba(255,152,0,0.1) 100%);
+    border-radius: 20px;
+    border: 1px solid rgba(255,193,7,0.25);
+    padding: 20px;
+  }
+
+  .level-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+  }
+
+  .level-name { font-size: 18px; font-weight: 700; color: #FFC107; }
+  .level-num { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .level-xp-total { font-size: 24px; font-weight: 800; color: var(--text); text-align: right; }
+  .level-xp-label { font-size: 10px; color: var(--muted); text-align: right; margin-top: 1px; }
+
+  .xp-bar {
+    height: 8px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .xp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #FF8F00, #FFC107);
+    border-radius: 8px;
+    width: 68%;
+  }
+
+  .xp-info { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+
+</style>
+</head>
+<body>
+
+<div class="phone-wrapper">
+  <div class="phone" id="phone">
+
+    <!-- ======= SPLASH ======= -->
+    <div class="screen active" id="screen-splash">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-icons">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="12"><rect x="1" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="3" y="8" width="12" height="8" rx="1" fill="currentColor"/><path d="M22 10v4c1.1-.55 1.1-3.45 0-4z"/></svg>
+        </div>
+      </div>
+
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 60px 40px;">
+        <div class="splash-logo">🌱</div>
+        <div class="splash-name">Recomeço</div>
+        <div class="splash-tagline">Um dia de cada vez.</div>
+        <div class="splash-dots">
+          <div class="splash-dot"></div>
+          <div class="splash-dot"></div>
+          <div class="splash-dot"></div>
+        </div>
+      </div>
+
+      <div style="padding: 40px; text-align:center;">
+        <p style="font-size:11px; color:var(--muted); letter-spacing:0.5px;">Construindo uma vida melhor</p>
+      </div>
+    </div>
+
+    <!-- ======= ONBOARDING ======= -->
+    <div class="screen" id="screen-onboarding">
+      <div class="status-bar" style="padding-top:14px;">
+        <span>9:41</span>
+        <div class="status-icons">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="12"><rect x="1" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="3" y="8" width="12" height="8" rx="1" fill="currentColor"/><path d="M22 10v4c1.1-.55 1.1-3.45 0-4z"/></svg>
+        </div>
+      </div>
+
+      <div class="onboarding-header">
+        <div class="ob-step">Passo 2 de 4</div>
+        <div class="progress-bar" style="margin-bottom:20px;"><div class="progress-fill" style="width:50%"></div></div>
+        <div class="screen-title">Qual sua<br>motivação principal?</div>
+        <div class="screen-sub" style="margin-top:8px;">Isso nos ajuda a personalizar sua jornada.</div>
+      </div>
+
+      <div class="ob-options">
+        <div class="ob-option selected" onclick="selectOpt(this)">
+          <span class="ob-icon">💑</span>
+          <span>Melhorar meu relacionamento</span>
+        </div>
+        <div class="ob-option" onclick="selectOpt(this)">
+          <span class="ob-icon">🧠</span>
+          <span>Saúde mental e foco</span>
+        </div>
+        <div class="ob-option" onclick="selectOpt(this)">
+          <span class="ob-icon">✝️</span>
+          <span>Espiritualidade</span>
+        </div>
+        <div class="ob-option" onclick="selectOpt(this)">
+          <span class="ob-icon">⚡</span>
+          <span>Produtividade</span>
+        </div>
+        <div class="ob-option" onclick="selectOpt(this)">
+          <span class="ob-icon">💪</span>
+          <span>Autocontrole</span>
+        </div>
+      </div>
+
+      <div style="padding: 0 24px;">
+        <button class="btn-primary">Continuar →</button>
+      </div>
+    </div>
+
+    <!-- ======= DASHBOARD ======= -->
+    <div class="screen" id="screen-dashboard">
+      <div class="status-bar" style="padding-top:14px;">
+        <span>9:41</span>
+        <div class="status-icons">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="12"><rect x="1" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="3" y="8" width="12" height="8" rx="1" fill="currentColor"/><path d="M22 10v4c1.1-.55 1.1-3.45 0-4z"/></svg>
+        </div>
+      </div>
+
+      <div class="dash-header">
+        <div class="user-greeting">
+          <div class="greeting-sub">Bom dia 👋</div>
+          <div class="greeting-name">João Paulo</div>
+        </div>
+        <div class="header-avatar">
+          😊
+          <div class="header-notif"></div>
+        </div>
+      </div>
+
+      <!-- COUNTER -->
+      <div class="counter-card">
+        <div class="counter-days">27</div>
+        <div class="counter-label">dias de progresso</div>
+        <div class="counter-meta">
+          <div class="counter-stat">
+            <div class="counter-stat-val">42</div>
+            <div class="counter-stat-lbl">Recorde</div>
+          </div>
+          <div class="counter-divider"></div>
+          <div class="counter-stat">
+            <div class="counter-stat-val">87%</div>
+            <div class="counter-stat-lbl">Sucesso</div>
+          </div>
+          <div class="counter-divider"></div>
+          <div class="counter-stat">
+            <div class="counter-stat-val">Lvl 4</div>
+            <div class="counter-stat-lbl">Nível</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MOTIVATIONAL -->
+      <div class="motivational">
+        <span class="motivational-icon">✨</span>
+        <span>"Você está melhor que 87% das pessoas que iniciam a jornada."</span>
+      </div>
+
+      <!-- RISK ROW -->
+      <div class="risk-row">
+        <div class="risk-card">
+          <div class="risk-label">Risco hoje</div>
+          <div class="risk-value">
+            <div class="risk-dot low"></div>
+            Baixo
+          </div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-label">Humor</div>
+          <div class="risk-value" style="font-size:22px;">😊 7/10</div>
+        </div>
+      </div>
+
+      <!-- QUICK ACTIONS -->
+      <div class="quick-actions">
+        <div class="qa-btn" onclick="goTo('checkin')">
+          <span class="qa-btn-icon">📋</span>
+          Check-in diário
+        </div>
+        <div class="qa-btn" onclick="goTo('ia')">
+          <span class="qa-btn-icon">🤖</span>
+          Mentor IA
+        </div>
+        <div class="qa-btn emergency" onclick="goTo('emergencia')">
+          <span class="qa-btn-icon">🚨</span>
+          Emergência
+        </div>
+      </div>
+
+      <!-- META PROGRESS -->
+      <div class="progress-card">
+        <div class="progress-header">
+          <div>
+            <div class="progress-title">Meta: 30 dias</div>
+            <div class="progress-sub">3 dias restantes</div>
+          </div>
+          <div class="progress-pct">90%</div>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:90%"></div>
+        </div>
+      </div>
+
+      <!-- LEVEL -->
+      <div class="level-card">
+        <div class="level-row">
+          <div>
+            <div class="level-name">🏆 Constância</div>
+            <div class="level-num">Nível 4</div>
+          </div>
+          <div>
+            <div class="level-xp-total">2.340</div>
+            <div class="level-xp-label">XP Total</div>
+          </div>
+        </div>
+        <div class="xp-bar"><div class="xp-fill"></div></div>
+        <div class="xp-info">
+          <span>340 XP para o próximo nível</span>
+          <span>68%</span>
+        </div>
+      </div>
+
+      <!-- BOTTOM NAV -->
+      <div class="bottom-nav">
+        <div class="nav-item active">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          Início
+        </div>
+        <div class="nav-item" onclick="goTo('evolucao')">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>
+          Evolução
+        </div>
+        <div class="nav-item" onclick="goTo('metas')">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+          Metas
+        </div>
+        <div class="nav-item" onclick="goTo('ia')">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+          Mentor
+        </div>
+        <div class="nav-item">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          Perfil
+        </div>
+      </div>
+    </div>
+
+    <!-- ======= CHECK-IN ======= -->
+    <div class="screen" id="screen-checkin">
+      <div class="status-bar" style="padding-top:14px;">
+        <span>9:41</span>
+        <div class="status-icons">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="12"><rect x="1" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="3" y="8" width="12" height="8" rx="1" fill="currentColor"/><path d="M22 10v4c1.1-.55 1.1-3.45 0-4z"/></svg>
+        </div>
+      </div>
+
+      <div class="checkin-header">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px; cursor:pointer;" onclick="goTo('dashboard')">
+          <svg fill="currentColor" viewBox="0 0 24 24" width="20" height="20" style="color:var(--muted)"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          <span style="font-size:13px; color:var(--muted);">Voltar</span>
+        </div>
+        <div class="screen-title">Check-in diário</div>
+        <div class="screen-sub" style="margin-top:6px;">Terça-feira, 27 de maio</div>
+      </div>
+
+      <div class="section">
+        <p style="font-size:14px; font-weight:600; color:var(--text); margin-bottom:12px;">Como você está se sentindo?</p>
+      </div>
+
+      <div class="emotions-grid">
+        <div class="emotion-btn selected" onclick="toggleEmotion(this)">
+          <span class="emotion-emoji">😊</span> Feliz
+        </div>
+        <div class="emotion-btn" onclick="toggleEmotion(this)">
+          <span class="emotion-emoji">😰</span> Ansioso
+        </div>
+        <div class="emotion-btn" onclick="toggleEmotion(this)">
+          <span class="emotion-emoji">😔</span> Triste
+        </div>
+        <div class="emotion-btn" onclick="toggleEmotion(this)">
+          <span class="emotion-emoji">😴</span> Cansado
+        </div>
+        <div class="emotion-btn" onclick="toggleEmotion(this)">
+          <span class="emotion-emoji">😡</span> Irritado
+        </div>
+        <div class="emotion-btn selected" onclick="toggleEmotion(this)">
+          <span class="emotion-emoji">💪</span> Motivado
+        </div>
+      </div>
+
+      <div class="slider-section">
+        <div class="slider-label">
+          Nível de ansiedade
+          <span class="slider-val" id="slider-val">3</span>
+        </div>
+        <input type="range" min="0" max="10" value="3" oninput="document.getElementById('slider-val').textContent=this.value">
+      </div>
+
+      <div class="checkin-question">
+        <div class="checkin-q-text">Você consumiu pornografia hoje?</div>
+        <div class="yn-buttons">
+          <button class="btn-no">✓ Não</button>
+          <button class="btn-yes">✗ Sim</button>
+        </div>
+      </div>
+
+      <div style="padding: 0 24px;">
+        <button class="btn-primary" onclick="goTo('dashboard')">Salvar check-in</button>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="goTo('dashboard')">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          Início
+        </div>
+        <div class="nav-item" onclick="goTo('evolucao')">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>
+          Evolução
+        </div>
+        <div class="nav-item active">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+          Check-in
+        </div>
+        <div class="nav-item" onclick="goTo('ia')">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+          Mentor
+        </div>
+        <div class="nav-item">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          Perfil
+        </div>
+      </div>
+    </div>
+
+    <!-- ======= EVOLUÇÃO ======= -->
+    <div class="screen" id="screen-evolucao">
+      <div class="status-bar" style="padding-top:14px;">
+        <span>9:41</span>
+        <div class="status-icons">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="12"><rect x="1" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="3" y="8" width="12" height="8" rx="1" fill="currentColor"/><path d="M22 10v4c1.1-.55 1.1-3.45 0-4z"/></svg>
+        </div>
+      </div>
+
+      <div class="evolucao-header">
+        <div class="screen-title">Sua Evolução</div>
+        <div class="screen-sub" style="margin-top:6px;">Maio 2025</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">27</div>
+          <div class="stat-unit">dias</div>
+          <div class="stat-desc">Limpos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">87%</div>
+          <div class="stat-unit" style="color: var(--accent);">taxa</div>
+          <div class="stat-desc">Sucesso</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">3</div>
+          <div class="stat-unit" style="color: var(--red);">vezes</div>
+          <div class="stat-desc">Recaídas</div>
+        </div>
+      </div>
+
+      <!-- CHART -->
+      <div class="chart-card">
+        <div class="chart-title">Últimos 7 dias</div>
+        <div class="chart-period">27 mai — 2 jun</div>
+        <div class="chart-bars">
+          <div class="bar-item">
+            <div class="bar-fill clean" style="height:100%"></div>
+            <div class="bar-day">Seg</div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-fill clean" style="height:100%"></div>
+            <div class="bar-day">Ter</div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-fill relapse" style="height:30%"></div>
+            <div class="bar-day">Qua</div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-fill clean" style="height:100%"></div>
+            <div class="bar-day">Qui</div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-fill clean" style="height:100%"></div>
+            <div class="bar-day">Sex</div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-fill clean" style="height:100%"></div>
+            <div class="bar-day">Sáb</div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-fill clean" style="height:100%"></div>
+            <div class="bar-day">Dom</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- IMPROVEMENT -->
+      <div class="improvement-card">
+        <div class="improvement-pct">90%</div>
+        <div class="improvement-label">de melhoria</div>
+        <div class="improvement-sub">Antes: ~30x/mês &nbsp;→&nbsp; Hoje: 3x/mês</div>
+      </div>
+
+      <!-- INSIGHT -->
+      <div class="insight-card">
+        <span class="insight-icon">⚠️</span>
+        <div>
+          <div class="insight-title">Padrão detectado</div>
+          <div class="insight-text">78% das recaídas ocorreram entre 22h e 01h. Considere uma rotina noturna saudável.</div>
+        </div>
+      </div>
+
+      <div class="insight-card" style="border-color: rgba(76,175,80,0.2); background: rgba(76,175,80,0.06);">
+        <span class="insight-icon">📱</span>
+        <div>
+          <div class="insight-title" style="color: var(--green);">Gatilho principal</div>
+          <div class="insight-text">65% das recaídas ocorreram após uso intenso de redes sociais.</div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="goTo('dashboard')">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          Início
+        </div>
+        <div class="nav-item active">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>
+          Evolução
+        </div>
+        <div class="nav-item" onclick="goTo('metas')">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+          Metas
+        </div>
+        <div class="nav-item" onclick="goTo('ia')">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+          Mentor
+        </div>
+        <div class="nav-item">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          Perfil
+        </div>
+      </div>
+    </div>
+
+    <!-- ======= METAS ======= -->
+    <div class="screen" id="screen-metas">
+      <div class="status-bar" style="padding-top:14px;">
+        <span>9:41</span>
+        <div class="status-icons"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="12"><rect x="1" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="3" y="8" width="12" height="8" rx="1" fill="currentColor"/><path d="M22 10v4c1.1-.55 1.1-3.45 0-4z"/></svg></div>
+      </div>
+
+      <div class="metas-header">
+        <div class="screen-title">Sua Jornada</div>
+        <div class="screen-sub" style="margin-top:6px;">Conquiste uma meta de cada vez.</div>
+      </div>
+
+      <div class="meta-item completed-meta">
+        <div class="meta-top">
+          <div>
+            <div class="meta-title">✅ Primeira Semana</div>
+            <div class="meta-desc">Concluída · 100%</div>
+          </div>
+          <div>
+            <div class="meta-badge-days">7</div>
+            <div class="meta-badge-label">dias</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="meta-item completed-meta">
+        <div class="meta-top">
+          <div>
+            <div class="meta-title">✅ Duas Semanas</div>
+            <div class="meta-desc">Concluída · 100%</div>
+          </div>
+          <div>
+            <div class="meta-badge-days">14</div>
+            <div class="meta-badge-label">dias</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="meta-item active-meta">
+        <div class="meta-top">
+          <div>
+            <div class="meta-title">🎯 Um Mês</div>
+            <div class="meta-desc">Em andamento · 3 dias restantes</div>
+          </div>
+          <div>
+            <div class="meta-badge-days">30</div>
+            <div class="meta-badge-label">dias</div>
+          </div>
+        </div>
+        <div class="meta-progress-row">
+          <div class="progress-bar" style="flex:1">
+            <div class="progress-fill" style="width:90%"></div>
+          </div>
+          <div class="meta-pct">90%</div>
+        </div>
+      </div>
+
+      <div class="meta-item" style="opacity:0.5">
+        <div class="meta-top">
+          <div>
+            <div class="meta-title">🔒 Dois Meses</div>
+            <div class="meta-desc">Bloqueado até concluir 30 dias</div>
+          </div>
+          <div>
+            <div class="meta-badge-days" style="color:var(--muted)">60</div>
+            <div class="meta-badge-label">dias</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="meta-item" style="opacity:0.4">
+        <div class="meta-top">
+          <div>
+            <div class="meta-title">🔒 Noventa Dias</div>
+            <div class="meta-desc">Bloqueado</div>
+          </div>
+          <div>
+            <div class="meta-badge-days" style="color:var(--muted)">90</div>
+            <div class="meta-badge-label">dias</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" style="margin-top:4px;">
+        <p style="font-size:13px; font-weight:600; color:var(--text); margin-bottom:12px;">Conquistas desbloqueadas</p>
+      </div>
+
+      <div class="achievements-grid">
+        <div class="achievement unlocked">
+          <span class="ach-medal">🥉</span>
+          <div class="ach-title">7 Dias</div>
+          <div class="ach-xp">+100 XP</div>
+        </div>
+        <div class="achievement unlocked">
+          <span class="ach-medal">🥈</span>
+          <div class="ach-title">14 Dias</div>
+          <div class="ach-xp">+200 XP</div>
+        </div>
+        <div class="achievement locked">
+          <span class="ach-medal">🥇</span>
+          <div class="ach-title">30 Dias</div>
+          <div class="ach-xp">+500 XP</div>
+        </div>
+        <div class="achievement locked">
+          <span class="ach-medal">🏆</span>
+          <div class="ach-title">90 Dias</div>
+          <div class="ach-xp">+1000 XP</div>
+        </div>
+        <div class="achievement locked">
+          <span class="ach-medal">💎</span>
+          <div class="ach-title">180 Dias</div>
+          <div class="ach-xp">+2000 XP</div>
+        </div>
+        <div class="achievement locked">
+          <span class="ach-medal">👑</span>
+          <div class="ach-title">365 Dias</div>
+          <div class="ach-xp">+5000 XP</div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="goTo('dashboard')">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          Início
+        </div>
+        <div class="nav-item" onclick="goTo('evolucao')">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>
+          Evolução
+        </div>
+        <div class="nav-item active">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+          Metas
+        </div>
+        <div class="nav-item" onclick="goTo('ia')">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+          Mentor
+        </div>
+        <div class="nav-item">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          Perfil
+        </div>
+      </div>
+    </div>
+
+    <!-- ======= MENTOR IA ======= -->
+    <div class="screen" id="screen-ia">
+      <div class="status-bar" style="padding-top:14px;">
+        <span>9:41</span>
+        <div class="status-icons"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="12"><rect x="1" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="3" y="8" width="12" height="8" rx="1" fill="currentColor"/><path d="M22 10v4c1.1-.55 1.1-3.45 0-4z"/></svg></div>
+      </div>
+
+      <div class="ia-header">
+        <div class="ia-avatar">🤖</div>
+        <div>
+          <div class="ia-name">Mentor IA</div>
+          <div class="ia-status">
+            <div class="ia-online-dot"></div>
+            Online agora
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-area">
+        <div>
+          <div class="chat-bubble bubble-ia">
+            Olá, João! 👋 Você está no dia 27 da sua jornada — isso é incrível. Como você está se sentindo hoje?
+          </div>
+          <div class="bubble-time">09:35</div>
+        </div>
+
+        <div style="align-self:flex-end">
+          <div class="chat-bubble bubble-user">
+            Estou me sentindo bem hoje, mas ontem à noite foi difícil.
+          </div>
+          <div class="bubble-time" style="text-align:right">09:37</div>
+        </div>
+
+        <div>
+          <div class="chat-bubble bubble-ia">
+            Entendo. Percebo que seu horário de maior vulnerabilidade costuma ser após as 22h. O que você estava fazendo quando sentiu a vontade surgir?
+          </div>
+          <div class="bubble-time">09:38</div>
+        </div>
+
+        <div style="align-self:flex-end">
+          <div class="chat-bubble bubble-user">
+            Estava no Instagram, sozinho...
+          </div>
+          <div class="bubble-time" style="text-align:right">09:39</div>
+        </div>
+
+        <div>
+          <div class="chat-bubble bubble-ia">
+            Isso corresponde a um padrão que identificamos: 65% das suas recaídas ocorreram após uso de redes sociais. Que tal criar uma regra: depois das 21h, Instagram desativado? Posso te ajudar a criar um ritual noturno. 🌙
+          </div>
+          <div class="bubble-time">09:41</div>
+        </div>
+      </div>
+
+      <div class="quick-chips">
+        <div class="chip">Estou com vontade agora</div>
+        <div class="chip">Preciso de ajuda</div>
+        <div class="chip">Tive uma recaída</div>
+        <div class="chip">Não consigo dormir</div>
+        <div class="chip">Estou ansioso</div>
+      </div>
+
+      <div class="chat-input-row">
+        <input class="chat-input" type="text" placeholder="Digite uma mensagem...">
+        <button class="send-btn">➤</button>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="goTo('dashboard')">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          Início
+        </div>
+        <div class="nav-item" onclick="goTo('evolucao')">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>
+          Evolução
+        </div>
+        <div class="nav-item" onclick="goTo('metas')">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+          Metas
+        </div>
+        <div class="nav-item active">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+          Mentor
+        </div>
+        <div class="nav-item">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          Perfil
+        </div>
+      </div>
+    </div>
+
+    <!-- ======= EMERGÊNCIA ======= -->
+    <div class="screen" id="screen-emergencia">
+      <div class="status-bar" style="padding-top:14px; color: rgba(255,255,255,0.7);">
+        <span>9:41</span>
+      </div>
+
+      <div class="emerg-header">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:24px; cursor:pointer;" onclick="goTo('dashboard')">
+          <svg fill="currentColor" viewBox="0 0 24 24" width="20" height="20" style="color:rgba(255,255,255,0.4)"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          <span style="font-size:13px; color:rgba(255,255,255,0.4);">Voltar</span>
+        </div>
+        <div class="emerg-pulse">🆘</div>
+        <div class="emerg-title">Você não está sozinho.</div>
+        <div class="emerg-sub">Respira fundo. Escolha uma das ações abaixo para passar por esse momento.</div>
+      </div>
+
+      <div class="emerg-actions">
+        <div class="emerg-btn">
+          <span class="emerg-btn-icon">🌬️</span>
+          Respiração guiada
+        </div>
+        <div class="emerg-btn">
+          <span class="emerg-btn-icon">🧘</span>
+          Meditação 5 min
+        </div>
+        <div class="emerg-btn">
+          <span class="emerg-btn-icon">🚶</span>
+          Caminhada agora
+        </div>
+        <div class="emerg-btn">
+          <span class="emerg-btn-icon">🎥</span>
+          Vídeo motivacional
+        </div>
+        <div class="emerg-btn" style="grid-column: span 2;" onclick="goTo('ia')">
+          <span class="emerg-btn-icon">🤖</span>
+          Falar com o Mentor IA
+        </div>
+      </div>
+
+      <div class="emerg-partner">
+        <div class="partner-avatar">👨</div>
+        <div>
+          <div class="partner-name">Carlos (irmão)</div>
+          <div class="partner-role">Parceiro de responsabilidade</div>
+        </div>
+        <div class="partner-call">📞</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TABS DE NAVEGAÇÃO -->
+  <div class="nav-tabs">
+    <div class="nav-tab active" onclick="goTo('splash')">Splash</div>
+    <div class="nav-tab" onclick="goTo('onboarding')">Onboarding</div>
+    <div class="nav-tab" onclick="goTo('dashboard')">Dashboard</div>
+    <div class="nav-tab" onclick="goTo('checkin')">Check-in</div>
+    <div class="nav-tab" onclick="goTo('evolucao')">Evolução</div>
+    <div class="nav-tab" onclick="goTo('metas')">Metas</div>
+    <div class="nav-tab" onclick="goTo('ia')">Mentor IA</div>
+    <div class="nav-tab" onclick="goTo('emergencia')">Emergência</div>
+  </div>
+</div>
+
+<script>
+  function goTo(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+
+    const screen = document.getElementById('screen-' + id);
+    if (screen) screen.classList.add('active');
+
+    const tabs = document.querySelectorAll('.nav-tab');
+    tabs.forEach(t => {
+      if (t.textContent.toLowerCase().replace(/\s+/g,'') === {
+        splash: 'splash', onboarding: 'onboarding', dashboard: 'dashboard',
+        checkin: 'check-in', evolucao: 'evolução', metas: 'metas',
+        ia: 'mentoria', emergencia: 'emergência'
+      }[id] || t.onclick?.toString().includes("'"+id+"'")) {
+        t.classList.add('active');
+      }
+    });
+
+    // Fix tab active state
+    tabs.forEach(t => {
+      const fn = t.getAttribute('onclick');
+      if (fn && fn.includes("'"+id+"'")) t.classList.add('active');
+    });
+
+    // Scroll to top
+    if (screen) screen.scrollTop = 0;
+  }
+
+  function selectOpt(el) {
+    document.querySelectorAll('.ob-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function toggleEmotion(el) {
+    el.classList.toggle('selected');
+  }
+</script>
+</body>
+</html>
+"icon-192.png">
 <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
 
 <!-- Favicon -->
