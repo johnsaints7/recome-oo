@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Recomeço">
+<meta name="application-name" content="Recomeço">
+<meta name="theme-color" content="#4CAF50">
+<meta name="description" content="Sua plataforma de recuperação comportamental. Um dia de cada vez.">
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!-- Apple Touch Icons -->
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+<title>Recomeço — Recuperação Comportamental</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ==================== RESET & ROOT ==================== */
+:root {
+  --green: #4CAF50;
+  --green-dark: #2E7D32;
+  --green-glow: rgba(76,175,80,0.25);
+  --red: #E53935;
+  --yellow: #FFC107;
+  --blue: #3949AB;
+  --bg: #0A0A0F;
+  --surface: #111118;
+  --card: #17171F;
+  --card2: #1E1E28;
+  --border: rgba(255,255,255,0.07);
+  --text: #F0F0F5;
+  --muted: #6B6B8A;
+  --accent: #6EE7B7;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  background: #05050A;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  font-family: 'Sora', sans-serif;
+  padding: 24px 16px 40px;
+  gap: 20px;
+}
+
+/* ==================== PHONE SHELL ==================== */
+.phone {
+  width: 390px;
+  height: 844px;
+  background: var(--bg);
+  border-radius: 50px;
+  border: 2px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    0 0 0 6px #0a0a0f,
+    0 0 0 8px rgba(255,255,255,0.05),
+    0 60px 120px rgba(0,0,0,0.95),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+
+/* notch */
+.phone::before {
+  content:'';
+  position:absolute;
+  top:14px; left:50%;
+  transform:translateX(-50%);
+  width:120px; height:34px;
+  background:#0A0A0F;
+  border-radius:20px;
+  z-index:200;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.06);
+}
+
+/* ==================== SCREENS ==================== */
+.screen {
+  display: none;
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+.screen::-webkit-scrollbar { display:none; }
+.screen.active { display:block; animation: fadeUp .3s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ==================== STATUS BAR ==================== */
+.sb {
+  height: 54px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 26px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: transparent;
+}
+.sb-icons { display:flex; gap:5px; align-items:center; }
+.sb-wifi { width:15px; opacity:.8; }
+.sb-batt { width:22px; opacity:.8; }
+
+/* ==================== BOTTOM NAV ==================== */
+.bnav {
+  position: absolute;
+  bottom:0; left:0; right:0;
+  height: 76px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  padding-top: 10px;
+  justify-content: space-around;
+  z-index: 150;
+}
+.bn {
+  display:flex; flex-direction:column; align-items:center;
+  gap:3px; cursor:pointer; opacity:.38; transition:opacity .2s;
+  font-size:9px; color:var(--text); letter-spacing:.3px; font-weight:600;
+}
+.bn.on { opacity:1; color:var(--green); }
+.bn svg { width:22px; height:22px; }
+
+/* ==================== BACK ROW ==================== */
+.back-row {
+  display:flex; align-items:center; gap:8px;
+  cursor:pointer; color:var(--muted); font-size:12px; margin-bottom:16px;
+}
+.back-row svg { width:18px; height:18px; flex-shrink:0; }
+
+/* ==================== TYPOGRAPHY ==================== */
+.title { font-size:22px; font-weight:800; color:var(--text); letter-spacing:-.5px; line-height:1.2; }
+.subtitle { font-size:13px; color:var(--muted); margin-top:6px; line-height:1.5; }
+
+/* ==================== CARDS ==================== */
+.card { background:var(--card); border-radius:20px; border:1px solid var(--border); padding:20px; }
+.card-sm { background:var(--card); border-radius:16px; border:1px solid var(--border); padding:16px; }
+
+/* ==================== PROGRESS BAR ==================== */
+.pbar { height:6px; background:rgba(255,255,255,0.07); border-radius:6px; overflow:hidden; }
+.pfill { height:100%; border-radius:6px; background:linear-gradient(90deg,var(--green-dark),var(--green)); transition:width .7s cubic-bezier(.4,0,.2,1); }
+
+/* ==================== BUTTONS ==================== */
+.btn { width:100%; padding:16px; border:none; border-radius:14px; font-size:15px; font-weight:700; font-family:'Sora',sans-serif; cursor:pointer; letter-spacing:.2px; transition:all .18s; }
+.btn-green { background:var(--green); color:#fff; box-shadow:0 8px 24px rgba(76,175,80,.3); }
+.btn-green:active { transform:scale(.98); }
+.btn-outline { background:transparent; border:1px solid var(--border); color:var(--text); }
+.btn-red { background:rgba(229,57,53,.12); border:1.5px solid rgba(229,57,53,.5); color:var(--red); }
+.btn-gold { background:linear-gradient(135deg,#FF8F00,#FFC107); color:#000; box-shadow:0 8px 24px rgba(255,193,7,.25); }
+
+/* ==================== TOGGLE ==================== */
+.toggle { width:42px; height:24px; border-radius:12px; cursor:pointer; display:flex; align-items:center; padding:3px; transition:background .2s; flex-shrink:0; }
+.toggle.on { background:var(--green); justify-content:flex-end; }
+.toggle.off { background:rgba(255,255,255,.1); justify-content:flex-start; }
+.toggle-knob { width:18px; height:18px; border-radius:50%; background:#fff; }
+
+/* ==================== BADGE ==================== */
+.badge { display:inline-flex; align-items:center; gap:3px; padding:3px 10px; border-radius:20px; font-size:10px; font-weight:700; letter-spacing:.3px; }
+.badge-g { background:rgba(76,175,80,.15); color:var(--green); border:1px solid rgba(76,175,80,.3); }
+.badge-y { background:rgba(255,193,7,.15); color:var(--yellow); border:1px solid rgba(255,193,7,.3); }
+.badge-r { background:rgba(229,57,53,.15); color:var(--red); border:1px solid rgba(229,57,53,.3); }
+.badge-b { background:rgba(57,73,171,.2); color:#7986CB; border:1px solid rgba(57,73,171,.3); }
+.badge-acc { background:rgba(110,231,183,.12); color:var(--accent); border:1px solid rgba(110,231,183,.25); }
+
+/* ==================== CHIP ==================== */
+.chip { padding:8px 14px; background:var(--card); border:1px solid var(--border); border-radius:20px; font-size:12px; font-family:'Sora',sans-serif; color:var(--muted); cursor:pointer; white-space:nowrap; transition:all .2s; }
+.chip:hover { border-color:var(--green); color:var(--green); }
+
+/* ==================== RANGE ==================== */
+input[type=range] { width:100%; -webkit-appearance:none; height:6px; background:rgba(255,255,255,.1); border-radius:6px; outline:none; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:22px; height:22px; border-radius:50%; background:var(--green); box-shadow:0 0 12px rgba(76,175,80,.6); cursor:pointer; }
+
+/* ==================== SECTION LABEL ==================== */
+.sec-label { font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:10px; }
+
+/* ==================== MENU ROW ==================== */
+.menu-row { display:flex; align-items:center; gap:14px; padding:15px 0; border-bottom:1px solid var(--border); cursor:pointer; }
+.menu-row:last-child { border-bottom:none; }
+.menu-icon { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.menu-title { font-size:14px; font-weight:600; color:var(--text); }
+.menu-desc { font-size:11px; color:var(--muted); margin-top:2px; }
+.menu-arrow { color:var(--muted); font-size:20px; margin-left:auto; }
+
+/* ==================== COMMUNITY POST ==================== */
+.post { background:var(--card); border-radius:20px; border:1px solid var(--border); padding:18px; }
+.post-head { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.post-av { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.post-name { font-size:13px; font-weight:700; color:var(--text); }
+.post-meta { font-size:11px; color:var(--muted); display:flex; align-items:center; gap:6px; margin-top:2px; }
+.post-body { font-size:13px; color:var(--text); line-height:1.55; margin-bottom:14px; font-family:'Inter',sans-serif; }
+.post-acts { display:flex; gap:18px; }
+.post-act { display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted); cursor:pointer; transition:color .2s; }
+.post-act:hover { color:var(--text); }
+
+/* ==================== CHAT ==================== */
+.bubble { max-width:82%; padding:12px 16px; border-radius:18px; font-size:13px; line-height:1.5; font-family:'Inter',sans-serif; }
+.bubble-ai { background:var(--card2); border:1px solid var(--border); color:var(--text); border-bottom-left-radius:4px; align-self:flex-start; }
+.bubble-user { background:rgba(76,175,80,.18); border:1px solid rgba(76,175,80,.3); color:var(--text); border-bottom-right-radius:4px; align-self:flex-end; }
+.btime { font-size:10px; color:var(--muted); margin-top:3px; }
+
+/* ==================== SCREEN-SPECIFIC ==================== */
+
+/* SPLASH */
+#s-splash {
+  background: radial-gradient(ellipse at 50% 35%, rgba(46,125,50,.35) 0%, transparent 65%), var(--bg);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0;
+}
+.splash-logo { width:88px; height:88px; background:linear-gradient(135deg,var(--green-dark),var(--green)); border-radius:28px; display:flex; align-items:center; justify-content:center; font-size:40px; margin-bottom:28px; box-shadow:0 20px 60px rgba(76,175,80,.45); }
+.splash-name { font-size:40px; font-weight:800; color:var(--text); letter-spacing:-1.5px; margin-bottom:8px; }
+.splash-tag { font-size:15px; color:var(--muted); font-weight:300; letter-spacing:.5px; margin-bottom:60px; }
+.dots { display:flex; gap:8px; }
+.dot { width:8px; height:8px; border-radius:50%; background:rgba(76,175,80,.3); animation:dotpulse 1.5s infinite; }
+.dot:nth-child(2){animation-delay:.2s} .dot:nth-child(3){animation-delay:.4s}
+@keyframes dotpulse { 0%,100%{transform:scale(1);opacity:.3} 50%{transform:scale(1.4);opacity:1;background:var(--green)} }
+
+/* ONBOARDING */
+.ob-opt { display:flex; align-items:center; gap:14px; padding:16px 18px; background:var(--card); border-radius:14px; border:1px solid var(--border); cursor:pointer; transition:all .2s; font-size:14px; font-weight:500; color:var(--text); }
+.ob-opt:hover,.ob-opt.sel { border-color:var(--green); background:rgba(76,175,80,.09); }
+.ob-emoji { font-size:22px; }
+
+/* DASHBOARD */
+.ctr-card { background:linear-gradient(135deg,rgba(46,125,50,.45),rgba(20,40,25,.7)); border-radius:24px; border:1px solid rgba(76,175,80,.3); padding:32px 24px; text-align:center; position:relative; overflow:hidden; }
+.ctr-card::before { content:''; position:absolute; top:-40px; right:-40px; width:160px; height:160px; background:radial-gradient(circle,rgba(76,175,80,.2),transparent 70%); border-radius:50%; }
+.ctr-days { font-size:84px; font-weight:800; color:var(--text); line-height:1; letter-spacing:-4px; text-shadow:0 0 40px rgba(76,175,80,.5); }
+.ctr-lbl { font-size:12px; color:rgba(255,255,255,.5); letter-spacing:1.5px; text-transform:uppercase; margin:6px 0 20px; }
+.ctr-stats { display:flex; justify-content:center; gap:24px; }
+.ctr-stat { display:flex; flex-direction:column; align-items:center; gap:2px; }
+.ctr-val { font-size:18px; font-weight:700; color:var(--text); }
+.ctr-key { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+.ctr-div { width:1px; height:32px; background:rgba(255,255,255,.1); align-self:center; }
+
+.motiv { margin-bottom:16px; padding:14px 18px; background:rgba(110,231,183,.06); border-radius:14px; border:1px solid rgba(110,231,183,.15); display:flex; align-items:center; gap:12px; font-size:13px; color:var(--accent); font-style:italic; line-height:1.4; }
+
+.qa-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+.qa-btn { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px 10px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; font-size:10px; font-weight:600; color:var(--muted); text-align:center; line-height:1.3; transition:all .2s; }
+.qa-btn:hover { border-color:rgba(255,255,255,.2); color:var(--text); }
+.qa-emg { border-color:rgba(229,57,53,.3); background:rgba(229,57,53,.07); color:var(--red); }
+.qa-emo { font-size:24px; }
+
+.risk-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+.risk-card { background:var(--card); border-radius:18px; border:1px solid var(--border); padding:16px; }
+.risk-lbl { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+.risk-val { font-size:16px; font-weight:700; color:var(--text); display:flex; align-items:center; gap:6px; }
+.rdot { width:10px; height:10px; border-radius:50%; }
+.rdot-g { background:var(--green); box-shadow:0 0 8px var(--green); }
+.rdot-y { background:var(--yellow); box-shadow:0 0 8px var(--yellow); }
+.rdot-r { background:var(--red); box-shadow:0 0 8px var(--red); }
+
+.lvl-card { background:linear-gradient(135deg,rgba(255,193,7,.15),rgba(255,152,0,.08)); border-radius:20px; border:1px solid rgba(255,193,7,.2); padding:20px; }
+.xpbar { height:8px; background:rgba(255,255,255,.07); border-radius:8px; overflow:hidden; margin:10px 0 6px; }
+.xpfill { height:100%; background:linear-gradient(90deg,#FF8F00,#FFC107); border-radius:8px; }
+
+/* CHECK-IN */
+.emo-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.emo-btn { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px 8px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; font-size:12px; font-weight:500; color:var(--muted); transition:all .2s; }
+.emo-btn:hover { border-color:rgba(255,255,255,.2); color:var(--text); }
+.emo-btn.sel { border-color:var(--green); background:rgba(76,175,80,.1); color:var(--text); }
+.emo-icon { font-size:28px; }
+.yn { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.btn-no { padding:18px; background:rgba(76,175,80,.15); border:1.5px solid var(--green); border-radius:14px; color:var(--green); font-size:16px; font-weight:700; font-family:'Sora',sans-serif; cursor:pointer; }
+.btn-yes { padding:18px; background:rgba(229,57,53,.1); border:1.5px solid rgba(229,57,53,.5); border-radius:14px; color:var(--red); font-size:16px; font-weight:700; font-family:'Sora',sans-serif; cursor:pointer; }
+
+/* EVOLUÇÃO */
+.stat-grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.stat-card { background:var(--card); border-radius:16px; border:1px solid var(--border); padding:14px 10px; text-align:center; }
+.stat-num { font-size:24px; font-weight:800; color:var(--text); line-height:1; }
+.stat-unit { font-size:10px; font-weight:700; margin-top:2px; }
+.stat-desc { font-size:9px; color:var(--muted); margin-top:3px; text-transform:uppercase; letter-spacing:.5px; }
+
+.bars { display:flex; align-items:flex-end; gap:5px; height:80px; }
+.bar-w { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; height:100%; justify-content:flex-end; }
+.bar-f { width:100%; border-radius:5px 5px 0 0; }
+.bar-f.cl { background:linear-gradient(180deg,var(--green),var(--green-dark)); }
+.bar-f.rl { background:linear-gradient(180deg,rgba(229,57,53,.8),rgba(229,57,53,.3)); }
+.bar-d { font-size:10px; color:var(--muted); }
+
+.impr-card { background:var(--card); border-radius:20px; border:1px solid rgba(110,231,183,.2); padding:20px; text-align:center; }
+.impr-pct { font-size:56px; font-weight:800; color:var(--accent); letter-spacing:-2px; line-height:1; text-shadow:0 0 30px rgba(110,231,183,.4); }
+.impr-lbl { font-size:11px; color:var(--muted); margin-top:5px; text-transform:uppercase; letter-spacing:1px; }
+
+.insight { padding:14px 16px; border-radius:14px; display:flex; gap:12px; align-items:flex-start; }
+.insight-y { background:rgba(255,193,7,.06); border:1px solid rgba(255,193,7,.2); }
+.insight-g { background:rgba(76,175,80,.06); border:1px solid rgba(76,175,80,.2); }
+.ins-ico { font-size:18px; flex-shrink:0; }
+.ins-title { font-size:13px; font-weight:700; margin-bottom:3px; }
+.ins-text { font-size:12px; color:var(--muted); line-height:1.4; }
+
+/* METAS */
+.meta-item { background:var(--card); border-radius:20px; border:1px solid var(--border); padding:20px; }
+.meta-item.act { border-color:var(--green); background:rgba(76,175,80,.06); }
+.meta-item.done { opacity:.65; }
+.meta-item.lock { opacity:.4; }
+.meta-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+.meta-title { font-size:16px; font-weight:700; color:var(--text); }
+.meta-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+.meta-days { font-size:22px; font-weight:800; color:var(--green); letter-spacing:-1px; text-align:right; }
+.meta-dlbl { font-size:10px; color:var(--muted); text-align:right; text-transform:uppercase; }
+.meta-prog-row { display:flex; align-items:center; gap:10px; }
+.meta-pct { font-size:12px; font-weight:700; color:var(--green); min-width:34px; }
+
+.ach-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.ach { background:var(--card); border-radius:16px; border:1px solid var(--border); padding:14px 8px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:5px; }
+.ach.unl { border-color:rgba(255,193,7,.4); background:rgba(255,193,7,.05); }
+.ach.lck { opacity:.3; }
+.ach-med { font-size:28px; }
+.ach-ttl { font-size:10px; font-weight:600; color:var(--text); }
+.ach-xp { font-size:10px; color:var(--yellow); }
+
+/* MENTOR IA */
+.ia-hdr { display:flex; align-items:center; gap:14px; padding:0 24px 16px; border-bottom:1px solid var(--border); }
+.ia-av { width:48px; height:48px; background:linear-gradient(135deg,#1A237E,#3949AB); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 0 20px rgba(57,73,171,.5); }
+.ia-nm { font-size:16px; font-weight:700; color:var(--text); }
+.ia-st { font-size:11px; color:var(--green); display:flex; align-items:center; gap:4px; }
+.ia-dot { width:7px; height:7px; background:var(--green); border-radius:50%; animation:blink 2s infinite; }
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.chat-area { padding:20px 24px; display:flex; flex-direction:column; gap:14px; }
+.chips-row { display:flex; gap:8px; padding:0 24px 12px; overflow-x:auto; scrollbar-width:none; }
+.chips-row::-webkit-scrollbar{display:none}
+.ci-row { display:flex; gap:10px; padding:0 24px; }
+.ci-input { flex:1; background:var(--card); border:1px solid var(--border); border-radius:24px; padding:12px 18px; font-size:13px; font-family:'Sora',sans-serif; color:var(--text); outline:none; }
+.ci-input::placeholder{color:var(--muted)}
+.ci-send { width:46px; height:46px; background:var(--green); border:none; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:16px; flex-shrink:0; box-shadow:0 4px 16px rgba(76,175,80,.4); }
+
+/* EMERGÊNCIA */
+.emg-pulse { width:80px; height:80px; margin:0 auto 24px; background:rgba(229,57,53,.15); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:36px; position:relative; }
+.emg-pulse::before,.emg-pulse::after { content:''; position:absolute; inset:0; border-radius:50%; border:2px solid rgba(229,57,53,.5); animation:pring 2s infinite; }
+.emg-pulse::after{animation-delay:.5s}
+@keyframes pring{0%{transform:scale(1);opacity:1}100%{transform:scale(1.9);opacity:0}}
+.emg-acts { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.emg-btn { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:20px 14px; display:flex; flex-direction:column; align-items:center; gap:10px; cursor:pointer; font-size:13px; font-weight:600; color:var(--text); text-align:center; line-height:1.3; transition:all .2s; }
+.emg-btn:hover { border-color:var(--red); background:rgba(229,57,53,.08); }
+.emg-ei { font-size:28px; }
+.emg-partner { padding:16px 18px; background:rgba(229,57,53,.1); border-radius:16px; border:1px solid rgba(229,57,53,.35); display:flex; align-items:center; gap:14px; cursor:pointer; }
+.ep-av { width:44px; height:44px; background:linear-gradient(135deg,#1A237E,#5C6BC0); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.ep-name { font-size:14px; font-weight:700; color:var(--text); }
+.ep-role { font-size:11px; color:var(--muted); }
+
+/* RESPIRAÇÃO */
+#s-resp {
+  background:radial-gradient(ellipse at 50% 40%,rgba(46,125,50,.35) 0%,var(--bg) 62%);
+  display:flex; flex-direction:column; align-items:center;
+}
+.br-wrap { position:relative; width:220px; height:220px; margin:0 auto 36px; }
+.br-ring1 { position:absolute; inset:0; border-radius:50%; border:2px solid rgba(76,175,80,.3); animation:brx 4s ease-in-out infinite; }
+.br-ring2 { position:absolute; inset:16px; border-radius:50%; border:2px solid rgba(76,175,80,.5); animation:brx 4s ease-in-out infinite .25s; }
+.br-core { position:absolute; inset:32px; background:radial-gradient(circle,rgba(76,175,80,.28),rgba(46,125,50,.12)); border-radius:50%; border:1.5px solid rgba(76,175,80,.6); display:flex; flex-direction:column; align-items:center; justify-content:center; animation:brx 4s ease-in-out infinite .12s; }
+@keyframes brx{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.08);opacity:1}}
+.br-phase { font-size:14px; font-weight:700; color:var(--text); }
+.br-cnt { font-size:38px; font-weight:800; color:var(--green); line-height:1; }
+.br-steps { display:flex; gap:28px; margin-bottom:36px; }
+.br-step { text-align:center; }
+.br-si { font-size:22px; margin-bottom:4px; }
+.br-sl { font-size:10px; color:var(--muted); }
+.br-st { font-size:13px; font-weight:700; color:var(--text); }
+.br-pbar { width:200px; height:4px; background:rgba(255,255,255,.08); border-radius:4px; overflow:hidden; margin-bottom:36px; }
+.br-pfill { height:100%; background:var(--green); border-radius:4px; animation:brp 14s linear infinite; }
+@keyframes brp{0%{width:0%}100%{width:100%}}
+
+/* PERFIL */
+.pf-hero { background:linear-gradient(180deg,rgba(46,125,50,.22) 0%,transparent 100%); padding:64px 24px 24px; text-align:center; }
+.pf-av-wrap { position:relative; width:84px; height:84px; margin:0 auto 14px; }
+.pf-av { width:84px; height:84px; background:linear-gradient(135deg,var(--green-dark),var(--green)); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:38px; border:3px solid rgba(76,175,80,.4); }
+.pf-lvlbdg { position:absolute; bottom:-4px; right:-4px; background:var(--yellow); border-radius:20px; padding:2px 8px; font-size:10px; font-weight:800; color:#000; border:2px solid var(--bg); }
+.pf-name { font-size:20px; font-weight:800; color:var(--text); margin-bottom:4px; }
+.pf-bio { font-size:12px; color:var(--muted); line-height:1.4; margin-bottom:14px; }
+.pf-stats { display:flex; background:var(--card); border-radius:16px; border:1px solid var(--border); overflow:hidden; }
+.pf-stat { flex:1; padding:14px 8px; text-align:center; border-right:1px solid var(--border); }
+.pf-stat:last-child{border-right:none}
+.pf-sv { font-size:18px; font-weight:800; color:var(--text); }
+.pf-sk { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-top:2px; }
+
+/* COMUNIDADE */
+.com-tabs-row { display:flex; gap:8px; padding:0 24px 14px; overflow-x:auto; scrollbar-width:none; }
+.com-tabs-row::-webkit-scrollbar{display:none}
+.ctab { padding:7px 14px; border-radius:20px; background:var(--card); border:1px solid var(--border); font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; white-space:nowrap; transition:all .2s; }
+.ctab.on { background:rgba(76,175,80,.14); border-color:var(--green); color:var(--green); }
+.np-row { display:flex; gap:10px; align-items:center; margin-bottom:16px; }
+.np-input { flex:1; background:var(--card); border:1px solid var(--border); border-radius:24px; padding:12px 18px; font-size:13px; font-family:'Sora',sans-serif; color:var(--text); outline:none; }
+.np-input::placeholder{color:var(--muted)}
+
+/* PARCEIRO */
+.part-box { background:rgba(76,175,80,.08); border-radius:20px; border:1px solid rgba(76,175,80,.25); padding:20px; }
+
+/* ACADEMIA */
+.ac-search { display:flex; align-items:center; gap:10px; background:var(--card); border:1px solid var(--border); border-radius:14px; padding:12px 16px; color:var(--muted); font-size:13px; margin-bottom:14px; }
+.cat-row { display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; margin-bottom:16px; }
+.cat-row::-webkit-scrollbar{display:none}
+.cat-t { padding:7px 16px; border-radius:20px; background:var(--card); border:1px solid var(--border); font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; white-space:nowrap; transition:all .2s; }
+.cat-t.on { background:rgba(76,175,80,.14); border-color:var(--green); color:var(--green); }
+.feat-course { border-radius:20px; overflow:hidden; position:relative; height:160px; background:linear-gradient(135deg,#1A237E,#283593); border:1px solid rgba(63,81,181,.4); cursor:pointer; display:flex; flex-direction:column; justify-content:flex-end; padding:20px; margin-bottom:16px; }
+.feat-emoji { position:absolute; top:20px; right:20px; font-size:50px; opacity:.65; }
+.feat-tag { display:inline-flex; padding:3px 10px; background:rgba(255,255,255,.15); border-radius:10px; font-size:9px; font-weight:800; color:#fff; letter-spacing:.8px; margin-bottom:5px; width:fit-content; }
+.feat-title { font-size:17px; font-weight:800; color:#fff; line-height:1.2; }
+.feat-meta { font-size:11px; color:rgba(255,255,255,.55); margin-top:4px; }
+.course-item { display:flex; align-items:center; gap:14px; background:var(--card); border-radius:16px; border:1px solid var(--border); padding:14px; cursor:pointer; }
+.course-thumb { width:52px; height:52px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; }
+.course-info { flex:1; }
+.course-title { font-size:14px; font-weight:700; color:var(--text); line-height:1.2; }
+.course-meta { font-size:11px; color:var(--muted); margin-top:3px; }
+.course-lock { font-size:18px; color:var(--muted); }
+
+/* ADMIN */
+.kpi-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.kpi-card { background:var(--card); border-radius:16px; border:1px solid var(--border); padding:16px; }
+.kpi-lbl { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+.kpi-val { font-size:26px; font-weight:800; color:var(--text); letter-spacing:-1px; line-height:1; }
+.kpi-chg { font-size:11px; margin-top:4px; }
+.kpi-up { color:var(--green); } .kpi-dn { color:var(--red); }
+.rev-card { background:linear-gradient(135deg,rgba(76,175,80,.2),rgba(46,125,50,.1)); border-radius:16px; border:1px solid rgba(76,175,80,.25); padding:18px; }
+.rev-lbl { font-size:10px; color:rgba(255,255,255,.45); text-transform:uppercase; letter-spacing:1px; }
+.rev-val { font-size:30px; font-weight:800; color:var(--text); letter-spacing:-1.5px; margin:4px 0; }
+.rev-period { font-size:11px; color:var(--muted); }
+.rev-row { display:flex; gap:14px; margin-top:14px; }
+.rev-it { flex:1; }
+.rev-it-l { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+.rev-it-v { font-size:15px; font-weight:700; color:var(--text); margin-top:2px; }
+.mbars { display:flex; align-items:flex-end; gap:5px; height:60px; }
+.mbar { flex:1; border-radius:4px 4px 0 0; }
+.user-row { display:flex; align-items:center; gap:10px; padding:12px 0; border-bottom:1px solid var(--border); }
+.user-row:last-child{border-bottom:none}
+.ur-av { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; background:var(--card2); }
+.ur-name { flex:1; font-size:13px; font-weight:600; color:var(--text); }
+.ur-str { font-size:11px; color:var(--green); }
+.ur-plan { font-size:10px; padding:2px 8px; border-radius:10px; font-weight:700; }
+.plan-f { background:rgba(255,255,255,.08); color:var(--muted); }
+.plan-p { background:rgba(255,193,7,.15); color:var(--yellow); }
+.alert-row { padding:11px 15px; border-radius:12px; font-size:12px; color:var(--text); display:flex; gap:10px; align-items:center; }
+.al-r { background:rgba(229,57,53,.08); border:1px solid rgba(229,57,53,.2); }
+.al-y { background:rgba(255,193,7,.06); border:1px solid rgba(255,193,7,.15); }
+.al-g { background:rgba(76,175,80,.06); border:1px solid rgba(76,175,80,.15); }
+
+/* ==================== NAV TABS OUTSIDE ==================== */
+.tab-bar {
+  display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:500px; width:100%;
+}
+.tab {
+  padding:7px 15px; border-radius:20px; background:#17171F; border:1px solid rgba(255,255,255,.07);
+  color:#6B6B8A; font-size:12px; font-family:'Sora',sans-serif; cursor:pointer; transition:all .2s; letter-spacing:.2px;
+}
+.tab:hover { color:var(--text); border-color:rgba(255,255,255,.18); }
+.tab.on { background:var(--green-dark); color:#fff; border-color:var(--green); }
+
+/* ==================== UTILS ==================== */
+.p24 { padding:0 24px; }
+.mb8 { margin-bottom:8px; }
+.mb12 { margin-bottom:12px; }
+.mb16 { margin-bottom:16px; }
+.mb20 { margin-bottom:20px; }
+.mb24 { margin-bottom:24px; }
+.gap8 { gap:8px; }
+.gap12 { gap:12px; }
+.gap16 { gap:16px; }
+.flex-col { display:flex; flex-direction:column; }
+.flex-row { display:flex; }
+.pb80 { padding-bottom:80px; }
+</style>
+</head>
+<body>
+
+<!-- ====================================================
+     PHONE
+===================================================== -->
+<div class="phone">
+
+<!-- ===== SPLASH ===== -->
+<div class="screen active" id="s-splash">
+  <div class="sb"><span>9:41</span><div class="sb-icons"><svg class="sb-wifi" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg><svg class="sb-batt" viewBox="0 0 24 12" fill="currentColor"><rect x="0" y="1" width="20" height="10" rx="2" stroke="currentColor" stroke-width="1.2" fill="none"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="currentColor"/><path d="M22 4v4c1.1-.55 1.1-3.45 0-4z"/></svg></div></div>
+  <div class="splash-logo">🌱</div>
+  <div class="splash-name">Recomeço</div>
+  <div class="splash-tag">Um dia de cada vez.</div>
+  <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+  <div style="position:absolute;bottom:40px;left:0;right:0;text-align:center;font-size:11px;color:var(--muted);letter-spacing:.5px;">Construindo uma vida melhor</div>
+</div>
+
+<!-- ===== ONBOARDING ===== -->
+<div class="screen" id="s-ob">
+  <div class="sb"><span>9:41</span></div>
+  <div style="padding:0 24px 24px;background:linear-gradient(180deg,rgba(46,125,50,.15),transparent)">
+    <div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">PASSO 2 DE 4</div>
+    <div class="pbar mb20"><div class="pfill" style="width:50%"></div></div>
+    <div class="title">Qual sua<br>motivação principal?</div>
+    <div class="subtitle">Isso nos ajuda a personalizar sua jornada.</div>
+  </div>
+  <div class="p24 flex-col gap8 mb24" id="ob-opts">
+    <div class="ob-opt sel" onclick="selOb(this)"><span class="ob-emoji">💑</span>Melhorar meu relacionamento</div>
+    <div class="ob-opt" onclick="selOb(this)"><span class="ob-emoji">🧠</span>Saúde mental e foco</div>
+    <div class="ob-opt" onclick="selOb(this)"><span class="ob-emoji">✝️</span>Espiritualidade</div>
+    <div class="ob-opt" onclick="selOb(this)"><span class="ob-emoji">⚡</span>Produtividade</div>
+    <div class="ob-opt" onclick="selOb(this)"><span class="ob-emoji">💪</span>Autocontrole</div>
+  </div>
+  <div class="p24"><button class="btn btn-green" onclick="go('s-dash')">Continuar →</button></div>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div class="screen pb80" id="s-dash">
+  <div class="sb"><span>9:41</span><div class="sb-icons"><svg class="sb-batt" viewBox="0 0 24 12" fill="currentColor"><rect x="0" y="1" width="20" height="10" rx="2" stroke="currentColor" stroke-width="1.2" fill="none"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="currentColor"/><path d="M22 4v4c1.1-.55 1.1-3.45 0-4z"/></svg></div></div>
+  <div style="padding:4px 24px 18px;display:flex;align-items:center;justify-content:space-between;">
+    <div><div style="font-size:12px;color:var(--muted);">Bom dia 👋</div><div style="font-size:18px;font-weight:700;color:var(--text);">João Paulo</div></div>
+    <div style="width:44px;height:44px;background:linear-gradient(135deg,var(--green-dark),var(--green));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;position:relative;">😊<div style="position:absolute;top:-2px;right:-2px;width:12px;height:12px;background:var(--red);border-radius:50%;border:2px solid var(--bg);"></div></div>
+  </div>
+  <div class="p24 mb16">
+    <div class="ctr-card">
+      <div class="ctr-days">27</div>
+      <div class="ctr-lbl">dias de progresso</div>
+      <div class="ctr-stats">
+        <div class="ctr-stat"><div class="ctr-val">42</div><div class="ctr-key">Recorde</div></div>
+        <div class="ctr-div"></div>
+        <div class="ctr-stat"><div class="ctr-val">87%</div><div class="ctr-key">Sucesso</div></div>
+        <div class="ctr-div"></div>
+        <div class="ctr-stat"><div class="ctr-val">Lv 4</div><div class="ctr-key">Nível</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="p24 mb16">
+    <div class="motiv"><span style="font-size:20px;flex-shrink:0">✨</span>"Você está melhor que 87% das pessoas que iniciam a jornada."</div>
+  </div>
+  <div class="p24 mb16">
+    <div class="risk-row">
+      <div class="risk-card"><div class="risk-lbl">Risco hoje</div><div class="risk-val"><div class="rdot rdot-g"></div>Baixo</div></div>
+      <div class="risk-card"><div class="risk-lbl">Humor</div><div class="risk-val" style="font-size:20px;">😊 7/10</div></div>
+    </div>
+  </div>
+  <div class="p24 mb16">
+    <div class="qa-grid">
+      <div class="qa-btn" onclick="go('s-checkin')"><span class="qa-emo">📋</span>Check-in diário</div>
+      <div class="qa-btn" onclick="go('s-ia')"><span class="qa-emo">🤖</span>Mentor IA</div>
+      <div class="qa-btn qa-emg" onclick="go('s-emg')"><span class="qa-emo">🚨</span>Emergência</div>
+    </div>
+  </div>
+  <div class="p24 mb16">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div><div style="font-size:14px;font-weight:700;color:var(--text);">Meta: 30 dias</div><div style="font-size:12px;color:var(--muted);">3 dias restantes</div></div>
+        <div style="font-size:20px;font-weight:800;color:var(--green);">90%</div>
+      </div>
+      <div class="pbar"><div class="pfill" style="width:90%"></div></div>
+    </div>
+  </div>
+  <div class="p24 mb16">
+    <div class="lvl-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div><div style="font-size:17px;font-weight:700;color:var(--yellow);">🏆 Constância</div><div style="font-size:12px;color:var(--muted);">Nível 4</div></div>
+        <div style="text-align:right;"><div style="font-size:22px;font-weight:800;color:var(--text);">2.340</div><div style="font-size:10px;color:var(--muted);">XP Total</div></div>
+      </div>
+      <div class="xpbar"><div class="xpfill" style="width:68%"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);"><span>340 XP para o próximo</span><span>68%</span></div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="bn on"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Início</div>
+    <div class="bn" onclick="go('s-evolucao')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>Evolução</div>
+    <div class="bn" onclick="go('s-metas')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>Metas</div>
+    <div class="bn" onclick="go('s-ia')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>Mentor</div>
+    <div class="bn" onclick="go('s-perfil')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Perfil</div>
+  </div>
+</div>
+
+<!-- ===== CHECK-IN ===== -->
+<div class="screen pb80" id="s-checkin">
+  <div class="sb"><span>9:41</span></div>
+  <div style="padding:4px 24px 20px;background:linear-gradient(180deg,rgba(76,175,80,.1),transparent)">
+    <div class="back-row mb12" onclick="go('s-dash')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Voltar</div>
+    <div class="title">Check-in diário</div>
+    <div class="subtitle">Terça-feira, 27 de maio</div>
+  </div>
+  <div class="p24 mb8"><div class="sec-label">Como você está se sentindo?</div></div>
+  <div class="p24 mb20">
+    <div class="emo-grid" id="emo-grid">
+      <div class="emo-btn sel" onclick="togEmo(this)"><span class="emo-icon">😊</span>Feliz</div>
+      <div class="emo-btn" onclick="togEmo(this)"><span class="emo-icon">😰</span>Ansioso</div>
+      <div class="emo-btn" onclick="togEmo(this)"><span class="emo-icon">😔</span>Triste</div>
+      <div class="emo-btn" onclick="togEmo(this)"><span class="emo-icon">😴</span>Cansado</div>
+      <div class="emo-btn" onclick="togEmo(this)"><span class="emo-icon">😡</span>Irritado</div>
+      <div class="emo-btn sel" onclick="togEmo(this)"><span class="emo-icon">💪</span>Motivado</div>
+    </div>
+  </div>
+  <div class="p24 mb20">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div style="font-size:14px;font-weight:600;color:var(--text);">Nível de ansiedade</div>
+      <div style="font-size:22px;font-weight:800;color:var(--green);" id="sval">3</div>
+    </div>
+    <input type="range" min="0" max="10" value="3" oninput="document.getElementById('sval').textContent=this.value">
+  </div>
+  <div class="p24 mb20">
+    <div style="font-size:17px;font-weight:700;color:var(--text);text-align:center;margin-bottom:16px;">Você consumiu pornografia hoje?</div>
+    <div class="yn">
+      <button class="btn-no">✓ Não</button>
+      <button class="btn-yes">✗ Sim</button>
+    </div>
+  </div>
+  <div class="p24"><button class="btn btn-green" onclick="go('s-dash')">Salvar check-in</button></div>
+  <div class="bnav">
+    <div class="bn" onclick="go('s-dash')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Início</div>
+    <div class="bn" onclick="go('s-evolucao')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>Evolução</div>
+    <div class="bn on"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>Check-in</div>
+    <div class="bn" onclick="go('s-ia')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>Mentor</div>
+    <div class="bn" onclick="go('s-perfil')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Perfil</div>
+  </div>
+</div>
+
+<!-- ===== EVOLUÇÃO ===== -->
+<div class="screen pb80" id="s-evolucao">
+  <div class="sb"><span>9:41</span></div>
+  <div style="padding:4px 24px 20px;"><div class="title">Sua Evolução</div><div class="subtitle">Maio 2025</div></div>
+  <div class="p24 mb16"><div class="stat-grid3">
+    <div class="stat-card"><div class="stat-num">27</div><div class="stat-unit" style="color:var(--green);">dias</div><div class="stat-desc">Limpos</div></div>
+    <div class="stat-card"><div class="stat-num">87%</div><div class="stat-unit" style="color:var(--accent);">taxa</div><div class="stat-desc">Sucesso</div></div>
+    <div class="stat-card"><div class="stat-num">3</div><div class="stat-unit" style="color:var(--red);">vezes</div><div class="stat-desc">Recaídas</div></div>
+  </div></div>
+  <div class="p24 mb16"><div class="card">
+    <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;">Últimos 7 dias</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:14px;">21–27 mai</div>
+    <div class="bars">
+      <div class="bar-w"><div class="bar-f cl" style="height:100%"></div><div class="bar-d">Seg</div></div>
+      <div class="bar-w"><div class="bar-f cl" style="height:100%"></div><div class="bar-d">Ter</div></div>
+      <div class="bar-w"><div class="bar-f rl" style="height:30%"></div><div class="bar-d">Qua</div></div>
+      <div class="bar-w"><div class="bar-f cl" style="height:100%"></div><div class="bar-d">Qui</div></div>
+      <div class="bar-w"><div class="bar-f cl" style="height:100%"></div><div class="bar-d">Sex</div></div>
+      <div class="bar-w"><div class="bar-f cl" style="height:100%"></div><div class="bar-d">Sáb</div></div>
+      <div class="bar-w"><div class="bar-f cl" style="height:100%"></div><div class="bar-d">Dom</div></div>
+    </div>
+  </div></div>
+  <div class="p24 mb16"><div class="impr-card"><div class="impr-pct">90%</div><div class="impr-lbl">de melhoria</div><div style="font-size:12px;color:var(--muted);margin-top:8px;">Antes: ~30x/mês &nbsp;→&nbsp; Hoje: 3x/mês</div></div></div>
+  <div class="p24 flex-col gap12 mb12">
+    <div class="insight insight-y"><span class="ins-ico">⚠️</span><div><div class="ins-title" style="color:var(--yellow);">Padrão detectado</div><div class="ins-text">78% das recaídas ocorreram entre 22h e 01h. Considere uma rotina noturna saudável.</div></div></div>
+    <div class="insight insight-g"><span class="ins-ico">📱</span><div><div class="ins-title" style="color:var(--green);">Gatilho principal</div><div class="ins-text">65% das recaídas ocorreram após uso intenso de redes sociais.</div></div></div>
+  </div>
+  <div class="bnav">
+    <div class="bn" onclick="go('s-dash')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Início</div>
+    <div class="bn on"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>Evolução</div>
+    <div class="bn" onclick="go('s-metas')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>Metas</div>
+    <div class="bn" onclick="go('s-ia')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>Mentor</div>
+    <div class="bn" onclick="go('s-perfil')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Perfil</div>
+  </div>
+</div>
+
+<!-- ===== METAS ===== -->
+<div class="screen pb80" id="s-metas">
+  <div class="sb"><span>9:41</span></div>
+  <div style="padding:4px 24px 20px;"><div class="title">Sua Jornada</div><div class="subtitle">Conquiste uma meta de cada vez.</div></div>
+  <div class="p24 flex-col gap12 mb20">
+    <div class="meta-item done">
+      <div class="meta-top"><div><div class="meta-title">✅ Primeira Semana</div><div class="meta-sub">Concluída · 100%</div></div><div><div class="meta-days" style="color:var(--accent);">7</div><div class="meta-dlbl">dias</div></div></div>
+    </div>
+    <div class="meta-item done">
+      <div class="meta-top"><div><div class="meta-title">✅ Duas Semanas</div><div class="meta-sub">Concluída · 100%</div></div><div><div class="meta-days" style="color:var(--accent);">14</div><div class="meta-dlbl">dias</div></div></div>
+    </div>
+    <div class="meta-item act">
+      <div class="meta-top"><div><div class="meta-title">🎯 Um Mês</div><div class="meta-sub">Em andamento · 3 dias restantes</div></div><div><div class="meta-days">30</div><div class="meta-dlbl">dias</div></div></div>
+      <div class="meta-prog-row"><div class="pbar" style="flex:1"><div class="pfill" style="width:90%"></div></div><div class="meta-pct">90%</div></div>
+    </div>
+    <div class="meta-item lock"><div class="meta-top"><div><div class="meta-title">🔒 Dois Meses</div><div class="meta-sub">Bloqueado</div></div><div><div class="meta-days" style="color:var(--muted);">60</div><div class="meta-dlbl">dias</div></div></div></div>
+    <div class="meta-item lock"><div class="meta-top"><div><div class="meta-title">🔒 Noventa Dias</div><div class="meta-sub">Bloqueado</div></div><div><div class="meta-days" style="color:var(--muted);">90</div><div class="meta-dlbl">dias</div></div></div></div>
+  </div>
+  <div class="p24 mb12"><div class="sec-label">Conquistas</div></div>
+  <div class="p24 mb12">
+    <div class="ach-grid">
+      <div class="ach unl"><span class="ach-med">🥉</span><div class="ach-ttl">7 Dias</div><div class="ach-xp">+100 XP</div></div>
+      <div class="ach unl"><span class="ach-med">🥈</span><div class="ach-ttl">14 Dias</div><div class="ach-xp">+200 XP</div></div>
+      <div class="ach lck"><span class="ach-med">🥇</span><div class="ach-ttl">30 Dias</div><div class="ach-xp">+500 XP</div></div>
+      <div class="ach lck"><span class="ach-med">🏆</span><div class="ach-ttl">90 Dias</div><div class="ach-xp">+1000 XP</div></div>
+      <div class="ach lck"><span class="ach-med">💎</span><div class="ach-ttl">180 Dias</div><div class="ach-xp">+2000 XP</div></div>
+      <div class="ach lck"><span class="ach-med">👑</span><div class="ach-ttl">365 Dias</div><div class="ach-xp">+5000 XP</div></div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="bn" onclick="go('s-dash')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Início</div>
+    <div class="bn" onclick="go('s-evolucao')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>Evolução</div>
+    <div class="bn on"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>Metas</div>
+    <div class="bn" onclick="go('s-ia')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>Mentor</div>
+    <div class="bn" onclick="go('s-perfil')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Perfil</div>
+  </div>
+</div>
+
+<!-- ===== MENTOR IA ===== -->
+<div class="screen pb80" id="s-ia">
+  <div class="sb"><span>9:41</span></div>
+  <div class="ia-hdr">
+    <div class="ia-av">🤖</div>
+    <div><div class="ia-nm">Mentor IA</div><div class="ia-st"><div class="ia-dot"></div>Online agora</div></div>
+  </div>
+  <div class="chat-area">
+    <div><div class="bubble bubble-ai">Olá, João! 👋 Você está no dia 27 da sua jornada — isso é incrível. Como você está se sentindo hoje?</div><div class="btime">09:35</div></div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;"><div class="bubble bubble-user">Estou bem hoje, mas ontem à noite foi difícil.</div><div class="btime" style="text-align:right;">09:37</div></div>
+    <div><div class="bubble bubble-ai">Entendo. Seu horário de maior vulnerabilidade costuma ser após as 22h. O que você estava fazendo quando sentiu a vontade surgir?</div><div class="btime">09:38</div></div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;"><div class="bubble bubble-user">Estava no Instagram, sozinho...</div><div class="btime" style="text-align:right;">09:39</div></div>
+    <div><div class="bubble bubble-ai">Isso confirma um padrão: 65% das suas recaídas ocorreram após redes sociais. Que tal desativar o Instagram após as 21h? Posso te ajudar a criar um ritual noturno. 🌙</div><div class="btime">09:41</div></div>
+  </div>
+  <div class="chips-row">
+    <div class="chip">Estou com vontade agora</div>
+    <div class="chip">Preciso de ajuda</div>
+    <div class="chip">Tive uma recaída</div>
+    <div class="chip">Não consigo dormir</div>
+    <div class="chip">Estou ansioso</div>
+  </div>
+  <div class="ci-row mb12">
+    <input class="ci-input" type="text" placeholder="Digite uma mensagem...">
+    <button class="ci-send">➤</button>
+  </div>
+  <div class="bnav">
+    <div class="bn" onclick="go('s-dash')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Início</div>
+    <div class="bn" onclick="go('s-evolucao')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>Evolução</div>
+    <div class="bn" onclick="go('s-metas')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>Metas</div>
+    <div class="bn on"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>Mentor</div>
+    <div class="bn" onclick="go('s-perfil')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Perfil</div>
+  </div>
+</div>
+
+<!-- ===== EMERGÊNCIA ===== -->
+<div class="screen" id="s-emg" style="background:radial-gradient(ellipse at 50% 30%,rgba(229,57,53,.3) 0%,var(--bg) 58%);padding-bottom:40px;">
+  <div class="sb" style="color:rgba(255,255,255,.6);"><span>9:41</span></div>
+  <div class="p24" style="padding-top:0;">
+    <div class="back-row mb24" onclick="go('s-dash')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Voltar</div>
+    <div class="emg-pulse">🆘</div>
+    <div style="text-align:center;margin-bottom:8px;"><span class="title">Você não está sozinho.</span></div>
+    <div style="text-align:center;font-size:14px;color:var(--muted);line-height:1.5;margin-bottom:28px;">Respira fundo. Escolha uma ação abaixo para passar por esse momento.</div>
+    <div class="emg-acts mb16">
+      <div class="emg-btn" onclick="go('s-resp')"><span class="emg-ei">🌬️</span>Respiração guiada</div>
+      <div class="emg-btn"><span class="emg-ei">🧘</span>Meditação 5 min</div>
+      <div class="emg-btn"><span class="emg-ei">🚶</span>Caminhada agora</div>
+      <div class="emg-btn"><span class="emg-ei">🎥</span>Vídeo motivacional</div>
+      <div class="emg-btn" style="grid-column:span 2;" onclick="go('s-ia')"><span class="emg-ei">🤖</span>Falar com o Mentor IA</div>
+    </div>
+    <div class="emg-partner">
+      <div class="ep-av">👨</div>
+      <div><div class="ep-name">Carlos (irmão)</div><div class="ep-role">Parceiro de responsabilidade</div></div>
+      <div style="margin-left:auto;font-size:22px;">📞</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RESPIRAÇÃO ===== -->
+<div class="screen" id="s-resp" style="background:radial-gradient(ellipse at 50% 40%,rgba(46,125,50,.35) 0%,var(--bg) 62%);display:flex;flex-direction:column;align-items:center;padding-bottom:40px;">
+  <div class="sb" style="width:100%;color:rgba(255,255,255,.5);"><span>9:41</span></div>
+  <div class="p24" style="align-self:flex-start;width:100%;">
+    <div class="back-row mb0" onclick="go('s-emg')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Voltar</div>
+  </div>
+  <div style="text-align:center;padding:16px 24px 0;">
+    <div class="title mb8">Respiração Guiada</div>
+    <div class="subtitle mb24">Técnica 4-4-6 para reduzir a ansiedade</div>
+  </div>
+  <div class="br-wrap">
+    <div class="br-ring1"></div>
+    <div class="br-ring2"></div>
+    <div class="br-core"><div class="br-phase" id="br-phase">Inspire</div><div class="br-cnt" id="br-cnt">4</div></div>
+  </div>
+  <div class="br-steps">
+    <div class="br-step"><div class="br-si">🌬️</div><div class="br-sl">Inspire</div><div class="br-st">4 seg</div></div>
+    <div class="br-step"><div class="br-si">⏸️</div><div class="br-sl">Segure</div><div class="br-st">4 seg</div></div>
+    <div class="br-step"><div class="br-si">💨</div><div class="br-sl">Expire</div><div class="br-st">6 seg</div></div>
+  </div>
+  <div class="br-pbar"><div class="br-pfill"></div></div>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">Ciclo 1 de 5 · 48 segundos restantes</div>
+  <button class="btn btn-green" style="max-width:220px;" onclick="go('s-emg')">Concluir sessão</button>
+</div>
+
+<!-- ===== COMUNIDADE ===== -->
+<div class="screen pb80" id="s-com">
+  <div class="sb"><span>9:41</span></div>
+  <div style="padding:4px 24px 14px;display:flex;justify-content:space-between;align-items:flex-end;">
+    <div><div class="title">Comunidade</div><div class="subtitle">Você não está sozinho nessa jornada.</div></div>
+    <div style="font-size:22px;cursor:pointer;">✏️</div>
+  </div>
+  <div class="com-tabs-row">
+    <div class="ctab on">Todos</div><div class="ctab">Iniciantes</div><div class="ctab">30 dias</div><div class="ctab">90 dias</div><div class="ctab">Jovens</div><div class="ctab">Casados</div><div class="ctab">Cristãos</div>
+  </div>
+  <div class="p24 mb16">
+    <div class="np-row"><input class="np-input" type="text" placeholder="Compartilhe sua jornada..."><button class="ci-send">➤</button></div>
+  </div>
+  <div class="p24 flex-col gap12 mb12">
+    <div class="post">
+      <div class="post-head"><div class="post-av" style="background:linear-gradient(135deg,#1A237E,#3949AB);">👨</div><div style="flex:1"><div class="post-name">Marcos A.</div><div class="post-meta"><span>há 12 min</span><span class="badge badge-g">🔥 45 dias</span></div></div></div>
+      <div class="post-body">Acabei de bater meu recorde pessoal — 45 dias! O modo emergência me salvou mais de uma vez. Pra quem está começando: não desista depois de uma recaída. Cada dia conta. 💪</div>
+      <div class="post-acts"><div class="post-act">❤️ 47</div><div class="post-act">💬 12</div><div class="post-act">🔗 Compartilhar</div></div>
+    </div>
+    <div class="post">
+      <div class="post-head"><div class="post-av" style="background:linear-gradient(135deg,#4A148C,#7B1FA2);">👩</div><div style="flex:1"><div class="post-name">Ana R.</div><div class="post-meta"><span>há 2h</span><span class="badge badge-y">⭐ 8 dias</span></div></div></div>
+      <div class="post-body">Semana difícil. O check-in emocional me ajudou a perceber que meu gatilho principal é o tédio à tarde. Agora coloco música e vou caminhar quando sinto isso chegando.</div>
+      <div class="post-acts"><div class="post-act">❤️ 23</div><div class="post-act">💬 8</div><div class="post-act">🔗 Compartilhar</div></div>
+    </div>
+    <div class="post">
+      <div class="post-head"><div class="post-av" style="background:linear-gradient(135deg,#BF360C,#E64A19);">🧔</div><div style="flex:1"><div class="post-name">Pedro L.</div><div class="post-meta"><span>há 5h</span><span class="badge badge-acc">💎 90 dias</span></div></div></div>
+      <div class="post-body">90 dias. Meu relacionamento melhorou muito. Consigo me concentrar no trabalho. Durmo melhor. Esse app mudou minha rotina de verdade. Obrigado a todos. 🙏</div>
+      <div class="post-acts"><div class="post-act">❤️ 134</div><div class="post-act">💬 41</div><div class="post-act">🔗 Compartilhar</div></div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="bn" onclick="go('s-dash')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Início</div>
+    <div class="bn on"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>Comunidade</div>
+    <div class="bn" onclick="go('s-academia')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1z"/></svg>Academia</div>
+    <div class="bn" onclick="go('s-ia')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>Mentor</div>
+    <div class="bn" onclick="go('s-perfil')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Perfil</div>
+  </div>
+</div>
+
+<!-- ===== ACADEMIA ===== -->
+<div class="screen pb80" id="s-academia">
+  <div class="sb"><span>9:41</span></div>
+  <div style="padding:4px 24px 14px;"><div class="title">Academia</div><div class="subtitle">Conhecimento que transforma.</div></div>
+  <div class="p24"><div class="ac-search">🔍 &nbsp; Buscar cursos e artigos...</div></div>
+  <div class="cat-row p24">
+    <div class="cat-t on">Todos</div><div class="cat-t">Neurociência</div><div class="cat-t">Psicologia</div><div class="cat-t">Relacionamentos</div><div class="cat-t">Espiritualidade</div>
+  </div>
+  <div class="p24">
+    <div class="feat-course mb16">
+      <div class="feat-emoji">🧠</div>
+      <div class="feat-tag">DESTAQUE</div>
+      <div class="feat-title">Dopamina e<br>Autocontrole</div>
+      <div class="feat-meta">Neurociência · 8 aulas · 42 min</div>
+    </div>
+    <div class="sec-label mb12">Em andamento</div>
+    <div class="flex-col gap12 mb16">
+      <div class="course-item">
+        <div class="course-thumb" style="background:rgba(46,125,50,.15);">🌱</div>
+        <div class="course-info"><div class="course-title">Construindo Novos Hábitos</div><div class="course-meta">Psicologia · 6 aulas</div><div class="pbar" style="margin-top:7px;"><div class="pfill" style="width:60%"></div></div></div>
+        <div style="font-size:12px;font-weight:700;color:var(--green);">60%</div>
+      </div>
+      <div class="course-item">
+        <div class="course-thumb" style="background:rgba(229,57,53,.1);">❤️</div>
+        <div class="course-info"><div class="course-title">Intimidade e Relacionamentos</div><div class="course-meta">Relacionamentos · 10 aulas</div><div class="pbar" style="margin-top:7px;"><div class="pfill" style="width:20%"></div></div></div>
+        <div style="font-size:12px;font-weight:700;color:var(--green);">20%</div>
+      </div>
+    </div>
+    <div class="sec-label mb12">Biblioteca</div>
+    <div class="flex-col gap12 mb20">
+      <div class="course-item"><div class="course-thumb" style="background:rgba(63,81,181,.15);">🔬</div><div class="course-info"><div class="course-title">Recompensa Cerebral</div><div class="course-meta">Neurociência · 5 aulas</div></div><div class="course-lock">🔒</div></div>
+      <div class="course-item"><div class="course-thumb" style="background:rgba(255,193,7,.1);">✝️</div><div class="course-info"><div class="course-title">Fé, Propósito e Disciplina</div><div class="course-meta">Espiritualidade · 7 aulas</div></div><div class="course-lock">🔒</div></div>
+      <div class="course-item"><div class="course-thumb" style="background:rgba(76,175,80,.1);">💪</div><div class="course-info"><div class="course-title">Autocontrole na Prática</div><div class="course-meta">Psicologia · 9 aulas</div></div><div class="course-lock">🔒</div></div>
+    </div>
+    <div style="padding:16px;background:linear-gradient(135deg,rgba(255,193,7,.1),rgba(255,152,0,.07));border-radius:16px;border:1px solid rgba(255,193,7,.2);text-align:center;margin-bottom:8px;">
+      <div style="font-size:14px;font-weight:700;color:var(--yellow);margin-bottom:4px;">🔓 Academia completa no Premium</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">Mais de 30 cursos e artigos exclusivos</div>
+      <button class="btn btn-gold" onclick="go('s-premium')">Assinar Premium — R$19,90/mês</button>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="bn" onclick="go('s-dash')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Início</div>
+    <div class="bn" onclick="go('s-com')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>Comunidade</div>
+    <div class="bn on"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1z"/></svg>Academia</div>
+    <div class="bn" onclick="go('s-ia')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>Mentor</div>
+    <div class="bn" onclick="go('s-perfil')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Perfil</div>
+  </div>
+</div>
+
+<!-- ===== PERFIL ===== -->
+<div class="screen pb80" id="s-perfil">
+  <div class="sb"><span>9:41</span></div>
+  <div class="pf-hero">
+    <div class="pf-av-wrap"><div class="pf-av">😊</div><div class="pf-lvlbdg">Lv 4</div></div>
+    <div class="pf-name">João Paulo</div>
+    <div class="pf-bio">Em recuperação há 6 meses · São Paulo, SP<br>Membro desde Janeiro 2025</div>
+    <div class="pf-stats mb0">
+      <div class="pf-stat"><div class="pf-sv">27</div><div class="pf-sk">Dias</div></div>
+      <div class="pf-stat"><div class="pf-sv">42</div><div class="pf-sk">Recorde</div></div>
+      <div class="pf-stat"><div class="pf-sv">2.340</div><div class="pf-sk">XP</div></div>
+      <div class="pf-stat"><div class="pf-sv">87%</div><div class="pf-sk">Sucesso</div></div>
+    </div>
+  </div>
+  <div class="p24 mb16"><button class="btn btn-outline" style="font-size:13px;padding:12px;">✏️ Editar Perfil</button></div>
+  <div class="p24">
+    <div class="menu-row" onclick="go('s-parceiro')"><div class="menu-icon" style="background:rgba(76,175,80,.1);">🤝</div><div class="menu-text"><div class="menu-title">Parceiro de Responsabilidade</div><div class="menu-desc">Carlos (irmão) · Vinculado</div></div><div class="menu-arrow">›</div></div>
+    <div class="menu-row"><div class="menu-icon" style="background:rgba(255,193,7,.1);">🏆</div><div class="menu-text"><div class="menu-title">Minhas Conquistas</div><div class="menu-desc">6 de 18 desbloqueadas</div></div><div class="menu-arrow">›</div></div>
+    <div class="menu-row" onclick="go('s-premium')"><div class="menu-icon" style="background:rgba(63,81,181,.1);">💎</div><div class="menu-text"><div class="menu-title">Meu Plano</div><div class="menu-desc">Fazer upgrade para Premium</div></div><span class="badge badge-y" style="margin-left:auto;">FREE</span></div>
+    <div class="menu-row"><div class="menu-icon" style="background:rgba(229,57,53,.1);">🔔</div><div class="menu-text"><div class="menu-title">Notificações</div><div class="menu-desc">Alertas, lembretes e risco</div></div><div class="menu-arrow">›</div></div>
+    <div class="menu-row"><div class="menu-icon" style="background:rgba(255,255,255,.05);">⚙️</div><div class="menu-text"><div class="menu-title">Configurações</div><div class="menu-desc">Privacidade, senha, conta</div></div><div class="menu-arrow">›</div></div>
+    <div class="menu-row" style="border-bottom:none;"><div class="menu-icon" style="background:rgba(229,57,53,.07);">🚪</div><div class="menu-text"><div class="menu-title" style="color:var(--red);">Sair da conta</div></div></div>
+  </div>
+  <div class="bnav">
+    <div class="bn" onclick="go('s-dash')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Início</div>
+    <div class="bn" onclick="go('s-evolucao')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>Evolução</div>
+    <div class="bn" onclick="go('s-metas')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>Metas</div>
+    <div class="bn" onclick="go('s-ia')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>Mentor</div>
+    <div class="bn on"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Perfil</div>
+  </div>
+</div>
+
+<!-- ===== PARCEIRO ===== -->
+<div class="screen pb80" id="s-parceiro">
+  <div class="sb"><span>9:41</span></div>
+  <div style="padding:4px 24px 20px;">
+    <div class="back-row mb16" onclick="go('s-perfil')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Voltar</div>
+    <div class="title">Parceiro de<br>Responsabilidade</div>
+    <div class="subtitle">Alguém de confiança que acompanha sua jornada.</div>
+  </div>
+  <div class="p24 mb20">
+    <div class="part-box">
+      <div style="font-size:10px;color:var(--green);font-weight:800;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;">✓ Parceiro Atual</div>
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+        <div style="width:52px;height:52px;background:linear-gradient(135deg,#1A237E,#5C6BC0);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;">👨</div>
+        <div><div style="font-size:16px;font-weight:700;color:var(--text);">Carlos (irmão)</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">📱 (11) 9 9999-1234</div><div style="font-size:12px;color:var(--muted);">✉️ carlos@email.com</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div style="background:var(--card);border-radius:12px;padding:12px;text-align:center;"><div style="font-size:20px;font-weight:800;color:var(--text);">47</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">alertas recebidos</div></div>
+        <div style="background:var(--card);border-radius:12px;padding:12px;text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--green);">Ativo</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">status</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="p24 mb20">
+    <div class="sec-label mb12">Ele recebe notificações de:</div>
+    <div class="flex-col gap8">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:var(--card);border-radius:12px;border:1px solid var(--border);"><span style="font-size:13px;color:var(--text);">✅ Check-in concluído</span><div class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="toggle-knob"></div></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:var(--card);border-radius:12px;border:1px solid var(--border);"><span style="font-size:13px;color:var(--text);">⚠️ Modo Emergência ativado</span><div class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="toggle-knob"></div></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:var(--card);border-radius:12px;border:1px solid var(--border);"><span style="font-size:13px;color:var(--text);">🏆 Meta atingida</span><div class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="toggle-knob"></div></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:var(--card);border-radius:12px;border:1px solid var(--border);"><span style="font-size:13px;color:var(--text);">📊 Relatório semanal</span><div class="toggle off" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="toggle-knob"></div></div></div>
+    </div>
+  </div>
+  <div class="p24"><button class="btn btn-outline">Convidar novo parceiro</button></div>
+</div>
+
+<!-- ===== PREMIUM ===== -->
+<div class="screen pb80" id="s-premium">
+  <div class="sb"><span>9:41</span></div>
+  <div style="padding:4px 24px 20px;">
+    <div class="back-row mb16" onclick="go('s-perfil')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Voltar</div>
+    <div style="text-align:center;">
+      <div style="font-size:48px;margin-bottom:12px;">💎</div>
+      <div class="title mb8">Recomeço Premium</div>
+      <div class="subtitle">Sua recuperação merece o melhor suporte.</div>
+    </div>
+  </div>
+  <div class="p24 mb16">
+    <div style="background:linear-gradient(135deg,rgba(255,193,7,.18),rgba(255,152,0,.1));border-radius:24px;border:1.5px solid rgba(255,193,7,.35);padding:24px;text-align:center;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:800;color:var(--yellow);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">MAIS POPULAR</div>
+      <div style="font-size:38px;font-weight:800;color:var(--text);letter-spacing:-2px;">R$19,90</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:20px;">/mês · Cancele quando quiser</div>
+      <button class="btn btn-gold mb16">Começar agora</button>
+      <div style="font-size:11px;color:var(--muted);">7 dias grátis · Sem cartão de crédito</div>
+    </div>
+    <div class="sec-label mb12">Inclui no Premium</div>
+    <div class="flex-col gap10">
+      <div style="display:flex;gap:12px;align-items:center;padding:12px 16px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:13px;color:var(--text);">🤖 <span><b>IA ilimitada</b> — sem restrições de mensagens</span></div>
+      <div style="display:flex;gap:12px;align-items:center;padding:12px 16px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:13px;color:var(--text);">📚 <span><b>Academia completa</b> — 30+ cursos</span></div>
+      <div style="display:flex;gap:12px;align-items:center;padding:12px 16px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:13px;color:var(--text);">📊 <span><b>Relatórios avançados</b> — mapas de calor e padrões</span></div>
+      <div style="display:flex;gap:12px;align-items:center;padding:12px 16px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:13px;color:var(--text);">👥 <span><b>Comunidade VIP</b> exclusiva</span></div>
+      <div style="display:flex;gap:12px;align-items:center;padding:12px 16px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:13px;color:var(--text);">🏆 <span><b>Desafios</b> exclusivos mensais</span></div>
+    </div>
+  </div>
+  <div class="p24 mb16">
+    <div style="text-align:center;font-size:12px;color:var(--muted);">Para psicólogos e igrejas,<br><span style="color:var(--green);cursor:pointer;">consulte nossos planos profissionais →</span></div>
+  </div>
+</div>
+
+<!-- ===== ADMIN ===== -->
+<div class="screen pb80" id="s-admin">
+  <div class="sb"><span>9:41</span></div>
+  <div style="padding:4px 24px 16px;border-bottom:1px solid var(--border);">
+    <div class="back-row mb12" onclick="go('s-dash')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Sair do Admin</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div><div class="title" style="font-size:18px;">Painel Admin</div><div class="subtitle" style="margin-top:2px;">Recomeço · Maio 2025</div></div>
+      <div style="padding:4px 12px;background:rgba(229,57,53,.15);border:1px solid rgba(229,57,53,.3);border-radius:20px;font-size:11px;font-weight:700;color:var(--red);">● LIVE</div>
+    </div>
+  </div>
+  <div class="p24 mb16" style="padding-top:16px;">
+    <div class="rev-card">
+      <div class="rev-lbl">Receita Mensal (MRR)</div>
+      <div class="rev-val">R$ 8.472</div>
+      <div class="rev-period">Maio 2025 · <span style="color:var(--green);">↑ +23% vs. abril</span></div>
+      <div class="rev-row">
+        <div class="rev-it"><div class="rev-it-l">Premium</div><div class="rev-it-v">R$ 5.970</div></div>
+        <div class="rev-it"><div class="rev-it-l">Psicólogos</div><div class="rev-it-v">R$ 1.197</div></div>
+        <div class="rev-it"><div class="rev-it-l">Igrejas</div><div class="rev-it-v">R$ 1.305</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="p24 mb16">
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-lbl">Usuários Ativos</div><div class="kpi-val">2.847</div><div class="kpi-chg kpi-up">↑ +312 essa semana</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">Assinantes Premium</div><div class="kpi-val">300</div><div class="kpi-chg kpi-up">↑ +28 esse mês</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">Check-ins Hoje</div><div class="kpi-val">1.204</div><div class="kpi-chg kpi-up">↑ 42% do base</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">Retenção</div><div class="kpi-val">78%</div><div class="kpi-chg kpi-up">↑ +4pp vs. anterior</div></div>
+    </div>
+  </div>
+  <div class="p24 mb8"><div class="sec-label">Crescimento — 7 dias</div></div>
+  <div class="p24 mb16">
+    <div class="card">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;">Novos usuários</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:12px;">Seg → Dom</div>
+      <div class="mbars">
+        <div class="mbar" style="height:55%;background:rgba(76,175,80,.5);"></div>
+        <div class="mbar" style="height:70%;background:rgba(76,175,80,.6);"></div>
+        <div class="mbar" style="height:45%;background:rgba(76,175,80,.5);"></div>
+        <div class="mbar" style="height:80%;background:rgba(76,175,80,.65);"></div>
+        <div class="mbar" style="height:100%;background:var(--green);"></div>
+        <div class="mbar" style="height:90%;background:rgba(76,175,80,.8);"></div>
+        <div class="mbar" style="height:75%;background:rgba(76,175,80,.7);"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:7px;font-size:10px;color:var(--muted);"><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span><span>Dom</span></div>
+    </div>
+  </div>
+  <div class="p24 mb8"><div class="sec-label">Usuários Recentes</div></div>
+  <div class="p24 mb16">
+    <div class="card">
+      <div class="user-row"><div class="ur-av">😊</div><div><div class="ur-name">João Paulo</div><div class="ur-str">🔥 27 dias</div></div><div class="ur-plan plan-f">FREE</div></div>
+      <div class="user-row"><div class="ur-av">👩</div><div><div class="ur-name">Ana Rodrigues</div><div class="ur-str">🔥 8 dias</div></div><div class="ur-plan plan-p">PREMIUM</div></div>
+      <div class="user-row"><div class="ur-av">🧔</div><div><div class="ur-name">Pedro Lima</div><div class="ur-str">💎 90 dias</div></div><div class="ur-plan plan-p">PREMIUM</div></div>
+      <div class="user-row"><div class="ur-av">👨</div><div><div class="ur-name">Marcos Alves</div><div class="ur-str">🔥 45 dias</div></div><div class="ur-plan plan-f">FREE</div></div>
+      <div class="user-row" style="border:none;"><div class="ur-av">👦</div><div><div class="ur-name">Rafael Costa</div><div class="ur-str">⭐ 3 dias</div></div><div class="ur-plan plan-p">PREMIUM</div></div>
+    </div>
+  </div>
+  <div class="p24 mb8"><div class="sec-label">Alertas do Sistema</div></div>
+  <div class="p24 mb20 flex-col gap8">
+    <div class="alert-row al-r"><span>🚨</span>14 usuários ativaram o Modo Emergência hoje</div>
+    <div class="alert-row al-y"><span>⚠️</span>Taxa de recaída elevada entre 22h–01h (padrão persistente)</div>
+    <div class="alert-row al-g"><span>✅</span>1.204 check-ins hoje — recorde mensal</div>
+  </div>
+</div>
+
+</div><!-- /phone -->
+
+<!-- ====================================================
+     TABS EXTERNAS
+===================================================== -->
+<div class="tab-bar">
+  <div class="tab on" onclick="go('s-splash')">🌱 Splash</div>
+  <div class="tab" onclick="go('s-ob')">📋 Onboarding</div>
+  <div class="tab" onclick="go('s-dash')">🏠 Dashboard</div>
+  <div class="tab" onclick="go('s-checkin')">✅ Check-in</div>
+  <div class="tab" onclick="go('s-evolucao')">📈 Evolução</div>
+  <div class="tab" onclick="go('s-metas')">🎯 Metas</div>
+  <div class="tab" onclick="go('s-ia')">🤖 Mentor IA</div>
+  <div class="tab" onclick="go('s-emg')">🚨 Emergência</div>
+  <div class="tab" onclick="go('s-resp')">🌬️ Respiração</div>
+  <div class="tab" onclick="go('s-com')">👥 Comunidade</div>
+  <div class="tab" onclick="go('s-academia')">📚 Academia</div>
+  <div class="tab" onclick="go('s-perfil')">👤 Perfil</div>
+  <div class="tab" onclick="go('s-parceiro')">🤝 Parceiro</div>
+  <div class="tab" onclick="go('s-premium')">💎 Premium</div>
+  <div class="tab" onclick="go('s-admin')">⚙️ Admin</div>
+</div>
+
+<!-- ====================================================
+     JAVASCRIPT
+===================================================== -->
+<script>
+// ---- NAVIGATION ----
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+
+  const screen = document.getElementById(id);
+  if (screen) { screen.classList.add('active'); screen.scrollTop = 0; }
+
+  document.querySelectorAll('.tab').forEach(t => {
+    if (t.getAttribute('onclick') && t.getAttribute('onclick').includes("'" + id + "'")) {
+      t.classList.add('on');
+    }
+  });
+
+  // breathing timer
+  if (id === 's-resp') startBreath();
+  else stopBreath();
+}
+
+// ---- ONBOARDING ----
+function selOb(el) {
+  document.querySelectorAll('.ob-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+// ---- EMOTIONS ----
+function togEmo(el) { el.classList.toggle('sel'); }
+
+// ---- BREATHING TIMER ----
+const phases = [
+  { name: 'Inspire', dur: 4 },
+  { name: 'Segure', dur: 4 },
+  { name: 'Expire', dur: 6 }
+];
+let bTimer = null, bPhase = 0, bCount = 4;
+
+function startBreath() {
+  stopBreath();
+  bPhase = 0; bCount = phases[0].dur;
+  updateBreath();
+  bTimer = setInterval(() => {
+    bCount--;
+    if (bCount <= 0) { bPhase = (bPhase + 1) % 3; bCount = phases[bPhase].dur; }
+    updateBreath();
+  }, 1000);
+}
+function stopBreath() { if (bTimer) { clearInterval(bTimer); bTimer = null; } }
+function updateBreath() {
+  const p = document.getElementById('br-phase');
+  const c = document.getElementById('br-cnt');
+  if (p) p.textContent = phases[bPhase].name;
+  if (c) c.textContent = bCount;
+}
+
+// ---- COMMUNITY TABS ----
+document.querySelectorAll('.ctab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.ctab').forEach(x => x.classList.remove('on'));
+    t.classList.add('on');
+  });
+});
+
+// ---- CAT TABS (ACADEMIA) ----
+document.querySelectorAll('.cat-t').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.cat-t').forEach(x => x.classList.remove('on'));
+    t.classList.add('on');
+  });
+});
+</script>
+
+
+<!-- ========== INSTALL BANNER ========== -->
+<div id="install-banner" style="
+  display:none; position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:390px;
+  background:#17171F; border-top:1px solid rgba(255,255,255,.1);
+  padding:16px 20px; z-index:9999;
+  align-items:center; gap:14px;
+  transition:opacity .3s, transform .3s;
+  opacity:0; transform:translateX(-50%) translateY(20px);
+">
+  <div style="width:44px;height:44px;background:linear-gradient(135deg,#2E7D32,#4CAF50);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🌱</div>
+  <div style="flex:1;">
+    <div style="font-size:13px;font-weight:700;color:#F0F0F5;font-family:Sora,sans-serif;">Instalar Recomeço</div>
+    <div style="font-size:11px;color:#6B6B8A;margin-top:2px;font-family:Sora,sans-serif;">Adicionar à tela inicial · Funciona offline</div>
+  </div>
+  <button onclick="installApp()" style="padding:10px 16px;background:#4CAF50;border:none;border-radius:10px;color:#fff;font-size:12px;font-weight:700;font-family:Sora,sans-serif;cursor:pointer;white-space:nowrap;">Instalar</button>
+  <button onclick="hideBanner()" style="background:none;border:none;color:#6B6B8A;font-size:20px;cursor:pointer;padding:4px;line-height:1;">✕</button>
+</div>
+
+<style>
+#install-banner.visible { opacity:1 !important; transform:translateX(-50%) translateY(0) !important; }
+
+/* Safe area para iPhone com notch */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  body { padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+  .bnav { padding-bottom: env(safe-area-inset-bottom); height: calc(76px + env(safe-area-inset-bottom)); }
+}
+
+/* Remover bounce scroll no iOS */
+html { height: -webkit-fill-available; overflow: hidden; }
+body { min-height: -webkit-fill-available; }
+.phone { touch-action: pan-y; }
+</style>
+
+<!-- ========== PWA: Service Worker + Install Banner ========== -->
+<script>
+// ---- Registrar Service Worker ----
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('[Recomeço] SW registrado:', reg.scope))
+      .catch(err => console.log('[Recomeço] SW falhou:', err));
+  });
+}
+
+// ---- Banner de instalação (PWA Install Prompt) ----
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallBanner();
+});
+
+function showInstallBanner() {
+  const banner = document.getElementById('install-banner');
+  if (banner) {
+    banner.style.display = 'flex';
+    setTimeout(() => banner.classList.add('visible'), 100);
+  }
+}
+
+function installApp() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(choice => {
+    if (choice.outcome === 'accepted') {
+      hideBanner();
+    }
+    deferredPrompt = null;
+  });
+}
+
+function hideBanner() {
+  const banner = document.getElementById('install-banner');
+  if (banner) {
+    banner.classList.remove('visible');
+    setTimeout(() => banner.style.display = 'none', 300);
+  }
+}
+
+window.addEventListener('appinstalled', () => {
+  hideBanner();
+  console.log('[Recomeço] App instalado com sucesso!');
+});
+
+// ---- Deep link via hash ----
+window.addEventListener('load', () => {
+  const hash = window.location.hash.replace('#', '');
+  if (hash && document.getElementById('s-' + hash)) {
+    go('s-' + hash);
+  }
+});
+</script>
+</body>
+</html>

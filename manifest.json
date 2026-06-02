@@ -1,0 +1,33 @@
+{
+  "name": "Recomeço — Recuperação Comportamental",
+  "short_name": "Recomeço",
+  "description": "Sua plataforma de recuperação comportamental. Um dia de cada vez.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A0A0F",
+  "theme_color": "#4CAF50",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "screenshots": [],
+  "categories": ["health", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "Check-in Diário",
+      "short_name": "Check-in",
+      "description": "Registre seu dia",
+      "url": "/index.html#checkin",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Modo Emergência",
+      "short_name": "Emergência",
+      "description": "Ajuda imediata",
+      "url": "/index.html#emg",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
