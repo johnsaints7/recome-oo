@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#4CAF50">
+<title>Recomeço — Recuperação Comportamental</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green:#4CAF50; --green-dark:#2E7D32; --red:#E53935; --yellow:#FFC107;
+  --bg:#0A0A0F; --surface:#111118; --card:#17171F; --card2:#1E1E28;
+  --border:rgba(255,255,255,0.07); --text:#F0F0F5; --muted:#7A7A9A; --accent:#6EE7B7;
+  --sidebar-w:240px; --max-w:860px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+#app{display:flex;height:100vh;width:100vw;overflow:hidden}
+
+/* SIDEBAR */
+#sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:28px 0 24px;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;transition:transform .3s;z-index:200}
+#sidebar::-webkit-scrollbar{display:none}
+.sidebar-logo{display:flex;align-items:center;gap:12px;padding:0 20px 28px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--green-dark),var(--green));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 16px rgba(76,175,80,.35);flex-shrink:0}
+.logo-text{font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.5px}
+.logo-tag{font-size:10px;color:var(--muted);margin-top:1px}
+.nav-group-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;padding:0 20px;margin-bottom:6px;margin-top:14px}
+.nav-link{display:flex;align-items:center;gap:12px;padding:11px 20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .18s;border-left:3px solid transparent}
+.nav-link:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav-link.active{color:var(--green);background:rgba(76,175,80,.08);border-left-color:var(--green)}
+.nav-link svg{width:18px;height:18px;flex-shrink:0}
+.nl-badge{margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:rgba(76,175,80,.15);color:var(--green)}
+.sidebar-user{margin-top:auto;padding:16px 20px 0;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.su-av{width:36px;height:36px;background:linear-gradient(135deg,var(--green-dark),var(--green));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+
+/* MAIN */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+#topbar{height:60px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;flex-shrink:0}
+.topbar-title{font-size:16px;font-weight:700;color:var(--text)}
+.topbar-actions{display:flex;align-items:center;gap:12px}
+.topbar-btn{padding:8px 18px;border-radius:10px;border:none;font-size:13px;font-weight:700;font-family:'Sora',sans-serif;cursor:pointer;transition:all .18s}
+.tb-emg{background:rgba(229,57,53,.15);color:var(--red);border:1px solid rgba(229,57,53,.3)}
+.tb-checkin{background:var(--green);color:#fff;box-shadow:0 4px 14px rgba(76,175,80,.35)}
+.hamburger{display:none;background:none;border:none;cursor:pointer;color:var(--text)}
+#content{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent}
+#content::-webkit-scrollbar{width:4px}
+#content::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:4px}
+
+/* SCREENS */
+.screen{display:none;min-height:100%}
+.screen.active{display:block;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.page{max-width:var(--max-w);margin:0 auto;padding:32px 28px 60px}
+
+/* BOTTOM NAV */
+#bottom-nav{display:none;height:64px;background:var(--surface);border-top:1px solid var(--border);justify-content:space-around;align-items:center;flex-shrink:0;position:relative;z-index:100}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;opacity:.38;transition:opacity .2s;font-size:9px;color:var(--text);font-weight:600;letter-spacing:.3px;padding:6px 12px}
+.bn-item.active{opacity:1;color:var(--green)}
+.bn-item svg{width:22px;height:22px}
+#sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:190}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  #sidebar{position:fixed;top:0;left:0;bottom:0;transform:translateX(-100%);z-index:200}
+  #sidebar.open{transform:translateX(0)}
+  #sidebar-overlay.show{display:block}
+  #topbar{padding:0 16px}
+  .hamburger{display:flex}
+  #bottom-nav{display:flex}
+  .page{padding:20px 16px 80px}
+  .topbar-actions .topbar-btn{display:none}
+}
+
+/* COMPONENTS */
+.card{background:var(--card);border-radius:16px;border:1px solid var(--border);padding:20px}
+.pbar{height:6px;background:rgba(255,255,255,.07);border-radius:6px;overflow:hidden}
+.pfill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--green-dark),var(--green));transition:width .7s ease}
+.btn{padding:14px 24px;border:none;border-radius:12px;font-size:14px;font-weight:700;font-family:'Sora',sans-serif;cursor:pointer;transition:all .18s}
+.btn-green{background:var(--green);color:#fff;box-shadow:0 6px 20px rgba(76,175,80,.3)}
+.btn-green:hover{filter:brightness(1.1)}
+.btn-block{width:100%}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-gold{background:linear-gradient(135deg,#FF8F00,#FFC107);color:#000}
+.btn-red-soft{background:rgba(229,57,53,.15);border:1.5px solid rgba(229,57,53,.5);color:var(--red);padding:16px;border-radius:12px;font-size:15px;font-weight:700;font-family:'Sora',sans-serif;cursor:pointer}
+.btn-no{padding:16px;background:rgba(76,175,80,.15);border:1.5px solid var(--green);border-radius:12px;color:var(--green);font-size:15px;font-weight:700;font-family:'Sora',sans-serif;cursor:pointer}
+.page-title{font-size:26px;font-weight:800;color:var(--text);letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}
+.page-sub{font-size:14px;color:var(--muted);line-height:1.5;margin-bottom:24px}
+.sec-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700}
+.badge-g{background:rgba(76,175,80,.15);color:var(--green);border:1px solid rgba(76,175,80,.3)}
+.badge-y{background:rgba(255,193,7,.15);color:var(--yellow);border:1px solid rgba(255,193,7,.3)}
+.badge-acc{background:rgba(110,231,183,.12);color:var(--accent);border:1px solid rgba(110,231,183,.25)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.fcol{display:flex;flex-direction:column}
+.gap8{gap:8px}.gap12{gap:12px}.gap16{gap:16px}.gap20{gap:20px}
+@media(max-width:600px){.grid2,.grid3{grid-template-columns:1fr}.page-title{font-size:22px}}
+
+/* DASHBOARD */
+.hero-card{background:linear-gradient(135deg,rgba(46,125,50,.5),rgba(15,35,20,.8));border-radius:20px;border:1px solid rgba(76,175,80,.3);padding:36px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:24px;position:relative;overflow:hidden}
+.hero-card::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(76,175,80,.2),transparent 70%);border-radius:50%}
+.hero-days{font-size:80px;font-weight:800;color:var(--text);line-height:1;letter-spacing:-4px;text-shadow:0 0 40px rgba(76,175,80,.5)}
+.hero-lbl{font-size:12px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1.5px;margin:6px 0 20px}
+.hero-stats{display:flex;gap:28px}
+.hs{display:flex;flex-direction:column;gap:2px}
+.hs-val{font-size:20px;font-weight:700;color:var(--text)}
+.hs-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.hero-right{flex-shrink:0;text-align:center}
+@media(max-width:600px){.hero-card{flex-direction:column;padding:24px 20px}.hero-days{font-size:60px}.hero-right{display:none}}
+
+.motiv{padding:14px 18px;background:rgba(110,231,183,.06);border-radius:12px;border:1px solid rgba(110,231,183,.15);display:flex;align-items:center;gap:12px;font-size:13px;color:var(--accent);font-style:italic;line-height:1.5;margin-bottom:24px}
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.qa{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 12px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);text-align:center;line-height:1.3;transition:all .2s}
+.qa:hover{border-color:rgba(255,255,255,.2);color:var(--text);background:var(--card2)}
+.qa-emg{border-color:rgba(229,57,53,.3);background:rgba(229,57,53,.07);color:var(--red)}
+.qa-ico{font-size:26px}
+@media(max-width:600px){.quick-grid{grid-template-columns:repeat(2,1fr)}}
+.risk-strip{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px}
+.rs-card{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:16px}
+.rs-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.rs-val{font-size:17px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:7px}
+.rdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.rdot-g{background:var(--green);box-shadow:0 0 8px var(--green)}
+.rdot-y{background:var(--yellow);box-shadow:0 0 8px var(--yellow)}
+.rdot-r{background:var(--red);box-shadow:0 0 8px var(--red)}
+@media(max-width:600px){.risk-strip{grid-template-columns:1fr 1fr}}
+.xpbar-wrap{background:linear-gradient(135deg,rgba(255,193,7,.15),rgba(255,152,0,.08));border-radius:16px;border:1px solid rgba(255,193,7,.2);padding:20px}
+.xpbar{height:8px;background:rgba(255,255,255,.07);border-radius:8px;overflow:hidden;margin:10px 0 6px}
+.xpfill{height:100%;background:linear-gradient(90deg,#FF8F00,#FFC107);border-radius:8px;transition:width .7s ease}
+
+/* CHECKIN */
+.emo-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:24px}
+.emo-btn{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;font-size:12px;font-weight:500;color:var(--muted);transition:all .2s}
+.emo-btn:hover{border-color:rgba(255,255,255,.2);color:var(--text)}
+.emo-btn.sel{border-color:var(--green);background:rgba(76,175,80,.1);color:var(--text)}
+.emo-icon{font-size:28px}
+@media(max-width:600px){.emo-grid{grid-template-columns:repeat(3,1fr)}}
+.slider-row{margin-bottom:24px}
+.slider-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:14px;font-weight:600;color:var(--text)}
+.slider-val{font-size:22px;font-weight:800;color:var(--green)}
+input[type=range]{width:100%;-webkit-appearance:none;height:6px;background:rgba(255,255,255,.1);border-radius:6px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--green);box-shadow:0 0 12px rgba(76,175,80,.6);cursor:pointer}
+.yn{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;max-width:400px}
+
+/* EVOLUÇÃO */
+.stat3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.stat-card{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:20px;text-align:center}
+.stat-num{font-size:32px;font-weight:800;color:var(--text);line-height:1}
+.stat-unit{font-size:11px;font-weight:700;margin-top:3px}
+.stat-desc{font-size:10px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+@media(max-width:500px){.stat-num{font-size:24px}}
+.bars{display:flex;align-items:flex-end;gap:6px;height:100px}
+.bar-w{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end}
+.bar-f{width:100%;border-radius:6px 6px 0 0;min-height:4px}
+.bar-cl{background:linear-gradient(180deg,var(--green),var(--green-dark))}
+.bar-rl{background:linear-gradient(180deg,rgba(229,57,53,.8),rgba(229,57,53,.3))}
+.bar-d{font-size:10px;color:var(--muted)}
+.impr-card{background:var(--card);border-radius:16px;border:1px solid rgba(110,231,183,.2);padding:28px;text-align:center}
+.impr-pct{font-size:64px;font-weight:800;color:var(--accent);letter-spacing:-2px;line-height:1;text-shadow:0 0 30px rgba(110,231,183,.4)}
+.insight{padding:14px 18px;border-radius:12px;display:flex;gap:12px;align-items:flex-start}
+.ins-y{background:rgba(255,193,7,.06);border:1px solid rgba(255,193,7,.2)}
+.ins-g{background:rgba(76,175,80,.06);border:1px solid rgba(76,175,80,.2)}
+.ins-title{font-size:13px;font-weight:700;margin-bottom:3px}
+.ins-text{font-size:12px;color:var(--muted);line-height:1.4}
+
+/* METAS */
+.meta-item{background:var(--card);border-radius:16px;border:1px solid var(--border);padding:20px;transition:all .2s}
+.meta-item.act{border-color:var(--green);background:rgba(76,175,80,.06)}
+.meta-item.done{opacity:.65}
+.meta-item.lock{opacity:.38}
+.meta-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.meta-title{font-size:16px;font-weight:700;color:var(--text)}
+.meta-sub{font-size:12px;color:var(--muted);margin-top:3px}
+.meta-days{font-size:24px;font-weight:800;color:var(--green);letter-spacing:-1px;text-align:right}
+.meta-dlbl{font-size:10px;color:var(--muted);text-align:right;text-transform:uppercase}
+.meta-prog-row{display:flex;align-items:center;gap:10px}
+.meta-pct{font-size:12px;font-weight:700;color:var(--green);min-width:34px}
+.ach-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.ach{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:16px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+.ach.unl{border-color:rgba(255,193,7,.4);background:rgba(255,193,7,.05)}
+.ach.lck{opacity:.3}
+@media(max-width:600px){.ach-grid{grid-template-columns:repeat(3,1fr)}}
+
+/* IA */
+.ia-header{display:flex;align-items:center;gap:16px;padding-bottom:20px;border-bottom:1px solid var(--border);margin-bottom:20px}
+.ia-av{width:52px;height:52px;background:linear-gradient(135deg,#1A237E,#3949AB);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 0 20px rgba(57,73,171,.5);flex-shrink:0}
+.ia-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.chat-box{background:var(--card);border-radius:16px;border:1px solid var(--border);padding:20px;margin-bottom:16px;display:flex;flex-direction:column;gap:16px;min-height:280px;max-height:420px;overflow-y:auto}
+.chat-box::-webkit-scrollbar{width:3px}
+.chat-box::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+.bubble{max-width:75%;padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.55;font-family:'Inter',sans-serif}
+.bubble-ai{background:var(--card2);border:1px solid var(--border);color:var(--text);border-bottom-left-radius:4px;align-self:flex-start}
+.bubble-user{background:rgba(76,175,80,.18);border:1px solid rgba(76,175,80,.3);color:var(--text);border-bottom-right-radius:4px;align-self:flex-end}
+.btime{font-size:10px;color:var(--muted);margin-top:3px}
+@media(max-width:600px){.bubble{max-width:90%}}
+.chips-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chip{padding:8px 14px;background:var(--card);border:1px solid var(--border);border-radius:20px;font-size:12px;font-family:'Sora',sans-serif;color:var(--muted);cursor:pointer;transition:all .2s}
+.chip:hover{border-color:var(--green);color:var(--green)}
+.ci-row{display:flex;gap:10px}
+.ci-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:24px;padding:13px 20px;font-size:14px;font-family:'Sora',sans-serif;color:var(--text);outline:none}
+.ci-input::placeholder{color:var(--muted)}
+.ci-send{width:50px;height:50px;background:var(--green);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;flex-shrink:0;box-shadow:0 4px 16px rgba(76,175,80,.4)}
+
+/* EMERGÊNCIA */
+#screen-emergencia{background:radial-gradient(ellipse at 50% 25%,rgba(229,57,53,.25) 0%,var(--bg) 55%)}
+.emg-center{max-width:520px;margin:0 auto;text-align:center;padding:40px 28px 20px}
+.emg-pulse{width:90px;height:90px;margin:0 auto 28px;background:rgba(229,57,53,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;position:relative}
+.emg-pulse::before,.emg-pulse::after{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid rgba(229,57,53,.5);animation:pring 2s infinite}
+.emg-pulse::after{animation-delay:.5s}
+@keyframes pring{0%{transform:scale(1);opacity:1}100%{transform:scale(1.9);opacity:0}}
+.emg-acts{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:520px;margin:0 auto 20px;padding:0 28px}
+.emg-btn{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;font-size:14px;font-weight:600;color:var(--text);text-align:center;line-height:1.3;transition:all .2s}
+.emg-btn:hover{border-color:var(--red);background:rgba(229,57,53,.08)}
+.emg-partner{display:flex;align-items:center;gap:16px;padding:18px 20px;background:rgba(229,57,53,.08);border-radius:14px;border:1px solid rgba(229,57,53,.3);cursor:pointer;max-width:520px;margin:0 auto 32px;margin-left:28px;margin-right:28px}
+.ep-av{width:48px;height:48px;background:linear-gradient(135deg,#1A237E,#5C6BC0);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+
+/* RESPIRAÇÃO */
+#screen-respiracao{background:radial-gradient(ellipse at 50% 35%,rgba(46,125,50,.3) 0%,var(--bg) 60%)}
+.breath-center{max-width:480px;margin:0 auto;text-align:center;padding:40px 28px 60px;display:flex;flex-direction:column;align-items:center}
+.br-wrap{position:relative;width:240px;height:240px;margin:0 auto 40px}
+.br-ring1{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(76,175,80,.3);animation:brx 4s ease-in-out infinite}
+.br-ring2{position:absolute;inset:18px;border-radius:50%;border:2px solid rgba(76,175,80,.5);animation:brx 4s ease-in-out infinite .25s}
+.br-core{position:absolute;inset:36px;background:radial-gradient(circle,rgba(76,175,80,.28),rgba(46,125,50,.12));border-radius:50%;border:1.5px solid rgba(76,175,80,.6);display:flex;flex-direction:column;align-items:center;justify-content:center;animation:brx 4s ease-in-out infinite .12s}
+@keyframes brx{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.08);opacity:1}}
+.br-steps{display:flex;gap:40px;margin-bottom:36px}
+.br-step{text-align:center}
+
+/* COMUNIDADE */
+.ctabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.ctab{padding:7px 16px;border-radius:20px;background:var(--card);border:1px solid var(--border);font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s}
+.ctab.on{background:rgba(76,175,80,.14);border-color:var(--green);color:var(--green)}
+.post{background:var(--card);border-radius:16px;border:1px solid var(--border);padding:20px}
+.post-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.post-act{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--muted);cursor:pointer;transition:color .2s}
+.post-act:hover{color:var(--text)}
+
+/* ACADEMIA */
+.feat-course{border-radius:18px;overflow:hidden;position:relative;height:180px;background:linear-gradient(135deg,#1A237E,#283593);border:1px solid rgba(63,81,181,.4);cursor:pointer;display:flex;flex-direction:column;justify-content:flex-end;padding:24px}
+.feat-emoji{position:absolute;top:20px;right:24px;font-size:60px;opacity:.6}
+.course-item{display:flex;align-items:center;gap:16px;background:var(--card);border-radius:14px;border:1px solid var(--border);padding:16px;cursor:pointer;transition:all .2s}
+.course-item:hover{border-color:rgba(255,255,255,.15);background:var(--card2)}
+.course-thumb{width:54px;height:54px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+
+/* PERFIL */
+.profile-hero{background:linear-gradient(135deg,rgba(46,125,50,.2),rgba(15,20,15,.5));border-radius:20px;border:1px solid rgba(76,175,80,.2);padding:32px;display:flex;align-items:center;gap:28px;margin-bottom:24px;flex-wrap:wrap}
+.pf-av{width:88px;height:88px;background:linear-gradient(135deg,var(--green-dark),var(--green));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;border:3px solid rgba(76,175,80,.4);flex-shrink:0}
+.pf-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.pf-stat{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:16px;text-align:center}
+.pf-sv{font-size:22px;font-weight:800;color:var(--text)}
+.pf-sk{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
+@media(max-width:600px){.pf-stats{grid-template-columns:repeat(2,1fr)}}
+.menu-row{display:flex;align-items:center;gap:14px;padding:16px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:all .2s}
+.menu-row:last-child{border-bottom:none}
+.menu-row:hover{opacity:.8}
+.menu-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+
+/* ADMIN */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.kpi-card{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:18px}
+.rev-card{background:linear-gradient(135deg,rgba(76,175,80,.2),rgba(46,125,50,.1));border-radius:16px;border:1px solid rgba(76,175,80,.25);padding:24px;margin-bottom:24px}
+.mbars{display:flex;align-items:flex-end;gap:6px;height:70px}
+.mbar{flex:1;border-radius:5px 5px 0 0}
+.user-row{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--border)}
+.user-row:last-child{border-bottom:none}
+.alert-row{padding:12px 16px;border-radius:10px;font-size:13px;color:var(--text);display:flex;gap:10px;align-items:center}
+.al-r{background:rgba(229,57,53,.08);border:1px solid rgba(229,57,53,.2)}
+.al-y{background:rgba(255,193,7,.06);border:1px solid rgba(255,193,7,.15)}
+.al-g{background:rgba(76,175,80,.06);border:1px solid rgba(76,175,80,.15)}
+@media(max-width:700px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+
+/* TOGGLE */
+.toggle{width:42px;height:24px;border-radius:12px;cursor:pointer;display:flex;align-items:center;padding:3px;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--green);justify-content:flex-end}
+.toggle.off{background:rgba(255,255,255,.1);justify-content:flex-start}
+.toggle-knob{width:18px;height:18px;border-radius:50%;background:#fff}
+
+/* ONBOARDING */
+.ob-card{max-width:540px;margin:0 auto}
+.ob-opt{display:flex;align-items:center;gap:16px;padding:18px 20px;background:var(--card);border-radius:14px;border:1px solid var(--border);cursor:pointer;transition:all .2s;font-size:14px;font-weight:500;color:var(--text)}
+.ob-opt:hover{border-color:rgba(255,255,255,.2);background:var(--card2)}
+.ob-opt.sel{border-color:var(--green);background:rgba(76,175,80,.09)}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--surface);border-radius:20px;border:1px solid var(--border);padding:28px;max-width:420px;width:100%;position:relative}
+.modal-title{font-size:20px;font-weight:800;color:var(--text);margin-bottom:8px}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.5}
+
+/* TOAST */
+#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card);border:1px solid rgba(76,175,80,.4);border-radius:12px;padding:12px 22px;font-size:13px;font-weight:600;color:var(--text);z-index:600;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* SPLASH */
+#screen-splash{background:radial-gradient(ellipse at 50% 35%,rgba(46,125,50,.35) 0%,transparent 65%),var(--bg);display:flex;align-items:center;justify-content:center;min-height:100vh}
+.splash-inner{text-align:center;padding:40px}
+.splash-logo{width:96px;height:96px;background:linear-gradient(135deg,var(--green-dark),var(--green));border-radius:32px;display:flex;align-items:center;justify-content:center;font-size:44px;margin:0 auto 32px;box-shadow:0 20px 60px rgba(76,175,80,.45)}
+.dots{display:flex;gap:8px;justify-content:center;margin-top:48px}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(76,175,80,.3);animation:dp 1.5s infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes dp{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.4);opacity:1;background:var(--green)}}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toast">✅ Salvo com sucesso!</div>
+
+<!-- MODAL RECAÍDA -->
+<div class="modal-overlay" id="modal-recaida">
+  <div class="modal">
+    <div class="modal-title">😔 Tudo bem. Você não é seus erros.</div>
+    <div class="modal-sub">Entender o que aconteceu nos ajuda a prevenir a próxima vez. O que você estava fazendo antes?</div>
+    <div class="sec-label">Qual foi o gatilho?</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;" id="gatilhos-grid">
+      <div class="ob-opt" onclick="selGatilho(this)" style="padding:12px 14px;font-size:13px;"><span>😔</span>Solidão</div>
+      <div class="ob-opt" onclick="selGatilho(this)" style="padding:12px 14px;font-size:13px;"><span>😰</span>Ansiedade</div>
+      <div class="ob-opt" onclick="selGatilho(this)" style="padding:12px 14px;font-size:13px;"><span>😴</span>Insônia</div>
+      <div class="ob-opt" onclick="selGatilho(this)" style="padding:12px 14px;font-size:13px;"><span>📱</span>Redes sociais</div>
+      <div class="ob-opt" onclick="selGatilho(this)" style="padding:12px 14px;font-size:13px;"><span>😡</span>Estresse</div>
+      <div class="ob-opt" onclick="selGatilho(this)" style="padding:12px 14px;font-size:13px;"><span>🥱</span>Tédio</div>
+    </div>
+    <button class="btn btn-green btn-block" onclick="salvarRecaida()">Registrar e continuar</button>
+  </div>
+</div>
+
+<!-- MODAL SETUP -->
+<div class="modal-overlay show" id="modal-setup">
+  <div class="modal">
+    <div style="font-size:48px;text-align:center;margin-bottom:16px;">🌱</div>
+    <div class="modal-title" style="text-align:center;">Bem-vindo ao Recomeço</div>
+    <div class="modal-sub" style="text-align:center;">Para começar, precisamos saber quando foi seu último dia limpo.</div>
+    <div class="sec-label">Qual é o seu nome?</div>
+    <input type="text" id="setup-nome" placeholder="Digite seu nome..." style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 16px;font-size:14px;font-family:'Sora',sans-serif;color:var(--text);outline:none;margin-bottom:16px;">
+    <div class="sec-label">Data de início da jornada</div>
+    <input type="date" id="setup-data" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 16px;font-size:14px;font-family:'Sora',sans-serif;color:var(--text);outline:none;margin-bottom:20px;">
+    <div class="sec-label">Qual sua motivação principal?</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
+      <div class="ob-opt sel" onclick="selectOpt(this)" style="padding:12px 16px;font-size:13px;"><span>💑</span>Melhorar meu relacionamento</div>
+      <div class="ob-opt" onclick="selectOpt(this)" style="padding:12px 16px;font-size:13px;"><span>🧠</span>Saúde mental e foco</div>
+      <div class="ob-opt" onclick="selectOpt(this)" style="padding:12px 16px;font-size:13px;"><span>✝️</span>Espiritualidade</div>
+      <div class="ob-opt" onclick="selectOpt(this)" style="padding:12px 16px;font-size:13px;"><span>💪</span>Autocontrole e disciplina</div>
+    </div>
+    <button class="btn btn-green btn-block" onclick="salvarSetup()">Iniciar minha jornada →</button>
+  </div>
+</div>
+
+<div id="app">
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🌱</div>
+      <div><div class="logo-text">Recomeço</div><div class="logo-tag">Recuperação Comportamental</div></div>
+    </div>
+    <div class="nav-group-label">Principal</div>
+    <div class="nav-link active" onclick="goTo('dashboard')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Dashboard</div>
+    <div class="nav-link" onclick="goTo('checkin')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Check-in Diário<span class="nl-badge" id="checkin-badge">Hoje</span></div>
+    <div class="nav-link" onclick="goTo('evolucao')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>Evolução</div>
+    <div class="nav-link" onclick="goTo('metas')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>Metas & Conquistas</div>
+    <div class="nav-group-label">Suporte</div>
+    <div class="nav-link" onclick="goTo('ia')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>Mentor IA</div>
+    <div class="nav-link" onclick="goTo('emergencia')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>Modo Emergência</div>
+    <div class="nav-link" onclick="goTo('respiracao')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4a4 4 0 014 4 4 4 0 01-4 4 4 4 0 01-4-4 4 4 0 014-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4z"/></svg>Respiração Guiada</div>
+    <div class="nav-group-label">Comunidade</div>
+    <div class="nav-link" onclick="goTo('comunidade')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>Comunidade</div>
+    <div class="nav-link" onclick="goTo('academia')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1z"/></svg>Academia</div>
+    <div class="nav-group-label">Conta</div>
+    <div class="nav-link" onclick="goTo('perfil')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Perfil</div>
+    <div class="nav-link" onclick="goTo('premium')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>Premium</div>
+    <div class="nav-link" onclick="goTo('admin')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>Admin</div>
+    <div class="sidebar-user">
+      <div class="su-av" id="sidebar-emoji">😊</div>
+      <div><div style="font-size:13px;font-weight:700;color:var(--text);" id="sidebar-nome">Usuário</div><div style="font-size:10px;color:var(--muted);" id="sidebar-plan">Plano Free</div></div>
+    </div>
+  </div>
+
+  <div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <div id="main">
+    <div id="topbar">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <button class="hamburger" onclick="toggleSidebar()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        </button>
+        <div class="topbar-title" id="topbar-title">Dashboard</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn tb-emg" onclick="goTo('emergencia')">🚨 Emergência</button>
+        <button class="topbar-btn tb-checkin" onclick="goTo('checkin')">✅ Check-in</button>
+      </div>
+    </div>
+
+    <div id="content">
+
+      <!-- ===== DASHBOARD ===== -->
+      <div class="screen active" id="screen-dashboard">
+        <div class="page">
+          <div class="hero-card">
+            <div>
+              <div class="hero-days" id="dash-dias">0</div>
+              <div class="hero-lbl">dias de progresso</div>
+              <div class="hero-stats">
+                <div class="hs"><div class="hs-val" id="dash-recorde">0</div><div class="hs-lbl">Recorde</div></div>
+                <div class="hs"><div class="hs-val" id="dash-taxa">0%</div><div class="hs-lbl">Sucesso</div></div>
+                <div class="hs"><div class="hs-val" id="dash-xp">0</div><div class="hs-lbl">XP Total</div></div>
+              </div>
+            </div>
+            <div class="hero-right">
+              <div style="font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:8px;" id="dash-nivel-nome">🌱 Iniciante</div>
+              <div style="font-size:48px;font-weight:800;color:var(--text);line-height:1;" id="dash-nivel-num">1</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px;">Nível atual</div>
+            </div>
+          </div>
+          <div class="motiv"><span style="font-size:22px;flex-shrink:0">✨</span><span id="dash-frase">"Cada dia é uma nova vitória. Você está construindo uma vida melhor."</span></div>
+          <div class="quick-grid">
+            <div class="qa" onclick="goTo('checkin')"><span class="qa-ico">📋</span>Check-in diário</div>
+            <div class="qa" onclick="goTo('ia')"><span class="qa-ico">🤖</span>Mentor IA</div>
+            <div class="qa" onclick="goTo('respiracao')"><span class="qa-ico">🌬️</span>Respiração</div>
+            <div class="qa qa-emg" onclick="goTo('emergencia')"><span class="qa-ico">🚨</span>Emergência</div>
+          </div>
+          <div class="risk-strip">
+            <div class="rs-card"><div class="rs-lbl">Risco hoje</div><div class="rs-val" id="dash-risco"><div class="rdot rdot-g"></div>Baixo</div></div>
+            <div class="rs-card"><div class="rs-lbl">Humor</div><div class="rs-val" id="dash-humor" style="font-size:18px;">— Sem dados</div></div>
+            <div class="rs-card"><div class="rs-lbl">Meta atual</div><div class="rs-val" id="dash-meta" style="font-size:14px;">—</div></div>
+          </div>
+          <div class="grid2" style="margin-bottom:24px;">
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                <div><div style="font-size:15px;font-weight:700;color:var(--text);" id="dash-meta-nome">Meta atual</div><div style="font-size:12px;color:var(--muted);margin-top:3px;" id="dash-meta-resto">—</div></div>
+                <div style="font-size:22px;font-weight:800;color:var(--green);" id="dash-meta-pct">0%</div>
+              </div>
+              <div class="pbar"><div class="pfill" id="dash-meta-bar" style="width:0%"></div></div>
+            </div>
+            <div class="xpbar-wrap">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div><div style="font-size:15px;font-weight:700;color:var(--yellow);" id="dash-xp-nivel">🌱 Iniciante</div><div style="font-size:12px;color:var(--muted);margin-top:3px;" id="dash-nivel-lbl">Nível 1</div></div>
+                <div style="text-align:right;"><div style="font-size:22px;font-weight:800;color:var(--text);" id="dash-xp-total">0</div><div style="font-size:10px;color:var(--muted);">XP Total</div></div>
+              </div>
+              <div class="xpbar"><div class="xpfill" id="dash-xp-bar" style="width:0%"></div></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);" id="dash-xp-info"><span>Ganhe mais XP fazendo check-ins</span><span id="dash-xp-pct">0%</span></div>
+            </div>
+          </div>
+          <div class="card" id="dash-checkin-card">
+            <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">Check-in de hoje</div>
+            <div style="font-size:13px;color:var(--muted);" id="dash-checkin-status">Você ainda não fez o check-in de hoje.</div>
+            <button class="btn btn-green" style="margin-top:14px;padding:12px 20px;font-size:13px;" onclick="goTo('checkin')">Fazer check-in agora →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CHECK-IN ===== -->
+      <div class="screen" id="screen-checkin">
+        <div class="page">
+          <div class="page-title">Check-in Diário</div>
+          <div class="page-sub" id="checkin-data">—</div>
+          <div id="checkin-ja-feito" style="display:none;">
+            <div style="background:rgba(76,175,80,.1);border:1px solid rgba(76,175,80,.3);border-radius:16px;padding:24px;text-align:center;margin-bottom:24px;">
+              <div style="font-size:40px;margin-bottom:12px;">✅</div>
+              <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px;">Check-in realizado!</div>
+              <div style="font-size:13px;color:var(--muted);">Você já registrou o check-in de hoje. Volte amanhã!</div>
+            </div>
+            <button class="btn btn-outline btn-block" onclick="goTo('dashboard')">← Voltar ao Dashboard</button>
+          </div>
+          <div id="checkin-form">
+            <div class="sec-label">Como você está se sentindo?</div>
+            <div class="emo-grid" id="emo-grid">
+              <div class="emo-btn" onclick="toggleEmotion(this)" data-emo="Feliz"><span class="emo-icon">😊</span>Feliz</div>
+              <div class="emo-btn" onclick="toggleEmotion(this)" data-emo="Ansioso"><span class="emo-icon">😰</span>Ansioso</div>
+              <div class="emo-btn" onclick="toggleEmotion(this)" data-emo="Triste"><span class="emo-icon">😔</span>Triste</div>
+              <div class="emo-btn" onclick="toggleEmotion(this)" data-emo="Cansado"><span class="emo-icon">😴</span>Cansado</div>
+              <div class="emo-btn" onclick="toggleEmotion(this)" data-emo="Irritado"><span class="emo-icon">😡</span>Irritado</div>
+              <div class="emo-btn" onclick="toggleEmotion(this)" data-emo="Motivado"><span class="emo-icon">💪</span>Motivado</div>
+            </div>
+            <div class="slider-row">
+              <div class="slider-head"><span>Nível de ansiedade</span><span class="slider-val" id="sval">5</span></div>
+              <input type="range" min="0" max="10" value="5" oninput="document.getElementById('sval').textContent=this.value" id="slider-ansiedade">
+            </div>
+            <div class="sec-label">Você consumiu pornografia hoje?</div>
+            <div class="yn">
+              <button class="btn-no" onclick="salvarCheckin(false)">✓ Não consumi</button>
+              <button class="btn-red-soft" onclick="mostrarRecaida()">✗ Sim, consumi</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== EVOLUÇÃO ===== -->
+      <div class="screen" id="screen-evolucao">
+        <div class="page">
+          <div class="page-title">Sua Evolução</div>
+          <div class="page-sub" id="evo-periodo">Carregando dados...</div>
+          <div class="stat3">
+            <div class="stat-card"><div class="stat-num" id="evo-limpos">0</div><div class="stat-unit" style="color:var(--green);">dias limpos</div><div class="stat-desc">Total</div></div>
+            <div class="stat-card"><div class="stat-num" id="evo-taxa">0%</div><div class="stat-unit" style="color:var(--accent);">taxa de sucesso</div><div class="stat-desc">Geral</div></div>
+            <div class="stat-card"><div class="stat-num" id="evo-recaidas">0</div><div class="stat-unit" style="color:var(--red);">recaídas</div><div class="stat-desc">Total</div></div>
+          </div>
+          <div class="grid2" style="margin-bottom:20px;">
+            <div class="card">
+              <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;">Últimos 7 dias</div>
+              <div style="font-size:11px;color:var(--muted);margin-bottom:16px;" id="evo-periodo-bar">—</div>
+              <div class="bars" id="evo-bars">
+                <div style="color:var(--muted);font-size:12px;text-align:center;width:100%;margin:auto;">Faça check-ins para ver o gráfico</div>
+              </div>
+            </div>
+            <div class="impr-card">
+              <div class="impr-pct" id="evo-melhoria">—</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:6px;text-transform:uppercase;letter-spacing:1px;">de melhoria</div>
+              <div style="font-size:13px;color:var(--muted);margin-top:10px;" id="evo-melhoria-sub">Continue fazendo check-ins diários para ver sua evolução.</div>
+            </div>
+          </div>
+          <div class="fcol gap12" id="evo-insights">
+            <div class="insight ins-g"><span style="font-size:20px;flex-shrink:0;">📊</span><div><div class="ins-title" style="color:var(--green);">Seus dados aparecem aqui</div><div class="ins-text">Faça check-ins diários para o sistema identificar seus padrões de risco e gatilhos.</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== METAS ===== -->
+      <div class="screen" id="screen-metas">
+        <div class="page">
+          <div class="page-title">Metas & Conquistas</div>
+          <div class="page-sub">Conquiste uma etapa de cada vez.</div>
+          <div class="fcol gap12" style="margin-bottom:32px;" id="metas-lista"></div>
+          <div class="sec-label">Conquistas</div>
+          <div class="ach-grid" id="ach-lista"></div>
+        </div>
+      </div>
+
+      <!-- ===== MENTOR IA ===== -->
+      <div class="screen" id="screen-ia">
+        <div class="page" style="max-width:680px;">
+          <div class="ia-header">
+            <div class="ia-av">🤖</div>
+            <div>
+              <div style="font-size:18px;font-weight:700;color:var(--text);">Mentor IA</div>
+              <div style="font-size:11px;color:var(--green);display:flex;align-items:center;gap:4px;"><div class="ia-dot"></div>Pronto para te ajudar</div>
+            </div>
+          </div>
+          <div class="chat-box" id="chat-box">
+            <div><div class="bubble bubble-ai" id="ia-boas-vindas">Olá! Sou o Mentor IA do Recomeço. Estou aqui para te apoiar na sua jornada. Como você está se sentindo hoje?</div><div class="btime">agora</div></div>
+          </div>
+          <div class="chips-row">
+            <div class="chip" onclick="enviarMensagem('Estou com vontade agora')">Estou com vontade agora</div>
+            <div class="chip" onclick="enviarMensagem('Preciso de ajuda')">Preciso de ajuda</div>
+            <div class="chip" onclick="enviarMensagem('Tive uma recaída')">Tive uma recaída</div>
+            <div class="chip" onclick="enviarMensagem('Não consigo dormir')">Não consigo dormir</div>
+            <div class="chip" onclick="enviarMensagem('Estou ansioso')">Estou ansioso</div>
+          </div>
+          <div class="ci-row">
+            <input class="ci-input" type="text" id="chat-input" placeholder="Digite uma mensagem..." onkeydown="if(event.key==='Enter')enviarMensagem()">
+            <button class="ci-send" onclick="enviarMensagem()">➤</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== EMERGÊNCIA ===== -->
+      <div class="screen" id="screen-emergencia">
+        <div class="emg-center">
+          <div class="emg-pulse">🆘</div>
+          <div style="font-size:28px;font-weight:800;color:var(--text);margin-bottom:10px;">Você não está sozinho.</div>
+          <div style="font-size:15px;color:var(--muted);line-height:1.6;margin-bottom:32px;">Respira fundo. Escolha uma das ações abaixo para passar por esse momento com segurança.</div>
+        </div>
+        <div class="emg-acts">
+          <div class="emg-btn" onclick="goTo('respiracao')"><span style="font-size:32px;">🌬️</span>Respiração guiada</div>
+          <div class="emg-btn" onclick="enviarMensagem('Estou em emergência, preciso de ajuda agora');goTo('ia')"><span style="font-size:32px;">🤖</span>Mentor IA</div>
+          <div class="emg-btn"><span style="font-size:32px;">🧘</span>Meditação 5 min</div>
+          <div class="emg-btn"><span style="font-size:32px;">🚶</span>Ir caminhar agora</div>
+          <div class="emg-btn" style="grid-column:span 2;"><span style="font-size:32px;">🎥</span>Vídeo motivacional</div>
+        </div>
+        <div class="emg-partner">
+          <div class="ep-av">👨</div>
+          <div style="flex:1;"><div style="font-size:15px;font-weight:700;color:var(--text);" id="parceiro-nome-emg">Parceiro de responsabilidade</div><div style="font-size:12px;color:var(--muted);">Toque para entrar em contato</div></div>
+          <div style="font-size:24px;margin-left:auto;">📞</div>
+        </div>
+      </div>
+
+      <!-- ===== RESPIRAÇÃO ===== -->
+      <div class="screen" id="screen-respiracao">
+        <div class="breath-center">
+          <div style="font-size:26px;font-weight:800;color:var(--text);margin-bottom:6px;">Respiração Guiada</div>
+          <div style="font-size:14px;color:var(--muted);margin-bottom:40px;">Técnica 4-4-6 para reduzir a ansiedade</div>
+          <div class="br-wrap">
+            <div class="br-ring1"></div><div class="br-ring2"></div>
+            <div class="br-core">
+              <div style="font-size:15px;font-weight:700;color:var(--text);" id="br-phase">Inspire</div>
+              <div style="font-size:44px;font-weight:800;color:var(--green);line-height:1;" id="br-cnt">4</div>
+            </div>
+          </div>
+          <div class="br-steps">
+            <div class="br-step"><div style="font-size:26px;margin-bottom:6px;">🌬️</div><div style="font-size:11px;color:var(--muted);">Inspire</div><div style="font-size:14px;font-weight:700;color:var(--text);">4 seg</div></div>
+            <div class="br-step"><div style="font-size:26px;margin-bottom:6px;">⏸️</div><div style="font-size:11px;color:var(--muted);">Segure</div><div style="font-size:14px;font-weight:700;color:var(--text);">4 seg</div></div>
+            <div class="br-step"><div style="font-size:26px;margin-bottom:6px;">💨</div><div style="font-size:11px;color:var(--muted);">Expire</div><div style="font-size:14px;font-weight:700;color:var(--text);">6 seg</div></div>
+          </div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:10px;" id="br-ciclo">Ciclo 1 de 5</div>
+          <div style="width:200px;height:4px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;margin-bottom:28px;">
+            <div id="br-prog" style="height:100%;background:var(--green);border-radius:4px;width:0%;transition:width .5s linear;"></div>
+          </div>
+          <button class="btn btn-green" style="padding:16px 40px;" onclick="pararRespiracao();goTo('emergencia')">Concluir sessão</button>
+        </div>
+      </div>
+
+      <!-- ===== COMUNIDADE ===== -->
+      <div class="screen" id="screen-comunidade">
+        <div class="page">
+          <div class="page-title">Comunidade</div>
+          <div class="page-sub">Você não está sozinho nessa jornada.</div>
+          <div class="ctabs">
+            <div class="ctab on">Todos</div><div class="ctab">Iniciantes</div><div class="ctab">30 dias</div><div class="ctab">90 dias</div><div class="ctab">Jovens</div><div class="ctab">Casados</div>
+          </div>
+          <div class="ci-row" style="margin-bottom:24px;">
+            <input class="ci-input" type="text" id="post-input" placeholder="Compartilhe algo com a comunidade...">
+            <button class="ci-send" onclick="postar()">➤</button>
+          </div>
+          <div class="fcol gap16" id="feed-posts">
+            <div class="post">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;"><div class="post-av" style="background:linear-gradient(135deg,#1A237E,#3949AB);">👨</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Marcos A.</div><div style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px;margin-top:3px;"><span>há 12 min</span><span class="badge badge-g">🔥 45 dias</span></div></div></div>
+              <div style="font-size:14px;color:var(--text);line-height:1.6;margin-bottom:16px;font-family:'Inter',sans-serif;">Acabei de bater meu recorde pessoal — 45 dias! O modo emergência me salvou mais de uma vez. Pra quem está começando: não desista depois de uma recaída. 💪</div>
+              <div style="display:flex;gap:20px;"><div class="post-act" onclick="curtir(this)">❤️ <span>47</span></div><div class="post-act">💬 12</div></div>
+            </div>
+            <div class="post">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;"><div class="post-av" style="background:linear-gradient(135deg,#BF360C,#E64A19);">🧔</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Pedro L.</div><div style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px;margin-top:3px;"><span>há 5h</span><span class="badge badge-acc">💎 90 dias</span></div></div></div>
+              <div style="font-size:14px;color:var(--text);line-height:1.6;margin-bottom:16px;font-family:'Inter',sans-serif;">90 dias. Meu relacionamento melhorou muito. Consigo me concentrar no trabalho. Durmo melhor. Esse app mudou minha rotina de verdade. 🙏</div>
+              <div style="display:flex;gap:20px;"><div class="post-act" onclick="curtir(this)">❤️ <span>134</span></div><div class="post-act">💬 41</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== ACADEMIA ===== -->
+      <div class="screen" id="screen-academia">
+        <div class="page">
+          <div class="page-title">Academia</div>
+          <div class="page-sub">Conhecimento que transforma hábitos.</div>
+          <div class="ctabs">
+            <div class="ctab on">Todos</div><div class="ctab">Neurociência</div><div class="ctab">Psicologia</div><div class="ctab">Relacionamentos</div><div class="ctab">Espiritualidade</div>
+          </div>
+          <div class="feat-course" style="margin-bottom:24px;">
+            <div class="feat-emoji">🧠</div>
+            <div style="display:inline-flex;padding:3px 10px;background:rgba(255,255,255,.15);border-radius:10px;font-size:9px;font-weight:800;color:#fff;letter-spacing:.8px;margin-bottom:6px;">DESTAQUE</div>
+            <div style="font-size:20px;font-weight:800;color:#fff;line-height:1.2;">Dopamina e Autocontrole</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.55);margin-top:5px;">Neurociência · 8 aulas · 42 min</div>
+          </div>
+          <div class="sec-label">Em andamento</div>
+          <div class="fcol gap12" style="margin-bottom:24px;">
+            <div class="course-item"><div class="course-thumb" style="background:rgba(46,125,50,.15);">🌱</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Construindo Novos Hábitos</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">Psicologia · 6 aulas</div><div class="pbar" style="margin-top:8px;"><div class="pfill" style="width:60%"></div></div></div><div style="font-size:13px;font-weight:700;color:var(--green);flex-shrink:0;">60%</div></div>
+          </div>
+          <div class="sec-label">Biblioteca</div>
+          <div class="grid2 gap12" style="margin-bottom:24px;">
+            <div class="course-item"><div class="course-thumb" style="background:rgba(63,81,181,.15);">🔬</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Recompensa Cerebral</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">Neurociência · 5 aulas</div></div><div style="font-size:20px;color:var(--muted);">🔒</div></div>
+            <div class="course-item"><div class="course-thumb" style="background:rgba(255,193,7,.1);">✝️</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Fé, Propósito e Disciplina</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">Espiritualidade · 7 aulas</div></div><div style="font-size:20px;color:var(--muted);">🔒</div></div>
+            <div class="course-item"><div class="course-thumb" style="background:rgba(76,175,80,.1);">💪</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Autocontrole na Prática</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">Psicologia · 9 aulas</div></div><div style="font-size:20px;color:var(--muted);">🔒</div></div>
+            <div class="course-item"><div class="course-thumb" style="background:rgba(229,57,53,.1);">❤️</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Intimidade e Relacionamentos</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">Relacionamentos · 10 aulas</div></div><div style="font-size:20px;color:var(--muted);">🔒</div></div>
+          </div>
+          <div style="padding:20px 24px;background:linear-gradient(135deg,rgba(255,193,7,.1),rgba(255,152,0,.07));border-radius:16px;border:1px solid rgba(255,193,7,.2);display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;">
+            <div><div style="font-size:15px;font-weight:700;color:var(--yellow);margin-bottom:4px;">🔓 Academia completa no Premium</div><div style="font-size:13px;color:var(--muted);">30+ cursos e artigos exclusivos</div></div>
+            <button class="btn btn-gold" onclick="goTo('premium')">Assinar — R$19,90/mês</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PERFIL ===== -->
+      <div class="screen" id="screen-perfil">
+        <div class="page">
+          <div class="profile-hero">
+            <div class="pf-av" id="perfil-emoji">😊</div>
+            <div style="flex:1;">
+              <div style="font-size:24px;font-weight:800;color:var(--text);margin-bottom:4px;" id="perfil-nome">—</div>
+              <div style="font-size:13px;color:var(--muted);margin-bottom:10px;" id="perfil-info">Membro do Recomeço</div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;" id="perfil-badges"></div>
+            </div>
+            <button class="btn btn-outline" style="white-space:nowrap;padding:10px 20px;" onclick="editarPerfil()">✏️ Editar</button>
+          </div>
+          <div class="pf-stats" style="margin-bottom:28px;">
+            <div class="pf-stat"><div class="pf-sv" id="perfil-dias">0</div><div class="pf-sk">Dias</div></div>
+            <div class="pf-stat"><div class="pf-sv" id="perfil-recorde">0</div><div class="pf-sk">Recorde</div></div>
+            <div class="pf-stat"><div class="pf-sv" id="perfil-xp">0</div><div class="pf-sk">XP</div></div>
+            <div class="pf-stat"><div class="pf-sv" id="perfil-taxa">0%</div><div class="pf-sk">Sucesso</div></div>
+          </div>
+          <div class="card">
+            <div class="menu-row" onclick="goTo('metas')"><div class="menu-icon" style="background:rgba(255,193,7,.1);">🏆</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--text);">Conquistas</div><div style="font-size:12px;color:var(--muted);margin-top:2px;" id="perfil-ach-count">0 desbloqueadas</div></div><span style="color:var(--muted);">›</span></div>
+            <div class="menu-row"><div class="menu-icon" style="background:rgba(76,175,80,.1);">🤝</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--text);">Parceiro de Responsabilidade</div><div style="font-size:12px;color:var(--muted);margin-top:2px;" id="perfil-parceiro">Nenhum vinculado</div></div><span style="color:var(--muted);">›</span></div>
+            <div class="menu-row" onclick="goTo('premium')"><div class="menu-icon" style="background:rgba(63,81,181,.1);">💎</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--text);">Meu Plano</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">Plano gratuito</div></div><span class="badge badge-y" style="margin-right:12px;">FREE</span><span style="color:var(--muted);">›</span></div>
+            <div class="menu-row"><div class="menu-icon" style="background:rgba(229,57,53,.07);">🗑️</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--red);">Resetar todos os dados</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">Apaga todo o histórico</div></div><button onclick="resetarDados()" style="background:rgba(229,57,53,.15);border:1px solid rgba(229,57,53,.3);color:var(--red);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;font-family:'Sora',sans-serif;cursor:pointer;">Resetar</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PREMIUM ===== -->
+      <div class="screen" id="screen-premium">
+        <div class="page" style="max-width:600px;">
+          <div style="text-align:center;margin-bottom:32px;">
+            <div style="font-size:56px;margin-bottom:16px;">💎</div>
+            <div class="page-title">Recomeço Premium</div>
+            <div class="page-sub">Sua recuperação merece o melhor suporte.</div>
+          </div>
+          <div style="background:linear-gradient(135deg,rgba(255,193,7,.18),rgba(255,152,0,.1));border-radius:20px;border:1.5px solid rgba(255,193,7,.35);padding:28px;text-align:center;margin-bottom:24px;">
+            <div style="font-size:11px;font-weight:800;color:var(--yellow);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">MAIS POPULAR</div>
+            <div style="font-size:46px;font-weight:800;color:var(--text);letter-spacing:-2px;">R$19,90</div>
+            <div style="font-size:14px;color:var(--muted);margin-bottom:24px;">/mês · Cancele quando quiser</div>
+            <button class="btn btn-gold btn-block" style="font-size:15px;padding:17px;margin-bottom:12px;" onclick="showToast('Em breve! 🚀')">Começar agora — 7 dias grátis</button>
+            <div style="font-size:12px;color:var(--muted);">Sem cartão de crédito no período de teste</div>
+          </div>
+          <div class="fcol gap10">
+            <div style="display:flex;gap:14px;align-items:center;padding:14px 18px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:14px;color:var(--text);">🤖 <span><b>IA ilimitada</b> — sem restrições de mensagens</span></div>
+            <div style="display:flex;gap:14px;align-items:center;padding:14px 18px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:14px;color:var(--text);">📚 <span><b>Academia completa</b> — 30+ cursos exclusivos</span></div>
+            <div style="display:flex;gap:14px;align-items:center;padding:14px 18px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:14px;color:var(--text);">📊 <span><b>Relatórios avançados</b> — mapas de calor e padrões</span></div>
+            <div style="display:flex;gap:14px;align-items:center;padding:14px 18px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:14px;color:var(--text);">👥 <span><b>Comunidade VIP</b> exclusiva</span></div>
+            <div style="display:flex;gap:14px;align-items:center;padding:14px 18px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:14px;color:var(--text);">🏆 <span><b>Desafios</b> exclusivos mensais</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== ADMIN ===== -->
+      <div class="screen" id="screen-admin">
+        <div class="page">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+            <div><div class="page-title">Painel Admin</div><div class="page-sub" style="margin-bottom:0;">Seus dados pessoais do Recomeço</div></div>
+            <div style="padding:5px 14px;background:rgba(76,175,80,.15);border:1px solid rgba(76,175,80,.3);border-radius:20px;font-size:12px;font-weight:700;color:var(--green);">● LOCAL</div>
+          </div>
+          <div class="rev-card" style="margin-bottom:24px;">
+            <div style="font-size:10px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;">Resumo Geral</div>
+            <div style="font-size:36px;font-weight:800;color:var(--text);letter-spacing:-1.5px;margin:6px 0;" id="admin-streak">0 dias</div>
+            <div style="font-size:12px;color:var(--muted);">Sequência atual · <span style="color:var(--green);" id="admin-inicio">—</span></div>
+            <div style="display:flex;gap:24px;margin-top:16px;flex-wrap:wrap;">
+              <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Check-ins</div><div style="font-size:16px;font-weight:700;color:var(--text);margin-top:3px;" id="admin-checkins">0</div></div>
+              <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Recaídas</div><div style="font-size:16px;font-weight:700;color:var(--text);margin-top:3px;" id="admin-recaidas">0</div></div>
+              <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">XP Total</div><div style="font-size:16px;font-weight:700;color:var(--text);margin-top:3px;" id="admin-xp">0</div></div>
+            </div>
+          </div>
+          <div class="kpi-grid" style="margin-bottom:24px;">
+            <div class="kpi-card"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Dias Limpos</div><div style="font-size:28px;font-weight:800;color:var(--text);line-height:1;" id="admin-limpos">0</div></div>
+            <div class="kpi-card"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Recorde</div><div style="font-size:28px;font-weight:800;color:var(--text);line-height:1;" id="admin-recorde">0</div></div>
+            <div class="kpi-card"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Nível</div><div style="font-size:28px;font-weight:800;color:var(--text);line-height:1;" id="admin-nivel">1</div></div>
+            <div class="kpi-card"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Taxa Sucesso</div><div style="font-size:28px;font-weight:800;color:var(--text);line-height:1;" id="admin-taxa">0%</div></div>
+          </div>
+          <div class="sec-label">Histórico de Check-ins</div>
+          <div class="card" id="admin-historico">
+            <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px;">Nenhum check-in registrado ainda.</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+
+    <div id="bottom-nav">
+      <div class="bn-item active" onclick="goTo('dashboard')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Início</div>
+      <div class="bn-item" onclick="goTo('evolucao')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>Evolução</div>
+      <div class="bn-item" onclick="goTo('checkin')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Check-in</div>
+      <div class="bn-item" onclick="goTo('ia')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>Mentor</div>
+      <div class="bn-item" onclick="goTo('perfil')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Perfil</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// BANCO DE DADOS LOCAL (localStorage)
+// ============================================================
+
+var DB = {
+  get: function(k){ try{ return JSON.parse(localStorage.getItem('rec_'+k)); }catch(e){ return null; } },
+  set: function(k,v){ localStorage.setItem('rec_'+k, JSON.stringify(v)); },
+  del: function(k){ localStorage.removeItem('rec_'+k); }
+};
+
+// ESTRUTURA DE DADOS
+function getDados(){
+  return DB.get('dados') || {
+    nome: '', dataInicio: '', motivacao: '', configurado: false,
+    checkins: [], // [{data, limpo, emocoes, ansiedade, gatilho}]
+    xp: 0, nivel: 1, recorde: 0
+  };
+}
+function salvarDados(d){ DB.set('dados', d); }
+
+// ============================================================
+// SISTEMA DE XP E NÍVEIS
+// ============================================================
+var NIVEIS = [
+  {nome:'🌱 Iniciante', min:0}, {nome:'💪 Disciplina', min:200},
+  {nome:'🎯 Controle', min:500}, {nome:'⚡ Constância', min:1000},
+  {nome:'🔥 Transformação', min:2000}, {nome:'👑 Liberdade', min:4000}
+];
+function getNivel(xp){
+  for(var i=NIVEIS.length-1;i>=0;i--){ if(xp>=NIVEIS[i].min) return {num:i+1, nome:NIVEIS[i].nome, min:NIVEIS[i].min, prox:NIVEIS[i+1]?NIVEIS[i+1].min:9999}; }
+  return {num:1, nome:NIVEIS[0].nome, min:0, prox:200};
+}
+function addXP(d, pts){
+  d.xp = (d.xp||0) + pts;
+  var n = getNivel(d.xp);
+  d.nivel = n.num;
+  return d;
+}
+
+// METAS
+var METAS = [
+  {dias:3, nome:'Primeiros 3 Dias', emoji:'🌱'},
+  {dias:7, nome:'Uma Semana', emoji:'⭐'},
+  {dias:14, nome:'Duas Semanas', emoji:'🥈'},
+  {dias:30, nome:'Um Mês', emoji:'🥇'},
+  {dias:60, nome:'Dois Meses', emoji:'🏆'},
+  {dias:90, nome:'Noventa Dias', emoji:'💎'},
+  {dias:180, nome:'Seis Meses', emoji:'🔮'},
+  {dias:365, nome:'Um Ano', emoji:'👑'}
+];
+
+// ============================================================
+// CÁLCULOS
+// ============================================================
+function hoje(){ return new Date().toISOString().split('T')[0]; }
+
+function calcDias(dataInicio){
+  if(!dataInicio) return 0;
+  var ini = new Date(dataInicio+'T00:00:00');
+  var now = new Date();
+  return Math.max(0, Math.floor((now-ini)/(1000*60*60*24)));
+}
+
+function calcEstatisticas(d){
+  var checkins = d.checkins || [];
+  var total = checkins.length;
+  var limpos = checkins.filter(function(c){ return c.limpo; }).length;
+  var recaidas = total - limpos;
+  var taxa = total > 0 ? Math.round(limpos/total*100) : 0;
+
+  // Streak atual
+  var streak = 0;
+  var sorted = checkins.slice().sort(function(a,b){ return b.data.localeCompare(a.data); });
+  for(var i=0;i<sorted.length;i++){
+    if(sorted[i].limpo) streak++;
+    else break;
+  }
+
+  // Recorde
+  var recAtual = 0, recMax = d.recorde || 0;
+  for(var j=0;j<sorted.length;j++){
+    if(sorted[j].limpo){ recAtual++; if(recAtual>recMax) recMax=recAtual; }
+    else recAtual=0;
+  }
+
+  return {total, limpos, recaidas, taxa, streak, recorde: recMax};
+}
+
+function getMetaAtual(dias){
+  for(var i=METAS.length-1;i>=0;i--){
+    if(dias<METAS[i].dias) continue;
+    var prox = METAS[i+1];
+    if(!prox) return {nome:'👑 Você atingiu tudo!', pct:100, resto:0, atual:METAS[i]};
+  }
+  var prox = METAS[0];
+  for(var k=0;k<METAS.length;k++){
+    if(dias<METAS[k].dias){ prox=METAS[k]; break; }
+  }
+  var pct = Math.min(100, Math.round(dias/prox.dias*100));
+  return {nome:prox.emoji+' '+prox.nome, pct, resto:prox.dias-dias, atual:prox};
+}
+
+function jaFezCheckinHoje(d){
+  return (d.checkins||[]).some(function(c){ return c.data===hoje(); });
+}
+
+// ============================================================
+// FRASES MOTIVACIONAIS
+// ============================================================
+var FRASES = [
+  '"Cada dia é uma nova vitória. Você está construindo uma vida melhor."',
+  '"A jornada de mil milhas começa com um único passo."',
+  '"Você é mais forte do que pensa. Continue."',
+  '"O progresso, não a perfeição, é o objetivo."',
+  '"Cada manhã é uma nova chance de recomeçar."',
+  '"A disciplina de hoje é a liberdade de amanhã."',
+  '"Você já provou que consegue. Agora prove mais uma vez."',
+  '"Pequenas vitórias diárias constroem grandes mudanças."'
+];
+
+// ============================================================
+// RENDERIZAÇÃO
+// ============================================================
+function renderDashboard(){
+  var d = getDados();
+  if(!d.configurado) return;
+  var dias = calcDias(d.dataInicio);
+  var stats = calcEstatisticas(d);
+  var meta = getMetaAtual(dias);
+  var nivel = getNivel(d.xp||0);
+
+  // Big number
+  setText('dash-dias', dias);
+  setText('dash-recorde', Math.max(stats.recorde, dias));
+  setText('dash-taxa', stats.taxa+'%');
+  setText('dash-xp', d.xp||0);
+  setText('dash-nivel-nome', nivel.nome);
+  setText('dash-nivel-num', nivel.num);
+
+  // Frase
+  var frase = FRASES[dias % FRASES.length];
+  setText('dash-frase', frase);
+
+  // Risco
+  var ansiedade = 5;
+  var ultimo = (d.checkins||[]).slice(-1)[0];
+  if(ultimo) ansiedade = ultimo.ansiedade || 5;
+  var riscoEl = document.getElementById('dash-risco');
+  if(riscoEl){
+    if(ansiedade <= 3) riscoEl.innerHTML = '<div class="rdot rdot-g"></div>Baixo';
+    else if(ansiedade <= 6) riscoEl.innerHTML = '<div class="rdot rdot-y"></div>Médio';
+    else riscoEl.innerHTML = '<div class="rdot rdot-r"></div>Alto';
+  }
+
+  // Humor
+  if(ultimo && ultimo.emocoes && ultimo.emocoes.length){
+    setText('dash-humor', ultimo.emocoes[0]);
+  } else {
+    setText('dash-humor', '— Sem dados');
+  }
+
+  // Meta
+  setText('dash-meta', meta.nome+' · '+meta.pct+'%');
+  setText('dash-meta-nome', meta.atual ? meta.atual.emoji+' '+meta.atual.nome : 'Meta concluída');
+  setText('dash-meta-resto', meta.resto > 0 ? meta.resto+' dias restantes' : 'Meta concluída! 🎉');
+  setText('dash-meta-pct', meta.pct+'%');
+  setBar('dash-meta-bar', meta.pct);
+
+  // XP
+  var xpPct = nivel.prox < 9999 ? Math.round((d.xp-nivel.min)/(nivel.prox-nivel.min)*100) : 100;
+  setText('dash-xp-nivel', nivel.nome);
+  setText('dash-nivel-lbl', 'Nível '+nivel.num);
+  setText('dash-xp-total', d.xp||0);
+  setText('dash-xp-pct', xpPct+'%');
+  setBar('dash-xp-bar', xpPct);
+  setText('dash-xp-info', nivel.prox < 9999 ? (nivel.prox-(d.xp||0))+' XP para o próximo nível' : 'Nível máximo atingido!');
+
+  // Checkin hoje
+  var fezHoje = jaFezCheckinHoje(d);
+  var card = document.getElementById('dash-checkin-card');
+  if(card){
+    if(fezHoje){
+      card.innerHTML = '<div style="display:flex;align-items:center;gap:12px;"><span style="font-size:28px;">✅</span><div><div style="font-size:14px;font-weight:700;color:var(--text);">Check-in realizado hoje!</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">Você ganhou +50 XP. Volte amanhã!</div></div></div>';
+    } else {
+      card.innerHTML = '<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">Check-in de hoje</div><div style="font-size:13px;color:var(--muted);">Você ainda não fez o check-in de hoje.</div><button class="btn btn-green" style="margin-top:14px;padding:12px 20px;font-size:13px;" onclick="goTo(\'checkin\')">Fazer check-in agora →</button>';
+    }
+  }
+
+  // Sidebar
+  setText('sidebar-nome', d.nome||'Usuário');
+  setText('sidebar-plan', 'Nível '+nivel.num+' · '+stats.limpos+' dias limpos');
+  setText('dash-frase', frase);
+}
+
+function renderCheckin(){
+  var d = getDados();
+  var dataHoje = new Date();
+  var opts = {weekday:'long',year:'numeric',month:'long',day:'numeric'};
+  setText('checkin-data', dataHoje.toLocaleDateString('pt-BR', opts));
+
+  var fezHoje = jaFezCheckinHoje(d);
+  document.getElementById('checkin-ja-feito').style.display = fezHoje ? 'block' : 'none';
+  document.getElementById('checkin-form').style.display = fezHoje ? 'none' : 'block';
+
+  // Badge sidebar
+  var badge = document.getElementById('checkin-badge');
+  if(badge) badge.textContent = fezHoje ? '✓' : 'Hoje';
+}
+
+function renderEvolucao(){
+  var d = getDados();
+  var stats = calcEstatisticas(d);
+  var dias = calcDias(d.dataInicio);
+
+  setText('evo-limpos', stats.limpos);
+  setText('evo-taxa', stats.taxa+'%');
+  setText('evo-recaidas', stats.recaidas);
+  setText('evo-periodo', 'Desde o início da jornada');
+
+  // Gráfico 7 dias
+  var barsEl = document.getElementById('evo-bars');
+  var ultimos7 = [];
+  for(var i=6;i>=0;i--){
+    var dt = new Date(); dt.setDate(dt.getDate()-i);
+    var ds = dt.toISOString().split('T')[0];
+    var ci = (d.checkins||[]).find(function(c){ return c.data===ds; });
+    ultimos7.push({ds, ci, label:['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][dt.getDay()]});
+  }
+  var periodoDatas = ultimos7[0].ds.substr(8,2)+' – '+ultimos7[6].ds.substr(8,2);
+  setText('evo-periodo-bar', periodoDatas+' '+(new Date().toLocaleString('pt-BR',{month:'short'})));
+  if(barsEl){
+    var html = '';
+    ultimos7.forEach(function(u){
+      if(!u.ci){ html += '<div class="bar-w"><div class="bar-f" style="height:10%;background:rgba(255,255,255,.1);"></div><div class="bar-d">'+u.label+'</div></div>'; }
+      else if(u.ci.limpo){ html += '<div class="bar-w"><div class="bar-f bar-cl" style="height:100%"></div><div class="bar-d">'+u.label+'</div></div>'; }
+      else { html += '<div class="bar-w"><div class="bar-f bar-rl" style="height:40%"></div><div class="bar-d">'+u.label+'</div></div>'; }
+    });
+    barsEl.innerHTML = html || '<div style="color:var(--muted);font-size:12px;text-align:center;width:100%;margin:auto;">Faça check-ins para ver o gráfico</div>';
+  }
+
+  // Melhoria
+  var total = (d.checkins||[]).length;
+  if(total >= 7){
+    var pct = stats.taxa;
+    setText('evo-melhoria', pct+'%');
+    setText('evo-melhoria-sub', 'Taxa de dias limpos em '+total+' check-ins registrados.');
+  } else {
+    setText('evo-melhoria', '—');
+    setText('evo-melhoria-sub', 'Faça pelo menos 7 check-ins para ver sua taxa de melhoria.');
+  }
+
+  // Insights
+  var insightsEl = document.getElementById('evo-insights');
+  if(insightsEl && (d.checkins||[]).length >= 3){
+    var rec = (d.checkins||[]).filter(function(c){ return !c.limpo && c.gatilho; });
+    var gatilhos = {};
+    rec.forEach(function(c){ gatilhos[c.gatilho] = (gatilhos[c.gatilho]||0)+1; });
+    var top = Object.entries(gatilhos).sort(function(a,b){return b[1]-a[1];})[0];
+    if(top){
+      insightsEl.innerHTML = '<div class="insight ins-y"><span style="font-size:20px;flex-shrink:0;">⚠️</span><div><div class="ins-title" style="color:var(--yellow);">Gatilho mais frequente</div><div class="ins-text">Seu gatilho mais comum foi <b>'+top[0]+'</b>, presente em '+top[1]+' recaída(s).</div></div></div>';
+    }
+  }
+}
+
+function renderMetas(){
+  var d = getDados();
+  var dias = calcDias(d.dataInicio);
+  var stats = calcEstatisticas(d);
+
+  var listaEl = document.getElementById('metas-lista');
+  if(listaEl){
+    var html = '';
+    METAS.forEach(function(m, i){
+      var pct = Math.min(100, Math.round(dias/m.dias*100));
+      if(dias >= m.dias){
+        html += '<div class="meta-item done"><div class="meta-top"><div><div class="meta-title">✅ '+m.nome+'</div><div class="meta-sub">Concluída · 100%</div></div><div><div class="meta-days" style="color:var(--accent);">'+m.dias+'</div><div class="meta-dlbl">dias</div></div></div></div>';
+      } else {
+        var isProx = i===0 || dias >= METAS[i-1].dias;
+        var cls = isProx ? 'act' : 'lock';
+        html += '<div class="meta-item '+cls+'">';
+        html += '<div class="meta-top"><div><div class="meta-title">'+(isProx?'🎯':'🔒')+' '+m.nome+'</div><div class="meta-sub">'+(isProx?'Em andamento · '+pct+'%':'Bloqueado')+'</div></div>';
+        html += '<div><div class="meta-days"'+(!isProx?' style="color:var(--muted);"':'')+'>'+m.dias+'</div><div class="meta-dlbl">dias</div></div></div>';
+        if(isProx) html += '<div class="meta-prog-row"><div class="pbar" style="flex:1"><div class="pfill" style="width:'+pct+'%"></div></div><div class="meta-pct">'+pct+'%</div></div>';
+        html += '</div>';
+      }
+    });
+    listaEl.innerHTML = html;
+  }
+
+  var ACHES = [
+    {dias:3,med:'🌱',nome:'3 Dias',xp:50},
+    {dias:7,med:'⭐',nome:'7 Dias',xp:100},
+    {dias:14,med:'🥈',nome:'14 Dias',xp:200},
+    {dias:30,med:'🥇',nome:'30 Dias',xp:500},
+    {dias:90,med:'💎',nome:'90 Dias',xp:1000},
+    {dias:365,med:'👑',nome:'365 Dias',xp:5000}
+  ];
+  var achEl = document.getElementById('ach-lista');
+  if(achEl){
+    var ahtml = '';
+    ACHES.forEach(function(a){
+      var unl = dias >= a.dias;
+      ahtml += '<div class="ach '+(unl?'unl':'lck')+'"><span style="font-size:28px;">'+a.med+'</span><div style="font-size:11px;font-weight:600;color:var(--text);">'+a.nome+'</div><div style="font-size:10px;color:var(--yellow);">+'+a.xp+' XP</div></div>';
+    });
+    achEl.innerHTML = ahtml;
+  }
+}
+
+function renderPerfil(){
+  var d = getDados();
+  var dias = calcDias(d.dataInicio);
+  var stats = calcEstatisticas(d);
+  var nivel = getNivel(d.xp||0);
+  var achCount = METAS.filter(function(m){ return dias>=m.dias; }).length;
+
+  setText('perfil-nome', d.nome||'Usuário');
+  setText('perfil-info', 'Membro do Recomeço · '+new Date(d.dataInicio+'T00:00:00').toLocaleDateString('pt-BR',{month:'long',year:'numeric'}));
+  setText('perfil-dias', dias);
+  setText('perfil-recorde', Math.max(stats.recorde, dias));
+  setText('perfil-xp', d.xp||0);
+  setText('perfil-taxa', stats.taxa+'%');
+  setText('perfil-ach-count', achCount+' de '+METAS.length+' desbloqueadas');
+
+  var badges = document.getElementById('perfil-badges');
+  if(badges){
+    badges.innerHTML = '<span class="badge badge-g">🔥 '+dias+' dias</span>'+
+      '<span class="badge badge-y">'+nivel.nome+'</span>'+
+      '<span class="badge" style="background:rgba(255,255,255,.07);color:var(--muted);border:1px solid var(--border);">FREE</span>';
+  }
+}
+
+function renderAdmin(){
+  var d = getDados();
+  var dias = calcDias(d.dataInicio);
+  var stats = calcEstatisticas(d);
+  var nivel = getNivel(d.xp||0);
+
+  setText('admin-streak', dias+' dias');
+  setText('admin-inicio', 'Início em '+new Date(d.dataInicio+'T00:00:00').toLocaleDateString('pt-BR'));
+  setText('admin-checkins', (d.checkins||[]).length);
+  setText('admin-recaidas', stats.recaidas);
+  setText('admin-xp', d.xp||0);
+  setText('admin-limpos', stats.limpos);
+  setText('admin-recorde', Math.max(stats.recorde, dias));
+  setText('admin-nivel', nivel.num);
+  setText('admin-taxa', stats.taxa+'%');
+
+  var histEl = document.getElementById('admin-historico');
+  if(histEl){
+    var checkins = (d.checkins||[]).slice(-10).reverse();
+    if(!checkins.length){ histEl.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px;">Nenhum check-in registrado ainda.</div>'; return; }
+    var html = '';
+    checkins.forEach(function(c){
+      var dt = new Date(c.data+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'});
+      var emos = c.emocoes ? c.emocoes.join(', ') : '—';
+      html += '<div class="user-row"><div style="font-size:20px;">'+(c.limpo?'✅':'❌')+'</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text);">'+dt+'</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">'+emos+' · Ansiedade: '+c.ansiedade+'/10</div></div>'+(c.gatilho?'<span style="font-size:11px;color:var(--red);">'+c.gatilho+'</span>':'')+'</div>';
+    });
+    histEl.innerHTML = html;
+  }
+}
+
+// ============================================================
+// ACTIONS
+// ============================================================
+function salvarSetup(){
+  var nome = document.getElementById('setup-nome').value.trim();
+  var data = document.getElementById('setup-data').value;
+  var motSel = document.querySelector('#modal-setup .ob-opt.sel');
+  var motivacao = motSel ? motSel.textContent.trim() : '';
+
+  if(!nome){ alert('Digite seu nome!'); return; }
+  if(!data){ alert('Escolha a data de início!'); return; }
+
+  var d = getDados();
+  d.nome = nome;
+  d.dataInicio = data;
+  d.motivacao = motivacao;
+  d.configurado = true;
+  d.xp = 0;
+  salvarDados(d);
+
+  document.getElementById('modal-setup').classList.remove('show');
+  renderTudo();
+  showToast('Bem-vindo, '+nome+'! 🌱');
+}
+
+var gatilhoSelecionado = '';
+function mostrarRecaida(){
+  gatilhoSelecionado = '';
+  document.querySelectorAll('#gatilhos-grid .ob-opt').forEach(function(o){ o.classList.remove('sel'); });
+  document.getElementById('modal-recaida').classList.add('show');
+}
+function selGatilho(el){
+  document.querySelectorAll('#gatilhos-grid .ob-opt').forEach(function(o){ o.classList.remove('sel'); });
+  el.classList.add('sel');
+  gatilhoSelecionado = el.textContent.trim().replace(/^[^\w]+/,'');
+}
+function salvarRecaida(){
+  document.getElementById('modal-recaida').classList.remove('show');
+  salvarCheckin(true, gatilhoSelecionado);
+}
+
+function salvarCheckin(recaida, gatilho){
+  var d = getDados();
+  if(jaFezCheckinHoje(d)){ showToast('Check-in já realizado hoje!'); return; }
+
+  var emocoes = [];
+  document.querySelectorAll('.emo-btn.sel').forEach(function(e){ emocoes.push(e.dataset.emo||e.textContent.trim()); });
+  var ansiedade = parseInt(document.getElementById('slider-ansiedade').value)||5;
+
+  var ci = { data:hoje(), limpo:!recaida, emocoes:emocoes, ansiedade:ansiedade, gatilho:gatilho||'' };
+  d.checkins = d.checkins || [];
+  d.checkins.push(ci);
+
+  // XP
+  if(!recaida){ d = addXP(d, 50); }
+  else { d = addXP(d, 10); }
+
+  // Recorde
+  var stats = calcEstatisticas(d);
+  d.recorde = Math.max(d.recorde||0, stats.recorde);
+
+  salvarDados(d);
+  renderTudo();
+  showToast(recaida ? 'Recaída registrada. Você vai superar isso! +10 XP' : '✅ Check-in salvo! +50 XP ganhos!');
+  goTo('dashboard');
+}
+
+// ============================================================
+// MENTOR IA — Respostas inteligentes baseadas no contexto
+// ============================================================
+var RESPOSTAS_IA = {
+  vontade: ["Entendo. Isso é o momento mais crítico — e o mais importante para resistir.\n\nVou te ajudar. Primeiro: **respira fundo 3 vezes**. Depois escolha uma dessas ações:\n1. 🌬️ Respiração guiada (clique no menu)\n2. 🚶 Levante e ande 5 minutos\n3. 📱 Chame alguém agora\n\nLembro que você chegou até aqui. Não desista agora.", "Esse desejo vai passar. Normalmente dura menos de 20 minutos.\n\nO que você pode fazer AGORA:\n— Ligar para alguém\n— Fazer exercício por 10 minutos\n— Mudar de ambiente\n— Usar o Modo Emergência\n\nVocê consegue passar por isso! 💪"],
+  ajuda: ["Estou aqui. Me conta o que está acontecendo. O que você está sentindo nesse momento?", "Claro! Estou aqui para te apoiar. Pode falar abertamente — este espaço é seguro.\n\nO que está pesando mais agora?"],
+  recaida: ["Primeiramente: recaída não é fracasso. É parte do processo de recuperação.\n\nO mais importante agora é não entrar em espiral de culpa. Cada dia é um recomeço.\n\n✅ O que fazer agora:\n1. Registre no check-in (isso é coragem)\n2. Identifique o gatilho\n3. Ajuste sua estratégia\n4. Recomece amanhã\n\nVocê não perdeu o progresso — aprendeu algo valioso."],
+  dormir: ["Dificuldade para dormir pode aumentar o risco de recaída. Vamos resolver isso.\n\n🌙 Rotina noturna:\n— Coloque o celular longe da cama\n— Leia algo leve por 15 min\n— Respiração 4-4-6 (3 ciclos)\n— Deixe o quarto escuro e fresco\n\nQuer fazer a respiração guiada agora?"],
+  ansioso: ["Ansiedade é um dos gatilhos mais comuns. Reconhecer isso já é o primeiro passo.\n\nTécnica rápida: **Regra 5-4-3-2-1**\n— 5 coisas que você vê\n— 4 que você pode tocar\n— 3 que você ouve\n— 2 que você cheira\n— 1 que você prova\n\nIsso ancora você no presente. Quer tentar?"],
+  padrao: ["Vou analisar seu histórico para identificar padrões de risco.\n\nContinue fazendo check-ins diários — quanto mais dados, mais preciso fica o meu apoio. Já identifico padrões depois de pelo menos 7 dias."],
+  default: ["Estou aqui para te apoiar na jornada. Pode me contar mais?", "Entendo. Continue fazendo seus check-ins diários — isso é o mais importante.\n\nÉ possível me dar mais detalhes sobre o que está sentindo?", "Sua jornada é única e válida. Continue. Cada dia limpo é uma vitória.\n\nComo posso te ajudar agora?"]
+};
+
+function getRespostaIA(msg){
+  var m = msg.toLowerCase();
+  if(m.includes('vontade')||m.includes('vício')||m.includes('urge')||m.includes('emergência')) return aleatorio(RESPOSTAS_IA.vontade);
+  if(m.includes('ajuda')||m.includes('preciso')) return aleatorio(RESPOSTAS_IA.ajuda);
+  if(m.includes('recaída')||m.includes('recaida')||m.includes('errei')||m.includes('caí')) return RESPOSTAS_IA.recaida[0];
+  if(m.includes('dorm')||m.includes('insônia')||m.includes('insonia')) return RESPOSTAS_IA.dormir[0];
+  if(m.includes('ansios')||m.includes('nervos')||m.includes('estress')) return RESPOSTAS_IA.ansioso[0];
+  if(m.includes('padrão')||m.includes('padrao')||m.includes('análise')) return RESPOSTAS_IA.padrao[0];
+  return aleatorio(RESPOSTAS_IA.default);
+}
+
+function aleatorio(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+function enviarMensagem(msg){
+  var input = document.getElementById('chat-input');
+  var texto = msg || (input ? input.value.trim() : '');
+  if(!texto) return;
+  if(input) input.value = '';
+
+  var d = getDados();
+  var chatBox = document.getElementById('chat-box');
+  if(!chatBox) return;
+
+  // Mensagem do usuário
+  var userDiv = document.createElement('div');
+  userDiv.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;';
+  userDiv.innerHTML = '<div class="bubble bubble-user">'+escapeHtml(texto)+'</div><div class="btime" style="text-align:right;">agora</div>';
+  chatBox.appendChild(userDiv);
+
+  // Personalizar resposta com dados reais
+  var resposta = getRespostaIA(texto);
+  var dias = calcDias(d.dataInicio);
+  if(texto.toLowerCase().includes('dias')||texto.toLowerCase().includes('progresso')){
+    resposta = 'Você está no dia '+dias+' da sua jornada! '+resposta;
+  }
+
+  // Digitando...
+  setTimeout(function(){
+    var aiDiv = document.createElement('div');
+    aiDiv.innerHTML = '<div class="bubble bubble-ai" style="color:var(--muted);font-style:italic;">Digitando...</div>';
+    chatBox.appendChild(aiDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    setTimeout(function(){
+      aiDiv.innerHTML = '<div class="bubble bubble-ai">'+escapeHtml(resposta)+'</div><div class="btime">agora</div>';
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }, 800);
+  }, 300);
+
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// ============================================================
+// COMUNIDADE
+// ============================================================
+function curtir(el){
+  var span = el.querySelector('span');
+  var num = parseInt(span.textContent)||0;
+  span.textContent = num+1;
+  el.style.color = 'var(--red)';
+}
+
+function postar(){
+  var input = document.getElementById('post-input');
+  var texto = input.value.trim();
+  if(!texto) return;
+  var d = getDados();
+  var dias = calcDias(d.dataInicio);
+  var nivel = getNivel(d.xp||0);
+  input.value = '';
+
+  var feed = document.getElementById('feed-posts');
+  var div = document.createElement('div');
+  div.className = 'post';
+  div.innerHTML = '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;"><div class="post-av" style="background:linear-gradient(135deg,var(--green-dark),var(--green));">'+getSidebarEmoji(d)+'</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">'+(d.nome||'Você')+'</div><div style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px;margin-top:3px;"><span>agora</span><span class="badge badge-g">🔥 '+dias+' dias</span></div></div></div><div style="font-size:14px;color:var(--text);line-height:1.6;margin-bottom:16px;font-family:\'Inter\',sans-serif;">'+escapeHtml(texto)+'</div><div style="display:flex;gap:20px;"><div class="post-act" onclick="curtir(this)">❤️ <span>0</span></div><div class="post-act">💬 0</div></div>';
+  feed.insertBefore(div, feed.firstChild);
+  showToast('Post publicado! 🎉');
+}
+
+// ============================================================
+// RESPIRAÇÃO
+// ============================================================
+var bTimer=null, bPhase=0, bCount=4, bCiclo=0, bTotal=5;
+var phases=[{name:'Inspire',dur:4},{name:'Segure',dur:4},{name:'Expire',dur:6}];
+var totalDur = phases.reduce(function(a,p){return a+p.dur;},0)*bTotal;
+var bElapsed = 0;
+
+function startBreath(){
+  stopBreath();
+  bPhase=0; bCount=phases[0].dur; bCiclo=1; bElapsed=0;
+  updateBreath();
+  bTimer=setInterval(function(){
+    bElapsed++;
+    bCount--;
+    var prog = Math.min(100, Math.round(bElapsed/totalDur*100));
+    var progEl = document.getElementById('br-prog');
+    if(progEl) progEl.style.width=prog+'%';
+    if(bCount<=0){
+      bPhase=(bPhase+1)%3;
+      bCount=phases[bPhase].dur;
+      if(bPhase===0){ bCiclo++; if(bCiclo>bTotal){stopBreath();return;} }
+    }
+    updateBreath();
+    setText('br-ciclo','Ciclo '+Math.min(bCiclo,bTotal)+' de '+bTotal);
+  },1000);
+}
+function stopBreath(){if(bTimer){clearInterval(bTimer);bTimer=null;}}
+function pararRespiracao(){stopBreath();}
+function updateBreath(){
+  var p=document.getElementById('br-phase'), c=document.getElementById('br-cnt');
+  if(p) p.textContent=phases[bPhase].name;
+  if(c) c.textContent=bCount;
+}
+
+// ============================================================
+// NAVEGAÇÃO
+// ============================================================
+var TITLES = {
+  dashboard:'Dashboard', checkin:'Check-in Diário', evolucao:'Evolução',
+  metas:'Metas & Conquistas', ia:'Mentor IA', emergencia:'Modo Emergência',
+  respiracao:'Respiração Guiada', comunidade:'Comunidade', academia:'Academia',
+  perfil:'Perfil', premium:'Premium', admin:'Admin'
+};
+
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.querySelectorAll('.nav-link').forEach(function(l){l.classList.remove('active');});
+  document.querySelectorAll('.bn-item').forEach(function(b){b.classList.remove('active');});
+
+  var screen = document.getElementById('screen-'+id);
+  if(screen){screen.classList.add('active'); document.getElementById('content').scrollTop=0;}
+
+  document.querySelectorAll('.nav-link, .bn-item').forEach(function(el){
+    var fn = el.getAttribute('onclick');
+    if(fn && fn.indexOf("'"+id+"'")!==-1) el.classList.add('active');
+  });
+
+  if(TITLES[id]) setText('topbar-title', TITLES[id]);
+  if(id==='respiracao') startBreath(); else stopBreath();
+
+  // Render específico
+  if(id==='dashboard') renderDashboard();
+  else if(id==='checkin') renderCheckin();
+  else if(id==='evolucao') renderEvolucao();
+  else if(id==='metas') renderMetas();
+  else if(id==='perfil') renderPerfil();
+  else if(id==='admin') renderAdmin();
+
+  closeSidebar();
+}
+
+// ============================================================
+// SIDEBAR
+// ============================================================
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('show');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('show');
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+var toastTimer=null;
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){t.classList.remove('show');},3000);
+}
+
+// ============================================================
+// PERFIL
+// ============================================================
+function editarPerfil(){
+  var d = getDados();
+  var nome = prompt('Seu nome:', d.nome||'');
+  if(nome!==null && nome.trim()){
+    d.nome = nome.trim();
+    salvarDados(d);
+    renderPerfil();
+    renderDashboard();
+    showToast('Perfil atualizado! ✅');
+  }
+}
+
+function resetarDados(){
+  if(confirm('Tem certeza? Todos os seus dados serão apagados.')){
+    if(confirm('Esta ação não pode ser desfeita. Confirmar?')){
+      localStorage.removeItem('rec_dados');
+      location.reload();
+    }
+  }
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function setText(id, val){ var el=document.getElementById(id); if(el) el.textContent=val; }
+function setBar(id, pct){ var el=document.getElementById(id); if(el) el.style.width=Math.max(0,Math.min(100,pct))+'%'; }
+function escapeHtml(s){ var d=document.createElement('div'); d.appendChild(document.createTextNode(s)); return d.innerHTML; }
+function getSidebarEmoji(d){ return '😊'; }
+
+function selectOpt(el){
+  var p=el.closest('.modal')||el.parentElement;
+  p.querySelectorAll('.ob-opt').forEach(function(o){o.classList.remove('sel');});
+  el.classList.add('sel');
+}
+
+function renderTudo(){
+  renderDashboard();
+  renderCheckin();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+(function init(){
+  // Setar data padrão para hoje no setup
+  var inp = document.getElementById('setup-data');
+  if(inp) inp.value = hoje();
+
+  var d = getDados();
+  if(d && d.configurado){
+    document.getElementById('modal-setup').classList.remove('show');
+    renderTudo();
+    goTo('dashboard');
+  } else {
+    document.getElementById('modal-setup').classList.add('show');
+  }
+
+  // IA: boas-vindas personalizada
+  var bv = document.getElementById('ia-boas-vindas');
+  if(bv && d && d.nome){
+    bv.textContent = 'Olá, '+d.nome+'! 👋 Sou o Mentor IA do Recomeço. Estou aqui para te apoiar na sua jornada. Como você está se sentindo hoje?';
+  }
+
+  // Tabs de comunidade e academia
+  document.querySelectorAll('.ctab').forEach(function(t){
+    t.addEventListener('click',function(){
+      var p=this.parentElement;
+      p.querySelectorAll('.ctab').forEach(function(x){x.classList.remove('on');});
+      this.classList.add('on');
+    });
+  });
+})();
+</script>
+</body>
+</html>
