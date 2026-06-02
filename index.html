@@ -1,1835 +1,1127 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Recomeço — App</title>
+<title>Recomeço — Recuperação Comportamental</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --green: #4CAF50;
-    --green-dark: #2E7D32;
-    --green-glow: rgba(76,175,80,0.25);
-    --red: #E53935;
-    --bg: #0A0A0F;
-    --surface: #13131A;
-    --card: #1A1A25;
-    --card2: #20202E;
-    --border: rgba(255,255,255,0.07);
-    --text: #F0F0F5;
-    --muted: #7A7A9A;
-    --accent: #6EE7B7;
-  }
-
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-
-  body {
-    background: #060608;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Sora', sans-serif;
-    padding: 20px;
-  }
-
-  /* PHONE FRAME */
-  .phone-wrapper {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .phone {
-    width: 390px;
-    height: 844px;
-    background: var(--bg);
-    border-radius: 48px;
-    border: 1.5px solid rgba(255,255,255,0.12);
-    overflow: hidden;
-    position: relative;
-    box-shadow:
-      0 0 0 6px #0d0d12,
-      0 0 0 8px rgba(255,255,255,0.06),
-      0 60px 120px rgba(0,0,0,0.9),
-      inset 0 1px 0 rgba(255,255,255,0.08);
-  }
-
-  /* NOTCH */
-  .phone::before {
-    content: '';
-    position: absolute;
-    top: 14px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 120px;
-    height: 34px;
-    background: #0A0A0F;
-    border-radius: 20px;
-    z-index: 100;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
-  }
-
-  /* NAV TABS */
-  .nav-tabs {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: center;
-    max-width: 500px;
-  }
-
-  .nav-tab {
-    padding: 8px 16px;
-    border-radius: 20px;
-    background: #1A1A25;
-    border: 1px solid rgba(255,255,255,0.08);
-    color: #7A7A9A;
-    font-size: 12px;
-    font-family: 'Sora', sans-serif;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.3px;
-  }
-
-  .nav-tab:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
-  .nav-tab.active { background: var(--green-dark); color: #fff; border-color: var(--green); }
-
-  /* SCREENS */
-  .screen {
-    display: none;
-    position: absolute;
-    inset: 0;
-    background: var(--bg);
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-bottom: 80px;
-    scrollbar-width: none;
-  }
-  .screen::-webkit-scrollbar { display: none; }
-  .screen.active { display: block; animation: fadeIn 0.3s ease; }
-
-  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
-
-  /* STATUS BAR */
-  .status-bar {
-    height: 54px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    padding: 0 28px 8px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text);
-    letter-spacing: 0.2px;
-  }
-
-  .status-icons { display: flex; gap: 6px; align-items: center; }
-
-  /* BOTTOM NAV */
-  .bottom-nav {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 80px;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: flex-start;
-    padding-top: 12px;
-    justify-content: space-around;
-    z-index: 50;
-    backdrop-filter: blur(20px);
-  }
-
-  .nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
-    opacity: 0.4;
-    transition: opacity 0.2s;
-    font-size: 10px;
-    color: var(--text);
-    letter-spacing: 0.3px;
-  }
-  .nav-item.active { opacity: 1; color: var(--green); }
-  .nav-item svg { width:22px; height:22px; }
-
-  /* TYPOGRAPHY */
-  .screen-title {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: -0.5px;
-    line-height: 1.2;
-  }
-
-  .screen-sub {
-    font-size: 13px;
-    color: var(--muted);
-    font-weight: 400;
-    line-height: 1.5;
-  }
-
-  /* CARDS */
-  .card {
-    background: var(--card);
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    padding: 20px;
-  }
-
-  .card-sm {
-    background: var(--card);
-    border-radius: 16px;
-    border: 1px solid var(--border);
-    padding: 16px;
-  }
-
-  /* BUTTONS */
-  .btn-primary {
-    width: 100%;
-    padding: 16px;
-    background: var(--green);
-    border: none;
-    border-radius: 14px;
-    color: #fff;
-    font-size: 15px;
-    font-weight: 700;
-    font-family: 'Sora', sans-serif;
-    cursor: pointer;
-    letter-spacing: 0.2px;
-    transition: all 0.2s;
-    box-shadow: 0 8px 24px rgba(76,175,80,0.3);
-  }
-  .btn-primary:active { transform: scale(0.98); }
-
-  .btn-outline {
-    width: 100%;
-    padding: 14px;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    color: var(--text);
-    font-size: 14px;
-    font-weight: 600;
-    font-family: 'Sora', sans-serif;
-    cursor: pointer;
-    letter-spacing: 0.2px;
-    transition: all 0.2s;
-  }
-
-  /* PROGRESS BAR */
-  .progress-bar {
-    height: 6px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 6px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--green-dark), var(--green));
-    border-radius: 6px;
-    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
-  }
-
-  /* BADGES */
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-  }
-  .badge-green { background: rgba(76,175,80,0.15); color: var(--green); border: 1px solid rgba(76,175,80,0.3); }
-  .badge-yellow { background: rgba(255,193,7,0.15); color: #FFC107; border: 1px solid rgba(255,193,7,0.3); }
-  .badge-red { background: rgba(229,57,53,0.15); color: var(--red); border: 1px solid rgba(229,57,53,0.3); }
-
-  /* SECTION */
-  .section { padding: 0 24px; margin-bottom: 20px; }
-
-  /* ===================== SCREEN 1: SPLASH ===================== */
-  #screen-splash {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(ellipse at 50% 30%, rgba(46,125,50,0.3) 0%, transparent 60%), var(--bg);
-  }
-
-  .splash-logo {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, var(--green-dark), var(--green));
-    border-radius: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 28px;
-    box-shadow: 0 20px 60px rgba(76,175,80,0.4);
-    font-size: 36px;
-  }
-
-  .splash-name {
-    font-size: 36px;
-    font-weight: 800;
-    color: var(--text);
-    letter-spacing: -1px;
-    margin-bottom: 8px;
-  }
-
-  .splash-tagline {
-    font-size: 15px;
-    color: var(--muted);
-    font-weight: 300;
-    letter-spacing: 0.5px;
-    margin-bottom: 60px;
-  }
-
-  .splash-dots {
-    display: flex;
-    gap: 8px;
-  }
-
-  .splash-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: rgba(76,175,80,0.3);
-    animation: pulse-dot 1.5s infinite;
-  }
-  .splash-dot:nth-child(2) { animation-delay: 0.2s; }
-  .splash-dot:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes pulse-dot {
-    0%,100% { transform: scale(1); opacity: 0.3; }
-    50% { transform: scale(1.4); opacity: 1; background: var(--green); }
-  }
-
-  /* ===================== SCREEN 2: ONBOARDING ===================== */
-  #screen-onboarding {
-    padding: 0;
-  }
-
-  .onboarding-header {
-    padding: 70px 24px 24px;
-    background: linear-gradient(180deg, rgba(46,125,50,0.15) 0%, transparent 100%);
-  }
-
-  .ob-step {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--green);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-
-  .ob-options {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 0 24px;
-    margin: 24px 0;
-  }
-
-  .ob-option {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 16px 18px;
-    background: var(--card);
-    border-radius: 14px;
-    border: 1px solid var(--border);
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text);
-  }
-  .ob-option:hover { border-color: var(--green); background: rgba(76,175,80,0.08); }
-  .ob-option.selected { border-color: var(--green); background: rgba(76,175,80,0.12); }
-  .ob-icon { font-size: 22px; }
-
-  /* ===================== SCREEN 3: DASHBOARD ===================== */
-  #screen-dashboard {
-    padding: 0;
-  }
-
-  .dash-header {
-    padding: 60px 24px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .user-greeting { flex: 1; }
-  .greeting-sub { font-size: 12px; color: var(--muted); font-weight: 400; margin-bottom: 2px; }
-  .greeting-name { font-size: 18px; font-weight: 700; color: var(--text); }
-
-  .header-avatar {
-    width: 44px; height: 44px;
-    background: linear-gradient(135deg, var(--green-dark), var(--green));
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    position: relative;
-  }
-  .header-notif {
-    position: absolute;
-    top: -2px; right: -2px;
-    width: 12px; height: 12px;
-    background: var(--red);
-    border-radius: 50%;
-    border: 2px solid var(--bg);
-  }
-
-  /* BIG COUNTER */
-  .counter-card {
-    margin: 0 24px 16px;
-    background: linear-gradient(135deg, rgba(46,125,50,0.4) 0%, rgba(30,50,35,0.6) 100%);
-    border-radius: 24px;
-    border: 1px solid rgba(76,175,80,0.3);
-    padding: 32px 24px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .counter-card::before {
-    content: '';
-    position: absolute;
-    top: -40px; right: -40px;
-    width: 150px; height: 150px;
-    background: radial-gradient(circle, rgba(76,175,80,0.2) 0%, transparent 70%);
-    border-radius: 50%;
-  }
-
-  .counter-days {
-    font-size: 80px;
-    font-weight: 800;
-    color: var(--text);
-    line-height: 1;
-    letter-spacing: -4px;
-    text-shadow: 0 0 40px rgba(76,175,80,0.5);
-  }
-
-  .counter-label {
-    font-size: 13px;
-    color: rgba(255,255,255,0.6);
-    font-weight: 400;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-top: 6px;
-    margin-bottom: 20px;
-  }
-
-  .counter-meta {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-  }
-
-  .counter-stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-  }
-
-  .counter-stat-val { font-size: 18px; font-weight: 700; color: var(--text); }
-  .counter-stat-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
-
-  .counter-divider {
-    width: 1px; height: 32px;
-    background: rgba(255,255,255,0.1);
-    align-self: center;
-  }
-
-  /* MOTIVATIONAL */
-  .motivational {
-    margin: 0 24px 16px;
-    padding: 14px 18px;
-    background: rgba(110,231,183,0.06);
-    border-radius: 14px;
-    border: 1px solid rgba(110,231,183,0.15);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 13px;
-    color: var(--accent);
-    font-weight: 400;
-    line-height: 1.4;
-    font-style: italic;
-  }
-
-  .motivational-icon { font-size: 20px; flex-shrink: 0; }
-
-  /* RISK CARD */
-  .risk-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin: 0 24px 16px;
-  }
-
-  .risk-card {
-    background: var(--card);
-    border-radius: 18px;
-    border: 1px solid var(--border);
-    padding: 16px;
-  }
-
-  .risk-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-  .risk-value { font-size: 16px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 6px; }
-  .risk-dot { width: 10px; height: 10px; border-radius: 50%; }
-  .risk-dot.low { background: var(--green); box-shadow: 0 0 8px var(--green); }
-  .risk-dot.med { background: #FFC107; box-shadow: 0 0 8px #FFC107; }
-
-  /* QUICK ACTIONS */
-  .quick-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
-    margin: 0 24px 16px;
-  }
-
-  .qa-btn {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 16px 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--muted);
-    text-align: center;
-    line-height: 1.3;
-  }
-  .qa-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
-  .qa-btn.emergency { border-color: rgba(229,57,53,0.3); background: rgba(229,57,53,0.08); color: var(--red); }
-  .qa-btn-icon { font-size: 24px; }
-
-  /* PROGRESS SECTION */
-  .progress-card {
-    margin: 0 24px 16px;
-    background: var(--card);
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    padding: 20px;
-  }
-
-  .progress-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
-  }
-
-  .progress-title { font-size: 14px; font-weight: 600; color: var(--text); }
-  .progress-sub { font-size: 12px; color: var(--muted); }
-  .progress-pct { font-size: 18px; font-weight: 800; color: var(--green); }
-
-  /* ===================== SCREEN 4: CHECK-IN ===================== */
-  #screen-checkin {
-    padding: 0;
-  }
-
-  .checkin-header {
-    padding: 64px 24px 24px;
-    text-align: center;
-    background: linear-gradient(180deg, rgba(76,175,80,0.1) 0%, transparent 100%);
-  }
-
-  .emotions-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin: 0 24px 24px;
-  }
-
-  .emotion-btn {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 16px 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--muted);
-  }
-  .emotion-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
-  .emotion-btn.selected { border-color: var(--green); background: rgba(76,175,80,0.1); color: var(--text); }
-  .emotion-emoji { font-size: 28px; }
-
-  .checkin-question {
-    margin: 0 24px 24px;
-    text-align: center;
-  }
-  .checkin-q-text { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
-
-  .yn-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-  .btn-no {
-    padding: 18px;
-    background: rgba(76,175,80,0.15);
-    border: 1.5px solid var(--green);
-    border-radius: 14px;
-    color: var(--green);
-    font-size: 16px;
-    font-weight: 700;
-    font-family: 'Sora', sans-serif;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-yes {
-    padding: 18px;
-    background: rgba(229,57,53,0.1);
-    border: 1.5px solid rgba(229,57,53,0.5);
-    border-radius: 14px;
-    color: var(--red);
-    font-size: 16px;
-    font-weight: 700;
-    font-family: 'Sora', sans-serif;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  /* SLIDER */
-  .slider-section { margin: 0 24px 24px; }
-  .slider-label { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-  .slider-val { font-size: 20px; font-weight: 800; color: var(--green); }
-
-  input[type="range"] {
-    width: 100%;
-    -webkit-appearance: none;
-    height: 6px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 6px;
-    outline: none;
-  }
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 12px rgba(76,175,80,0.6);
-    cursor: pointer;
-  }
-
-  /* ===================== SCREEN 5: EVOLUÇÃO ===================== */
-  #screen-evolucao { padding: 0; }
-
-  .evolucao-header {
-    padding: 64px 24px 24px;
-  }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin: 0 24px 20px;
-  }
-
-  .stat-card {
-    background: var(--card);
-    border-radius: 16px;
-    border: 1px solid var(--border);
-    padding: 14px 12px;
-    text-align: center;
-  }
-
-  .stat-number { font-size: 24px; font-weight: 800; color: var(--text); line-height: 1; }
-  .stat-unit { font-size: 11px; color: var(--green); font-weight: 600; margin-top: 2px; }
-  .stat-desc { font-size: 10px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-
-  /* CHART MOCK */
-  .chart-card {
-    margin: 0 24px 16px;
-    background: var(--card);
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    padding: 20px;
-  }
-
-  .chart-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-  .chart-period { font-size: 11px; color: var(--muted); margin-bottom: 16px; }
-
-  .chart-bars {
-    display: flex;
-    align-items: flex-end;
-    gap: 6px;
-    height: 80px;
-  }
-
-  .bar-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    height: 100%;
-    justify-content: flex-end;
-  }
-
-  .bar-fill {
-    width: 100%;
-    border-radius: 6px 6px 0 0;
-    transition: height 0.5s ease;
-  }
-  .bar-fill.clean { background: linear-gradient(180deg, var(--green), var(--green-dark)); }
-  .bar-fill.relapse { background: linear-gradient(180deg, rgba(229,57,53,0.8), rgba(229,57,53,0.4)); }
-
-  .bar-day { font-size: 10px; color: var(--muted); }
-
-  /* INSIGHT CARD */
-  .insight-card {
-    margin: 0 24px 16px;
-    padding: 16px;
-    background: rgba(255,193,7,0.06);
-    border-radius: 16px;
-    border: 1px solid rgba(255,193,7,0.2);
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-  }
-
-  .insight-icon { font-size: 20px; flex-shrink: 0; }
-  .insight-title { font-size: 13px; font-weight: 600; color: #FFC107; margin-bottom: 4px; }
-  .insight-text { font-size: 12px; color: var(--muted); line-height: 1.4; }
-
-  /* IMPROVEMENT */
-  .improvement-card {
-    margin: 0 24px 16px;
-    background: var(--card);
-    border-radius: 20px;
-    border: 1px solid rgba(110,231,183,0.2);
-    padding: 20px;
-    text-align: center;
-  }
-
-  .improvement-pct {
-    font-size: 56px;
-    font-weight: 800;
-    color: var(--accent);
-    letter-spacing: -2px;
-    line-height: 1;
-    text-shadow: 0 0 30px rgba(110,231,183,0.4);
-  }
-
-  .improvement-label { font-size: 12px; color: var(--muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 1px; }
-  .improvement-sub { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.4; }
-
-  /* ===================== SCREEN 6: MENTOR IA ===================== */
-  #screen-ia { padding: 0; }
-
-  .ia-header {
-    padding: 64px 24px 16px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .ia-avatar {
-    width: 48px; height: 48px;
-    background: linear-gradient(135deg, #1A237E, #3949AB);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    box-shadow: 0 0 20px rgba(57,73,171,0.5);
-  }
-
-  .ia-name { font-size: 16px; font-weight: 700; color: var(--text); }
-  .ia-status { font-size: 12px; color: var(--green); display: flex; align-items: center; gap: 4px; }
-  .ia-online-dot { width: 7px; height: 7px; background: var(--green); border-radius: 50%; animation: blink 2s infinite; }
-
-  @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
-
-  .chat-area {
-    padding: 20px 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    min-height: 280px;
-  }
-
-  .chat-bubble {
-    max-width: 82%;
-    padding: 12px 16px;
-    border-radius: 18px;
-    font-size: 13px;
-    line-height: 1.5;
-    font-family: 'Inter', sans-serif;
-  }
-
-  .bubble-ia {
-    background: var(--card2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-bottom-left-radius: 4px;
-    align-self: flex-start;
-  }
-
-  .bubble-user {
-    background: rgba(76,175,80,0.2);
-    border: 1px solid rgba(76,175,80,0.3);
-    color: var(--text);
-    border-bottom-right-radius: 4px;
-    align-self: flex-end;
-  }
-
-  .bubble-time {
-    font-size: 10px;
-    color: var(--muted);
-    margin-top: 4px;
-    text-align: right;
-  }
-
-  .quick-chips {
-    display: flex;
-    gap: 8px;
-    padding: 0 24px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    padding-bottom: 12px;
-  }
-  .quick-chips::-webkit-scrollbar { display: none; }
-
-  .chip {
-    padding: 8px 14px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    font-size: 12px;
-    font-family: 'Sora', sans-serif;
-    color: var(--muted);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s;
-  }
-  .chip:hover { border-color: var(--green); color: var(--green); }
-
-  .chat-input-row {
-    display: flex;
-    gap: 10px;
-    padding: 0 24px;
-    margin-top: 8px;
-  }
-
-  .chat-input {
-    flex: 1;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 12px 18px;
-    font-size: 13px;
-    font-family: 'Sora', sans-serif;
-    color: var(--text);
-    outline: none;
-  }
-  .chat-input::placeholder { color: var(--muted); }
-
-  .send-btn {
-    width: 46px; height: 46px;
-    background: var(--green);
-    border: none;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 18px;
-    flex-shrink: 0;
-    box-shadow: 0 4px 16px rgba(76,175,80,0.4);
-  }
-
-  /* ===================== SCREEN 7: METAS ===================== */
-  #screen-metas { padding: 0; }
-
-  .metas-header {
-    padding: 64px 24px 24px;
-  }
-
-  .meta-item {
-    margin: 0 24px 12px;
-    background: var(--card);
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    padding: 20px;
-    transition: all 0.2s;
-  }
-
-  .meta-item.active-meta { border-color: var(--green); background: rgba(76,175,80,0.06); }
-  .meta-item.completed-meta { border-color: rgba(110,231,183,0.3); opacity: 0.7; }
-
-  .meta-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 12px;
-  }
-
-  .meta-title { font-size: 16px; font-weight: 700; color: var(--text); }
-  .meta-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
-
-  .meta-badge-days {
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--green);
-    letter-spacing: -1px;
-    text-align: right;
-  }
-  .meta-badge-label { font-size: 10px; color: var(--muted); text-align: right; text-transform: uppercase; }
-
-  .meta-progress-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 12px;
-  }
-
-  .meta-pct { font-size: 12px; font-weight: 700; color: var(--green); min-width: 36px; }
-
-  /* CONQUISTAS */
-  .achievements-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin: 0 24px 16px;
-  }
-
-  .achievement {
-    background: var(--card);
-    border-radius: 16px;
-    border: 1px solid var(--border);
-    padding: 16px 10px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-  }
-  .achievement.unlocked { border-color: rgba(255,193,7,0.4); background: rgba(255,193,7,0.05); }
-  .achievement.locked { opacity: 0.35; }
-
-  .ach-medal { font-size: 28px; }
-  .ach-title { font-size: 11px; font-weight: 600; color: var(--text); }
-  .ach-xp { font-size: 10px; color: #FFC107; }
-
-  /* ===================== SCREEN 8: EMERGÊNCIA ===================== */
-  #screen-emergencia {
-    background: radial-gradient(ellipse at 50% 30%, rgba(229,57,53,0.3) 0%, var(--bg) 60%);
-    padding: 0;
-    padding-bottom: 40px;
-  }
-
-  .emerg-header {
-    padding: 64px 24px 32px;
-    text-align: center;
-  }
-
-  .emerg-pulse {
-    width: 80px; height: 80px;
-    margin: 0 auto 24px;
-    background: rgba(229,57,53,0.15);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 36px;
-    position: relative;
-  }
-
-  .emerg-pulse::before, .emerg-pulse::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    border: 2px solid rgba(229,57,53,0.5);
-    animation: pulse-ring 2s infinite;
-  }
-  .emerg-pulse::after { animation-delay: 0.5s; }
-
-  @keyframes pulse-ring {
-    0% { transform: scale(1); opacity: 1; }
-    100% { transform: scale(1.8); opacity: 0; }
-  }
-
-  .emerg-title { font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
-  .emerg-sub { font-size: 14px; color: var(--muted); line-height: 1.5; }
-
-  .emerg-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    padding: 0 24px;
-    margin-bottom: 20px;
-  }
-
-  .emerg-btn {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 20px 14px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-    text-align: center;
-    line-height: 1.3;
-  }
-  .emerg-btn:hover { border-color: var(--red); background: rgba(229,57,53,0.08); }
-  .emerg-btn-icon { font-size: 28px; }
-
-  .emerg-partner {
-    margin: 0 24px;
-    padding: 16px 20px;
-    background: rgba(229,57,53,0.12);
-    border-radius: 16px;
-    border: 1px solid rgba(229,57,53,0.4);
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    cursor: pointer;
-  }
-
-  .partner-avatar {
-    width: 44px; height: 44px;
-    background: linear-gradient(135deg, #1A237E, #5C6BC0);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
-  }
-
-  .partner-name { font-size: 14px; font-weight: 700; color: var(--text); }
-  .partner-role { font-size: 12px; color: var(--muted); }
-  .partner-call { margin-left: auto; font-size: 22px; }
-
-  /* GAMIFICATION */
-  .level-card {
-    margin: 0 24px 20px;
-    background: linear-gradient(135deg, rgba(255,193,7,0.15) 0%, rgba(255,152,0,0.1) 100%);
-    border-radius: 20px;
-    border: 1px solid rgba(255,193,7,0.25);
-    padding: 20px;
-  }
-
-  .level-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 14px;
-  }
-
-  .level-name { font-size: 18px; font-weight: 700; color: #FFC107; }
-  .level-num { font-size: 12px; color: var(--muted); margin-top: 2px; }
-  .level-xp-total { font-size: 24px; font-weight: 800; color: var(--text); text-align: right; }
-  .level-xp-label { font-size: 10px; color: var(--muted); text-align: right; margin-top: 1px; }
-
-  .xp-bar {
-    height: 8px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 8px;
-    overflow: hidden;
-    margin-bottom: 8px;
-  }
-  .xp-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #FF8F00, #FFC107);
-    border-radius: 8px;
-    width: 68%;
-  }
-
-  .xp-info { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
-
+:root {
+  --green: #4CAF50;
+  --green-dark: #2E7D32;
+  --red: #E53935;
+  --yellow: #FFC107;
+  --bg: #0A0A0F;
+  --surface: #111118;
+  --card: #17171F;
+  --card2: #1E1E28;
+  --border: rgba(255,255,255,0.07);
+  --text: #F0F0F5;
+  --muted: #7A7A9A;
+  --accent: #6EE7B7;
+  --sidebar-w: 240px;
+  --max-w: 860px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html, body {
+  height: 100%;
+  font-family: 'Sora', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+
+/* ===================== LAYOUT ===================== */
+#app {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* SIDEBAR — desktop */
+#sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 28px 0 24px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  transition: transform 0.3s ease;
+  z-index: 200;
+}
+#sidebar::-webkit-scrollbar { display:none; }
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px 28px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.logo-icon {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--green-dark), var(--green));
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 4px 16px rgba(76,175,80,.35);
+  flex-shrink: 0;
+}
+.logo-text { font-size: 18px; font-weight: 800; color: var(--text); letter-spacing: -.5px; }
+.logo-tag { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+.nav-group-label {
+  font-size: 10px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1.5px;
+  padding: 0 20px; margin-bottom: 6px; margin-top: 14px;
+}
+
+.nav-link {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 20px;
+  font-size: 13px; font-weight: 600; color: var(--muted);
+  cursor: pointer; transition: all .18s; border-radius: 0;
+  border-left: 3px solid transparent;
+}
+.nav-link:hover { color: var(--text); background: rgba(255,255,255,.04); }
+.nav-link.active { color: var(--green); background: rgba(76,175,80,.08); border-left-color: var(--green); }
+.nav-link svg { width: 18px; height: 18px; flex-shrink: 0; }
+.nav-link .nl-badge {
+  margin-left: auto; font-size: 10px; font-weight: 700;
+  padding: 2px 7px; border-radius: 10px;
+  background: rgba(76,175,80,.15); color: var(--green);
+}
+
+.sidebar-user {
+  margin-top: auto;
+  padding: 16px 20px 0;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.su-av {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--green-dark), var(--green));
+  border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-size: 16px; flex-shrink: 0;
+}
+.su-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.su-plan { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+/* MAIN AREA */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* TOP BAR — desktop */
+#topbar {
+  height: 60px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  flex-shrink: 0;
+}
+.topbar-title { font-size: 16px; font-weight: 700; color: var(--text); }
+.topbar-actions { display: flex; align-items: center; gap: 12px; }
+.topbar-btn {
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: none;
+  font-size: 13px; font-weight: 700;
+  font-family: 'Sora', sans-serif;
+  cursor: pointer; transition: all .18s;
+}
+.tb-emg { background: rgba(229,57,53,.15); color: var(--red); border: 1px solid rgba(229,57,53,.3); }
+.tb-emg:hover { background: rgba(229,57,53,.25); }
+.tb-checkin { background: var(--green); color: #fff; box-shadow: 0 4px 14px rgba(76,175,80,.35); }
+.tb-checkin:hover { filter: brightness(1.1); }
+.hamburger { display: none; background: none; border: none; cursor: pointer; color: var(--text); }
+
+/* CONTENT */
+#content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.1) transparent;
+}
+#content::-webkit-scrollbar { width: 4px; }
+#content::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 4px; }
+
+/* SCREENS */
+.screen { display: none; min-height: 100%; }
+.screen.active { display: block; animation: fadeIn .25s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+/* PAGE WRAPPER — centrado no desktop */
+.page {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 32px 28px 60px;
+}
+
+/* BOTTOM NAV — mobile only */
+#bottom-nav {
+  display: none;
+  height: 64px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  justify-content: space-around;
+  align-items: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 100;
+}
+.bn-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 3px; cursor: pointer; opacity: .38; transition: opacity .2s;
+  font-size: 9px; color: var(--text); font-weight: 600;
+  letter-spacing: .3px; padding: 6px 12px;
+}
+.bn-item.active { opacity: 1; color: var(--green); }
+.bn-item svg { width: 22px; height: 22px; }
+
+/* MOBILE OVERLAY */
+#sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.6);
+  z-index: 190;
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 768px) {
+  #sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    transform: translateX(-100%);
+    z-index: 200;
+  }
+  #sidebar.open { transform: translateX(0); }
+  #sidebar-overlay.show { display: block; }
+  #topbar { padding: 0 16px; }
+  .hamburger { display: flex; }
+  #bottom-nav { display: flex; }
+  .page { padding: 20px 16px 80px; }
+  .topbar-actions .topbar-btn { display: none; }
+}
+
+/* ===================== COMPONENTS ===================== */
+.card { background: var(--card); border-radius: 16px; border: 1px solid var(--border); padding: 20px; }
+.card-sm { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 16px; }
+.pbar { height: 6px; background: rgba(255,255,255,.07); border-radius: 6px; overflow: hidden; }
+.pfill { height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--green-dark), var(--green)); }
+
+.btn { padding: 14px 24px; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; font-family: 'Sora',sans-serif; cursor: pointer; transition: all .18s; }
+.btn-green { background: var(--green); color: #fff; box-shadow: 0 6px 20px rgba(76,175,80,.3); }
+.btn-green:hover { filter: brightness(1.1); }
+.btn-block { width: 100%; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-gold { background: linear-gradient(135deg,#FF8F00,#FFC107); color: #000; }
+
+.page-title { font-size: 26px; font-weight: 800; color: var(--text); letter-spacing: -.5px; line-height: 1.2; margin-bottom: 6px; }
+.page-sub { font-size: 14px; color: var(--muted); line-height: 1.5; margin-bottom: 28px; }
+.sec-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
+.back-row { display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--muted); font-size: 13px; margin-bottom: 20px; transition: color .2s; }
+.back-row:hover { color: var(--text); }
+.back-row svg { width: 18px; height: 18px; }
+
+.badge { display: inline-flex; align-items: center; gap: 3px; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; }
+.badge-g { background: rgba(76,175,80,.15); color: var(--green); border: 1px solid rgba(76,175,80,.3); }
+.badge-y { background: rgba(255,193,7,.15); color: var(--yellow); border: 1px solid rgba(255,193,7,.3); }
+.badge-acc { background: rgba(110,231,183,.12); color: var(--accent); border: 1px solid rgba(110,231,183,.25); }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.grid4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+.fcol { display: flex; flex-direction: column; }
+.gap8 { gap: 8px; } .gap12 { gap: 12px; } .gap16 { gap: 16px; } .gap20 { gap: 20px; }
+
+@media (max-width: 600px) {
+  .grid2, .grid3 { grid-template-columns: 1fr; }
+  .grid4 { grid-template-columns: 1fr 1fr; }
+  .page-title { font-size: 22px; }
+}
+
+/* ===================== DASHBOARD ===================== */
+.hero-card {
+  background: linear-gradient(135deg, rgba(46,125,50,.5), rgba(15,35,20,.8));
+  border-radius: 20px;
+  border: 1px solid rgba(76,175,80,.3);
+  padding: 36px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-card::before {
+  content: '';
+  position: absolute; top: -60px; right: -60px;
+  width: 220px; height: 220px;
+  background: radial-gradient(circle, rgba(76,175,80,.2), transparent 70%);
+  border-radius: 50%;
+}
+.hero-days { font-size: 80px; font-weight: 800; color: var(--text); line-height: 1; letter-spacing: -4px; text-shadow: 0 0 40px rgba(76,175,80,.5); }
+.hero-lbl { font-size: 12px; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 6px; margin-bottom: 20px; }
+.hero-stats { display: flex; gap: 28px; }
+.hs { display: flex; flex-direction: column; gap: 2px; }
+.hs-val { font-size: 20px; font-weight: 700; color: var(--text); }
+.hs-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+.hero-right { flex-shrink: 0; text-align: center; }
+.hero-badge { font-size: 13px; font-weight: 700; color: var(--yellow); margin-bottom: 8px; }
+.hero-level { font-size: 48px; font-weight: 800; color: var(--text); line-height: 1; }
+.hero-lvl-lbl { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+@media (max-width: 600px) {
+  .hero-card { flex-direction: column; padding: 24px 20px; }
+  .hero-days { font-size: 60px; }
+  .hero-right { display: none; }
+}
+
+.motiv { padding: 14px 18px; background: rgba(110,231,183,.06); border-radius: 12px; border: 1px solid rgba(110,231,183,.15); display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--accent); font-style: italic; line-height: 1.5; margin-bottom: 24px; }
+
+.quick-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+.qa { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px 12px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; line-height: 1.3; transition: all .2s; }
+.qa:hover { border-color: rgba(255,255,255,.2); color: var(--text); background: var(--card2); }
+.qa-emg { border-color: rgba(229,57,53,.3); background: rgba(229,57,53,.07); color: var(--red); }
+.qa-emg:hover { background: rgba(229,57,53,.14); }
+.qa-ico { font-size: 26px; }
+@media (max-width: 600px) { .quick-grid { grid-template-columns: repeat(2,1fr); } }
+
+.risk-strip { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+.rs-card { background: var(--card); border-radius: 14px; border: 1px solid var(--border); padding: 16px; }
+.rs-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.rs-val { font-size: 17px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 7px; }
+.rdot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.rdot-g { background: var(--green); box-shadow: 0 0 8px var(--green); }
+@media (max-width: 600px) { .risk-strip { grid-template-columns: 1fr 1fr; } }
+
+.xpbar-wrap { background: linear-gradient(135deg,rgba(255,193,7,.15),rgba(255,152,0,.08)); border-radius: 16px; border: 1px solid rgba(255,193,7,.2); padding: 20px; }
+.xpbar { height: 8px; background: rgba(255,255,255,.07); border-radius: 8px; overflow: hidden; margin: 10px 0 6px; }
+.xpfill { height: 100%; background: linear-gradient(90deg,#FF8F00,#FFC107); border-radius: 8px; }
+
+/* ===================== CHECK-IN ===================== */
+.emo-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 10px; margin-bottom: 24px; }
+.emo-btn { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px 8px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; font-size: 12px; font-weight: 500; color: var(--muted); transition: all .2s; }
+.emo-btn:hover { border-color: rgba(255,255,255,.2); color: var(--text); }
+.emo-btn.sel { border-color: var(--green); background: rgba(76,175,80,.1); color: var(--text); }
+.emo-icon { font-size: 28px; }
+@media (max-width: 600px) { .emo-grid { grid-template-columns: repeat(3,1fr); } }
+
+.slider-row { margin-bottom: 24px; }
+.slider-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 14px; font-weight: 600; color: var(--text); }
+.slider-val { font-size: 22px; font-weight: 800; color: var(--green); }
+input[type=range] { width: 100%; -webkit-appearance: none; height: 6px; background: rgba(255,255,255,.1); border-radius: 6px; outline: none; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--green); box-shadow: 0 0 12px rgba(76,175,80,.6); cursor: pointer; }
+
+.yn { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+.btn-no { padding: 18px; background: rgba(76,175,80,.15); border: 1.5px solid var(--green); border-radius: 12px; color: var(--green); font-size: 16px; font-weight: 700; font-family: 'Sora',sans-serif; cursor: pointer; transition: all .2s; }
+.btn-no:hover { background: rgba(76,175,80,.25); }
+.btn-yes { padding: 18px; background: rgba(229,57,53,.1); border: 1.5px solid rgba(229,57,53,.5); border-radius: 12px; color: var(--red); font-size: 16px; font-weight: 700; font-family: 'Sora',sans-serif; cursor: pointer; transition: all .2s; }
+.btn-yes:hover { background: rgba(229,57,53,.2); }
+
+/* ===================== EVOLUÇÃO ===================== */
+.stat3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 24px; }
+.stat-card { background: var(--card); border-radius: 14px; border: 1px solid var(--border); padding: 20px; text-align: center; }
+.stat-num { font-size: 32px; font-weight: 800; color: var(--text); line-height: 1; }
+.stat-unit { font-size: 11px; font-weight: 700; margin-top: 3px; }
+.stat-desc { font-size: 10px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: .5px; }
+@media (max-width: 500px) { .stat3 { grid-template-columns: repeat(3,1fr); } .stat-num { font-size: 24px; } }
+
+.bars { display: flex; align-items: flex-end; gap: 6px; height: 100px; }
+.bar-w { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; height: 100%; justify-content: flex-end; }
+.bar-f { width: 100%; border-radius: 6px 6px 0 0; }
+.bar-cl { background: linear-gradient(180deg,var(--green),var(--green-dark)); }
+.bar-rl { background: linear-gradient(180deg,rgba(229,57,53,.8),rgba(229,57,53,.3)); }
+.bar-d { font-size: 10px; color: var(--muted); }
+
+.impr-card { background: var(--card); border-radius: 16px; border: 1px solid rgba(110,231,183,.2); padding: 28px; text-align: center; }
+.impr-pct { font-size: 64px; font-weight: 800; color: var(--accent); letter-spacing: -2px; line-height: 1; text-shadow: 0 0 30px rgba(110,231,183,.4); }
+.insight { padding: 14px 18px; border-radius: 12px; display: flex; gap: 12px; align-items: flex-start; }
+.ins-y { background: rgba(255,193,7,.06); border: 1px solid rgba(255,193,7,.2); }
+.ins-g { background: rgba(76,175,80,.06); border: 1px solid rgba(76,175,80,.2); }
+.ins-title { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.ins-text { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+/* ===================== METAS ===================== */
+.meta-item { background: var(--card); border-radius: 16px; border: 1px solid var(--border); padding: 20px; transition: all .2s; }
+.meta-item.act { border-color: var(--green); background: rgba(76,175,80,.06); }
+.meta-item.done { opacity: .6; }
+.meta-item.lock { opacity: .38; }
+.meta-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.meta-title { font-size: 16px; font-weight: 700; color: var(--text); }
+.meta-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.meta-days { font-size: 24px; font-weight: 800; color: var(--green); letter-spacing: -1px; text-align: right; }
+.meta-dlbl { font-size: 10px; color: var(--muted); text-align: right; text-transform: uppercase; }
+.meta-prog-row { display: flex; align-items: center; gap: 10px; }
+.meta-pct { font-size: 12px; font-weight: 700; color: var(--green); min-width: 34px; }
+
+.ach-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 10px; }
+.ach { background: var(--card); border-radius: 14px; border: 1px solid var(--border); padding: 16px 8px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.ach.unl { border-color: rgba(255,193,7,.4); background: rgba(255,193,7,.05); }
+.ach.lck { opacity: .3; }
+@media (max-width: 600px) { .ach-grid { grid-template-columns: repeat(3,1fr); } }
+
+/* ===================== MENTOR IA ===================== */
+.ia-header { display: flex; align-items: center; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+.ia-av { width: 52px; height: 52px; background: linear-gradient(135deg,#1A237E,#3949AB); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 20px rgba(57,73,171,.5); flex-shrink: 0; }
+.ia-online { font-size: 11px; color: var(--green); display: flex; align-items: center; gap: 4px; }
+.ia-dot { width: 7px; height: 7px; background: var(--green); border-radius: 50%; animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+.chat-box { background: var(--card); border-radius: 16px; border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 16px; min-height: 320px; }
+.bubble { max-width: 75%; padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.55; font-family: 'Inter',sans-serif; }
+.bubble-ai { background: var(--card2); border: 1px solid var(--border); color: var(--text); border-bottom-left-radius: 4px; align-self: flex-start; }
+.bubble-user { background: rgba(76,175,80,.18); border: 1px solid rgba(76,175,80,.3); color: var(--text); border-bottom-right-radius: 4px; align-self: flex-end; }
+.btime { font-size: 10px; color: var(--muted); margin-top: 3px; }
+@media (max-width: 600px) { .bubble { max-width: 90%; } }
+
+.chips-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.chip { padding: 8px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; font-size: 12px; font-family: 'Sora',sans-serif; color: var(--muted); cursor: pointer; transition: all .2s; }
+.chip:hover { border-color: var(--green); color: var(--green); }
+
+.ci-row { display: flex; gap: 10px; }
+.ci-input { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 13px 20px; font-size: 14px; font-family: 'Sora',sans-serif; color: var(--text); outline: none; }
+.ci-input::placeholder { color: var(--muted); }
+.ci-send { width: 50px; height: 50px; background: var(--green); border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; flex-shrink: 0; box-shadow: 0 4px 16px rgba(76,175,80,.4); }
+
+/* ===================== EMERGÊNCIA ===================== */
+#screen-emergencia { background: radial-gradient(ellipse at 50% 25%, rgba(229,57,53,.25) 0%, var(--bg) 55%); }
+.emg-center { max-width: 520px; margin: 0 auto; text-align: center; padding: 40px 28px 60px; }
+.emg-pulse { width: 90px; height: 90px; margin: 0 auto 28px; background: rgba(229,57,53,.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; position: relative; }
+.emg-pulse::before,.emg-pulse::after { content:''; position:absolute; inset:0; border-radius:50%; border:2px solid rgba(229,57,53,.5); animation:pring 2s infinite; }
+.emg-pulse::after { animation-delay:.5s; }
+@keyframes pring { 0%{transform:scale(1);opacity:1} 100%{transform:scale(1.9);opacity:0} }
+.emg-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 520px; margin: 0 auto 20px; }
+.emg-btn { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px 14px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--text); text-align: center; line-height: 1.3; transition: all .2s; }
+.emg-btn:hover { border-color: var(--red); background: rgba(229,57,53,.08); }
+.emg-partner { display: flex; align-items: center; gap: 16px; padding: 18px 20px; background: rgba(229,57,53,.08); border-radius: 14px; border: 1px solid rgba(229,57,53,.3); cursor: pointer; max-width: 520px; margin: 0 auto; }
+.ep-av { width: 48px; height: 48px; background: linear-gradient(135deg,#1A237E,#5C6BC0); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+
+/* ===================== RESPIRAÇÃO ===================== */
+#screen-respiracao { background: radial-gradient(ellipse at 50% 35%, rgba(46,125,50,.3) 0%, var(--bg) 60%); }
+.breath-center { max-width: 480px; margin: 0 auto; text-align: center; padding: 40px 28px 60px; display: flex; flex-direction: column; align-items: center; }
+.br-wrap { position: relative; width: 240px; height: 240px; margin: 0 auto 40px; }
+.br-ring1 { position:absolute; inset:0; border-radius:50%; border:2px solid rgba(76,175,80,.3); animation:brx 4s ease-in-out infinite; }
+.br-ring2 { position:absolute; inset:18px; border-radius:50%; border:2px solid rgba(76,175,80,.5); animation:brx 4s ease-in-out infinite .25s; }
+.br-core { position:absolute; inset:36px; background:radial-gradient(circle,rgba(76,175,80,.28),rgba(46,125,50,.12)); border-radius:50%; border:1.5px solid rgba(76,175,80,.6); display:flex; flex-direction:column; align-items:center; justify-content:center; animation:brx 4s ease-in-out infinite .12s; }
+@keyframes brx { 0%,100%{transform:scale(1);opacity:.7} 50%{transform:scale(1.08);opacity:1} }
+.br-steps { display: flex; gap: 40px; margin-bottom: 36px; }
+.br-step { text-align: center; }
+
+/* ===================== COMUNIDADE ===================== */
+.ctabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.ctab { padding: 7px 16px; border-radius: 20px; background: var(--card); border: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .2s; }
+.ctab.on { background: rgba(76,175,80,.14); border-color: var(--green); color: var(--green); }
+.post { background: var(--card); border-radius: 16px; border: 1px solid var(--border); padding: 20px; }
+.post-av { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.post-act { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--muted); cursor: pointer; transition: color .2s; }
+.post-act:hover { color: var(--text); }
+
+/* ===================== ACADEMIA ===================== */
+.feat-course { border-radius: 18px; overflow: hidden; position: relative; height: 180px; background: linear-gradient(135deg,#1A237E,#283593); border: 1px solid rgba(63,81,181,.4); cursor: pointer; display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; }
+.feat-emoji { position: absolute; top: 20px; right: 24px; font-size: 60px; opacity: .6; }
+.course-item { display: flex; align-items: center; gap: 16px; background: var(--card); border-radius: 14px; border: 1px solid var(--border); padding: 16px; cursor: pointer; transition: all .2s; }
+.course-item:hover { border-color: rgba(255,255,255,.15); background: var(--card2); }
+.course-thumb { width: 54px; height: 54px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+
+/* ===================== PERFIL ===================== */
+.profile-hero { background: linear-gradient(135deg, rgba(46,125,50,.2), rgba(15,20,15,.5)); border-radius: 20px; border: 1px solid rgba(76,175,80,.2); padding: 32px; display: flex; align-items: center; gap: 28px; margin-bottom: 24px; }
+.pf-av { width: 88px; height: 88px; background: linear-gradient(135deg,var(--green-dark),var(--green)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; border: 3px solid rgba(76,175,80,.4); flex-shrink: 0; }
+.pf-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
+.pf-stat { background: var(--card); border-radius: 14px; border: 1px solid var(--border); padding: 16px; text-align: center; }
+.pf-sv { font-size: 22px; font-weight: 800; color: var(--text); }
+.pf-sk { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-top: 3px; }
+@media (max-width: 600px) {
+  .profile-hero { flex-direction: column; text-align: center; }
+  .pf-stats { grid-template-columns: repeat(2,1fr); }
+}
+
+.menu-row { display: flex; align-items: center; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--border); cursor: pointer; transition: all .2s; }
+.menu-row:last-child { border-bottom: none; }
+.menu-row:hover { opacity: .8; }
+.menu-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+
+/* ===================== ADMIN ===================== */
+.kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
+.kpi-card { background: var(--card); border-radius: 14px; border: 1px solid var(--border); padding: 18px; }
+.rev-card { background: linear-gradient(135deg,rgba(76,175,80,.2),rgba(46,125,50,.1)); border-radius: 16px; border: 1px solid rgba(76,175,80,.25); padding: 24px; margin-bottom: 24px; }
+.mbars { display: flex; align-items: flex-end; gap: 6px; height: 70px; }
+.mbar { flex: 1; border-radius: 5px 5px 0 0; }
+.user-row { display: flex; align-items: center; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--border); }
+.user-row:last-child { border-bottom: none; }
+.alert-row { padding: 12px 16px; border-radius: 10px; font-size: 13px; color: var(--text); display: flex; gap: 10px; align-items: center; }
+.al-r { background: rgba(229,57,53,.08); border: 1px solid rgba(229,57,53,.2); }
+.al-y { background: rgba(255,193,7,.06); border: 1px solid rgba(255,193,7,.15); }
+.al-g { background: rgba(76,175,80,.06); border: 1px solid rgba(76,175,80,.15); }
+@media (max-width: 700px) { .kpi-grid { grid-template-columns: repeat(2,1fr); } }
+
+/* ===================== TOGGLE ===================== */
+.toggle { width: 42px; height: 24px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; padding: 3px; transition: background .2s; flex-shrink: 0; }
+.toggle.on { background: var(--green); justify-content: flex-end; }
+.toggle.off { background: rgba(255,255,255,.1); justify-content: flex-start; }
+.toggle-knob { width: 18px; height: 18px; border-radius: 50%; background: #fff; }
+
+/* ===================== SPLASH ===================== */
+#screen-splash {
+  background: radial-gradient(ellipse at 50% 35%, rgba(46,125,50,.35) 0%, transparent 65%), var(--bg);
+  display: flex; align-items: center; justify-content: center; min-height: 100vh;
+}
+.splash-inner { text-align: center; padding: 40px; }
+.splash-logo { width: 96px; height: 96px; background: linear-gradient(135deg,var(--green-dark),var(--green)); border-radius: 32px; display: flex; align-items: center; justify-content: center; font-size: 44px; margin: 0 auto 32px; box-shadow: 0 20px 60px rgba(76,175,80,.45); }
+.dots { display: flex; gap: 8px; justify-content: center; margin-top: 48px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(76,175,80,.3); animation: dp 1.5s infinite; }
+.dot:nth-child(2){animation-delay:.2s} .dot:nth-child(3){animation-delay:.4s}
+@keyframes dp { 0%,100%{transform:scale(1);opacity:.3} 50%{transform:scale(1.4);opacity:1;background:var(--green)} }
+
+/* ===================== ONBOARDING ===================== */
+.ob-card { max-width: 540px; margin: 0 auto; }
+.ob-opt { display: flex; align-items: center; gap: 16px; padding: 18px 20px; background: var(--card); border-radius: 14px; border: 1px solid var(--border); cursor: pointer; transition: all .2s; font-size: 14px; font-weight: 500; color: var(--text); }
+.ob-opt:hover { border-color: rgba(255,255,255,.2); background: var(--card2); }
+.ob-opt.sel { border-color: var(--green); background: rgba(76,175,80,.09); }
 </style>
 </head>
 <body>
 
-<div class="phone-wrapper">
-  <div class="phone" id="phone">
+<div id="app">
 
-    <!-- ======= SPLASH ======= -->
-    <div class="screen active" id="screen-splash">
-      <div class="status-bar">
-        <span>9:41</span>
-        <div class="status-icons">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
-          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="12"><rect x="1" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="3" y="8" width="12" height="8" rx="1" fill="currentColor"/><path d="M22 10v4c1.1-.55 1.1-3.45 0-4z"/></svg>
-        </div>
-      </div>
-
-      <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 60px 40px;">
-        <div class="splash-logo">🌱</div>
-        <div class="splash-name">Recomeço</div>
-        <div class="splash-tagline">Um dia de cada vez.</div>
-        <div class="splash-dots">
-          <div class="splash-dot"></div>
-          <div class="splash-dot"></div>
-          <div class="splash-dot"></div>
-        </div>
-      </div>
-
-      <div style="padding: 40px; text-align:center;">
-        <p style="font-size:11px; color:var(--muted); letter-spacing:0.5px;">Construindo uma vida melhor</p>
-      </div>
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🌱</div>
+      <div><div class="logo-text">Recomeço</div><div class="logo-tag">Recuperação Comportamental</div></div>
     </div>
 
-    <!-- ======= ONBOARDING ======= -->
-    <div class="screen" id="screen-onboarding">
-      <div class="status-bar" style="padding-top:14px;">
-        <span>9:41</span>
-        <div class="status-icons">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
-          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="12"><rect x="1" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="3" y="8" width="12" height="8" rx="1" fill="currentColor"/><path d="M22 10v4c1.1-.55 1.1-3.45 0-4z"/></svg>
-        </div>
-      </div>
-
-      <div class="onboarding-header">
-        <div class="ob-step">Passo 2 de 4</div>
-        <div class="progress-bar" style="margin-bottom:20px;"><div class="progress-fill" style="width:50%"></div></div>
-        <div class="screen-title">Qual sua<br>motivação principal?</div>
-        <div class="screen-sub" style="margin-top:8px;">Isso nos ajuda a personalizar sua jornada.</div>
-      </div>
-
-      <div class="ob-options">
-        <div class="ob-option selected" onclick="selectOpt(this)">
-          <span class="ob-icon">💑</span>
-          <span>Melhorar meu relacionamento</span>
-        </div>
-        <div class="ob-option" onclick="selectOpt(this)">
-          <span class="ob-icon">🧠</span>
-          <span>Saúde mental e foco</span>
-        </div>
-        <div class="ob-option" onclick="selectOpt(this)">
-          <span class="ob-icon">✝️</span>
-          <span>Espiritualidade</span>
-        </div>
-        <div class="ob-option" onclick="selectOpt(this)">
-          <span class="ob-icon">⚡</span>
-          <span>Produtividade</span>
-        </div>
-        <div class="ob-option" onclick="selectOpt(this)">
-          <span class="ob-icon">💪</span>
-          <span>Autocontrole</span>
-        </div>
-      </div>
-
-      <div style="padding: 0 24px;">
-        <button class="btn-primary">Continuar →</button>
-      </div>
+    <div class="nav-group-label">Principal</div>
+    <div class="nav-link active" onclick="goTo('dashboard')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-link" onclick="goTo('checkin')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Check-in Diário
+      <span class="nl-badge">Hoje</span>
+    </div>
+    <div class="nav-link" onclick="goTo('evolucao')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>
+      Evolução
+    </div>
+    <div class="nav-link" onclick="goTo('metas')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+      Metas & Conquistas
     </div>
 
-    <!-- ======= DASHBOARD ======= -->
-    <div class="screen" id="screen-dashboard">
-      <div class="status-bar" style="padding-top:14px;">
-        <span>9:41</span>
-        <div class="status-icons">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
-          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="12"><rect x="1" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="3" y="8" width="12" height="8" rx="1" fill="currentColor"/><path d="M22 10v4c1.1-.55 1.1-3.45 0-4z"/></svg>
-        </div>
-      </div>
-
-      <div class="dash-header">
-        <div class="user-greeting">
-          <div class="greeting-sub">Bom dia 👋</div>
-          <div class="greeting-name">João Paulo</div>
-        </div>
-        <div class="header-avatar">
-          😊
-          <div class="header-notif"></div>
-        </div>
-      </div>
-
-      <!-- COUNTER -->
-      <div class="counter-card">
-        <div class="counter-days">27</div>
-        <div class="counter-label">dias de progresso</div>
-        <div class="counter-meta">
-          <div class="counter-stat">
-            <div class="counter-stat-val">42</div>
-            <div class="counter-stat-lbl">Recorde</div>
-          </div>
-          <div class="counter-divider"></div>
-          <div class="counter-stat">
-            <div class="counter-stat-val">87%</div>
-            <div class="counter-stat-lbl">Sucesso</div>
-          </div>
-          <div class="counter-divider"></div>
-          <div class="counter-stat">
-            <div class="counter-stat-val">Lvl 4</div>
-            <div class="counter-stat-lbl">Nível</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- MOTIVATIONAL -->
-      <div class="motivational">
-        <span class="motivational-icon">✨</span>
-        <span>"Você está melhor que 87% das pessoas que iniciam a jornada."</span>
-      </div>
-
-      <!-- RISK ROW -->
-      <div class="risk-row">
-        <div class="risk-card">
-          <div class="risk-label">Risco hoje</div>
-          <div class="risk-value">
-            <div class="risk-dot low"></div>
-            Baixo
-          </div>
-        </div>
-        <div class="risk-card">
-          <div class="risk-label">Humor</div>
-          <div class="risk-value" style="font-size:22px;">😊 7/10</div>
-        </div>
-      </div>
-
-      <!-- QUICK ACTIONS -->
-      <div class="quick-actions">
-        <div class="qa-btn" onclick="goTo('checkin')">
-          <span class="qa-btn-icon">📋</span>
-          Check-in diário
-        </div>
-        <div class="qa-btn" onclick="goTo('ia')">
-          <span class="qa-btn-icon">🤖</span>
-          Mentor IA
-        </div>
-        <div class="qa-btn emergency" onclick="goTo('emergencia')">
-          <span class="qa-btn-icon">🚨</span>
-          Emergência
-        </div>
-      </div>
-
-      <!-- META PROGRESS -->
-      <div class="progress-card">
-        <div class="progress-header">
-          <div>
-            <div class="progress-title">Meta: 30 dias</div>
-            <div class="progress-sub">3 dias restantes</div>
-          </div>
-          <div class="progress-pct">90%</div>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill" style="width:90%"></div>
-        </div>
-      </div>
-
-      <!-- LEVEL -->
-      <div class="level-card">
-        <div class="level-row">
-          <div>
-            <div class="level-name">🏆 Constância</div>
-            <div class="level-num">Nível 4</div>
-          </div>
-          <div>
-            <div class="level-xp-total">2.340</div>
-            <div class="level-xp-label">XP Total</div>
-          </div>
-        </div>
-        <div class="xp-bar"><div class="xp-fill"></div></div>
-        <div class="xp-info">
-          <span>340 XP para o próximo nível</span>
-          <span>68%</span>
-        </div>
-      </div>
-
-      <!-- BOTTOM NAV -->
-      <div class="bottom-nav">
-        <div class="nav-item active">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-          Início
-        </div>
-        <div class="nav-item" onclick="goTo('evolucao')">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>
-          Evolução
-        </div>
-        <div class="nav-item" onclick="goTo('metas')">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-          Metas
-        </div>
-        <div class="nav-item" onclick="goTo('ia')">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
-          Mentor
-        </div>
-        <div class="nav-item">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-          Perfil
-        </div>
-      </div>
+    <div class="nav-group-label">Suporte</div>
+    <div class="nav-link" onclick="goTo('ia')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+      Mentor IA
+    </div>
+    <div class="nav-link" onclick="goTo('emergencia')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+      Modo Emergência
+    </div>
+    <div class="nav-link" onclick="goTo('respiracao')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm0 18a8 8 0 110-16 8 8 0 010 16zm-1-5h2v2h-2zm0-8h2v6h-2z"/></svg>
+      Respiração Guiada
     </div>
 
-    <!-- ======= CHECK-IN ======= -->
-    <div class="screen" id="screen-checkin">
-      <div class="status-bar" style="padding-top:14px;">
-        <span>9:41</span>
-        <div class="status-icons">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
-          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="12"><rect x="1" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="3" y="8" width="12" height="8" rx="1" fill="currentColor"/><path d="M22 10v4c1.1-.55 1.1-3.45 0-4z"/></svg>
-        </div>
-      </div>
-
-      <div class="checkin-header">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px; cursor:pointer;" onclick="goTo('dashboard')">
-          <svg fill="currentColor" viewBox="0 0 24 24" width="20" height="20" style="color:var(--muted)"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-          <span style="font-size:13px; color:var(--muted);">Voltar</span>
-        </div>
-        <div class="screen-title">Check-in diário</div>
-        <div class="screen-sub" style="margin-top:6px;">Terça-feira, 27 de maio</div>
-      </div>
-
-      <div class="section">
-        <p style="font-size:14px; font-weight:600; color:var(--text); margin-bottom:12px;">Como você está se sentindo?</p>
-      </div>
-
-      <div class="emotions-grid">
-        <div class="emotion-btn selected" onclick="toggleEmotion(this)">
-          <span class="emotion-emoji">😊</span> Feliz
-        </div>
-        <div class="emotion-btn" onclick="toggleEmotion(this)">
-          <span class="emotion-emoji">😰</span> Ansioso
-        </div>
-        <div class="emotion-btn" onclick="toggleEmotion(this)">
-          <span class="emotion-emoji">😔</span> Triste
-        </div>
-        <div class="emotion-btn" onclick="toggleEmotion(this)">
-          <span class="emotion-emoji">😴</span> Cansado
-        </div>
-        <div class="emotion-btn" onclick="toggleEmotion(this)">
-          <span class="emotion-emoji">😡</span> Irritado
-        </div>
-        <div class="emotion-btn selected" onclick="toggleEmotion(this)">
-          <span class="emotion-emoji">💪</span> Motivado
-        </div>
-      </div>
-
-      <div class="slider-section">
-        <div class="slider-label">
-          Nível de ansiedade
-          <span class="slider-val" id="slider-val">3</span>
-        </div>
-        <input type="range" min="0" max="10" value="3" oninput="document.getElementById('slider-val').textContent=this.value">
-      </div>
-
-      <div class="checkin-question">
-        <div class="checkin-q-text">Você consumiu pornografia hoje?</div>
-        <div class="yn-buttons">
-          <button class="btn-no">✓ Não</button>
-          <button class="btn-yes">✗ Sim</button>
-        </div>
-      </div>
-
-      <div style="padding: 0 24px;">
-        <button class="btn-primary" onclick="goTo('dashboard')">Salvar check-in</button>
-      </div>
-
-      <div class="bottom-nav">
-        <div class="nav-item" onclick="goTo('dashboard')">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-          Início
-        </div>
-        <div class="nav-item" onclick="goTo('evolucao')">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>
-          Evolução
-        </div>
-        <div class="nav-item active">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-          Check-in
-        </div>
-        <div class="nav-item" onclick="goTo('ia')">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
-          Mentor
-        </div>
-        <div class="nav-item">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-          Perfil
-        </div>
-      </div>
+    <div class="nav-group-label">Comunidade</div>
+    <div class="nav-link" onclick="goTo('comunidade')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      Comunidade
+    </div>
+    <div class="nav-link" onclick="goTo('academia')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1z"/></svg>
+      Academia
     </div>
 
-    <!-- ======= EVOLUÇÃO ======= -->
-    <div class="screen" id="screen-evolucao">
-      <div class="status-bar" style="padding-top:14px;">
-        <span>9:41</span>
-        <div class="status-icons">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
-          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="12"><rect x="1" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="3" y="8" width="12" height="8" rx="1" fill="currentColor"/><path d="M22 10v4c1.1-.55 1.1-3.45 0-4z"/></svg>
-        </div>
-      </div>
-
-      <div class="evolucao-header">
-        <div class="screen-title">Sua Evolução</div>
-        <div class="screen-sub" style="margin-top:6px;">Maio 2025</div>
-      </div>
-
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-number">27</div>
-          <div class="stat-unit">dias</div>
-          <div class="stat-desc">Limpos</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">87%</div>
-          <div class="stat-unit" style="color: var(--accent);">taxa</div>
-          <div class="stat-desc">Sucesso</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">3</div>
-          <div class="stat-unit" style="color: var(--red);">vezes</div>
-          <div class="stat-desc">Recaídas</div>
-        </div>
-      </div>
-
-      <!-- CHART -->
-      <div class="chart-card">
-        <div class="chart-title">Últimos 7 dias</div>
-        <div class="chart-period">27 mai — 2 jun</div>
-        <div class="chart-bars">
-          <div class="bar-item">
-            <div class="bar-fill clean" style="height:100%"></div>
-            <div class="bar-day">Seg</div>
-          </div>
-          <div class="bar-item">
-            <div class="bar-fill clean" style="height:100%"></div>
-            <div class="bar-day">Ter</div>
-          </div>
-          <div class="bar-item">
-            <div class="bar-fill relapse" style="height:30%"></div>
-            <div class="bar-day">Qua</div>
-          </div>
-          <div class="bar-item">
-            <div class="bar-fill clean" style="height:100%"></div>
-            <div class="bar-day">Qui</div>
-          </div>
-          <div class="bar-item">
-            <div class="bar-fill clean" style="height:100%"></div>
-            <div class="bar-day">Sex</div>
-          </div>
-          <div class="bar-item">
-            <div class="bar-fill clean" style="height:100%"></div>
-            <div class="bar-day">Sáb</div>
-          </div>
-          <div class="bar-item">
-            <div class="bar-fill clean" style="height:100%"></div>
-            <div class="bar-day">Dom</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- IMPROVEMENT -->
-      <div class="improvement-card">
-        <div class="improvement-pct">90%</div>
-        <div class="improvement-label">de melhoria</div>
-        <div class="improvement-sub">Antes: ~30x/mês &nbsp;→&nbsp; Hoje: 3x/mês</div>
-      </div>
-
-      <!-- INSIGHT -->
-      <div class="insight-card">
-        <span class="insight-icon">⚠️</span>
-        <div>
-          <div class="insight-title">Padrão detectado</div>
-          <div class="insight-text">78% das recaídas ocorreram entre 22h e 01h. Considere uma rotina noturna saudável.</div>
-        </div>
-      </div>
-
-      <div class="insight-card" style="border-color: rgba(76,175,80,0.2); background: rgba(76,175,80,0.06);">
-        <span class="insight-icon">📱</span>
-        <div>
-          <div class="insight-title" style="color: var(--green);">Gatilho principal</div>
-          <div class="insight-text">65% das recaídas ocorreram após uso intenso de redes sociais.</div>
-        </div>
-      </div>
-
-      <div class="bottom-nav">
-        <div class="nav-item" onclick="goTo('dashboard')">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-          Início
-        </div>
-        <div class="nav-item active">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>
-          Evolução
-        </div>
-        <div class="nav-item" onclick="goTo('metas')">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-          Metas
-        </div>
-        <div class="nav-item" onclick="goTo('ia')">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
-          Mentor
-        </div>
-        <div class="nav-item">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-          Perfil
-        </div>
-      </div>
+    <div class="nav-group-label">Conta</div>
+    <div class="nav-link" onclick="goTo('perfil')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      Perfil
+    </div>
+    <div class="nav-link" onclick="goTo('premium')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+      Premium
+      <span class="nl-badge">FREE</span>
+    </div>
+    <div class="nav-link" onclick="goTo('admin')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      Admin
     </div>
 
-    <!-- ======= METAS ======= -->
-    <div class="screen" id="screen-metas">
-      <div class="status-bar" style="padding-top:14px;">
-        <span>9:41</span>
-        <div class="status-icons"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="12"><rect x="1" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="3" y="8" width="12" height="8" rx="1" fill="currentColor"/><path d="M22 10v4c1.1-.55 1.1-3.45 0-4z"/></svg></div>
-      </div>
-
-      <div class="metas-header">
-        <div class="screen-title">Sua Jornada</div>
-        <div class="screen-sub" style="margin-top:6px;">Conquiste uma meta de cada vez.</div>
-      </div>
-
-      <div class="meta-item completed-meta">
-        <div class="meta-top">
-          <div>
-            <div class="meta-title">✅ Primeira Semana</div>
-            <div class="meta-desc">Concluída · 100%</div>
-          </div>
-          <div>
-            <div class="meta-badge-days">7</div>
-            <div class="meta-badge-label">dias</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="meta-item completed-meta">
-        <div class="meta-top">
-          <div>
-            <div class="meta-title">✅ Duas Semanas</div>
-            <div class="meta-desc">Concluída · 100%</div>
-          </div>
-          <div>
-            <div class="meta-badge-days">14</div>
-            <div class="meta-badge-label">dias</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="meta-item active-meta">
-        <div class="meta-top">
-          <div>
-            <div class="meta-title">🎯 Um Mês</div>
-            <div class="meta-desc">Em andamento · 3 dias restantes</div>
-          </div>
-          <div>
-            <div class="meta-badge-days">30</div>
-            <div class="meta-badge-label">dias</div>
-          </div>
-        </div>
-        <div class="meta-progress-row">
-          <div class="progress-bar" style="flex:1">
-            <div class="progress-fill" style="width:90%"></div>
-          </div>
-          <div class="meta-pct">90%</div>
-        </div>
-      </div>
-
-      <div class="meta-item" style="opacity:0.5">
-        <div class="meta-top">
-          <div>
-            <div class="meta-title">🔒 Dois Meses</div>
-            <div class="meta-desc">Bloqueado até concluir 30 dias</div>
-          </div>
-          <div>
-            <div class="meta-badge-days" style="color:var(--muted)">60</div>
-            <div class="meta-badge-label">dias</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="meta-item" style="opacity:0.4">
-        <div class="meta-top">
-          <div>
-            <div class="meta-title">🔒 Noventa Dias</div>
-            <div class="meta-desc">Bloqueado</div>
-          </div>
-          <div>
-            <div class="meta-badge-days" style="color:var(--muted)">90</div>
-            <div class="meta-badge-label">dias</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="section" style="margin-top:4px;">
-        <p style="font-size:13px; font-weight:600; color:var(--text); margin-bottom:12px;">Conquistas desbloqueadas</p>
-      </div>
-
-      <div class="achievements-grid">
-        <div class="achievement unlocked">
-          <span class="ach-medal">🥉</span>
-          <div class="ach-title">7 Dias</div>
-          <div class="ach-xp">+100 XP</div>
-        </div>
-        <div class="achievement unlocked">
-          <span class="ach-medal">🥈</span>
-          <div class="ach-title">14 Dias</div>
-          <div class="ach-xp">+200 XP</div>
-        </div>
-        <div class="achievement locked">
-          <span class="ach-medal">🥇</span>
-          <div class="ach-title">30 Dias</div>
-          <div class="ach-xp">+500 XP</div>
-        </div>
-        <div class="achievement locked">
-          <span class="ach-medal">🏆</span>
-          <div class="ach-title">90 Dias</div>
-          <div class="ach-xp">+1000 XP</div>
-        </div>
-        <div class="achievement locked">
-          <span class="ach-medal">💎</span>
-          <div class="ach-title">180 Dias</div>
-          <div class="ach-xp">+2000 XP</div>
-        </div>
-        <div class="achievement locked">
-          <span class="ach-medal">👑</span>
-          <div class="ach-title">365 Dias</div>
-          <div class="ach-xp">+5000 XP</div>
-        </div>
-      </div>
-
-      <div class="bottom-nav">
-        <div class="nav-item" onclick="goTo('dashboard')">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-          Início
-        </div>
-        <div class="nav-item" onclick="goTo('evolucao')">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>
-          Evolução
-        </div>
-        <div class="nav-item active">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-          Metas
-        </div>
-        <div class="nav-item" onclick="goTo('ia')">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
-          Mentor
-        </div>
-        <div class="nav-item">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-          Perfil
-        </div>
-      </div>
+    <div class="sidebar-user">
+      <div class="su-av">😊</div>
+      <div><div class="su-name">João Paulo</div><div class="su-plan">Plano Free · Lv 4</div></div>
     </div>
-
-    <!-- ======= MENTOR IA ======= -->
-    <div class="screen" id="screen-ia">
-      <div class="status-bar" style="padding-top:14px;">
-        <span>9:41</span>
-        <div class="status-icons"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="12"><rect x="1" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="3" y="8" width="12" height="8" rx="1" fill="currentColor"/><path d="M22 10v4c1.1-.55 1.1-3.45 0-4z"/></svg></div>
-      </div>
-
-      <div class="ia-header">
-        <div class="ia-avatar">🤖</div>
-        <div>
-          <div class="ia-name">Mentor IA</div>
-          <div class="ia-status">
-            <div class="ia-online-dot"></div>
-            Online agora
-          </div>
-        </div>
-      </div>
-
-      <div class="chat-area">
-        <div>
-          <div class="chat-bubble bubble-ia">
-            Olá, João! 👋 Você está no dia 27 da sua jornada — isso é incrível. Como você está se sentindo hoje?
-          </div>
-          <div class="bubble-time">09:35</div>
-        </div>
-
-        <div style="align-self:flex-end">
-          <div class="chat-bubble bubble-user">
-            Estou me sentindo bem hoje, mas ontem à noite foi difícil.
-          </div>
-          <div class="bubble-time" style="text-align:right">09:37</div>
-        </div>
-
-        <div>
-          <div class="chat-bubble bubble-ia">
-            Entendo. Percebo que seu horário de maior vulnerabilidade costuma ser após as 22h. O que você estava fazendo quando sentiu a vontade surgir?
-          </div>
-          <div class="bubble-time">09:38</div>
-        </div>
-
-        <div style="align-self:flex-end">
-          <div class="chat-bubble bubble-user">
-            Estava no Instagram, sozinho...
-          </div>
-          <div class="bubble-time" style="text-align:right">09:39</div>
-        </div>
-
-        <div>
-          <div class="chat-bubble bubble-ia">
-            Isso corresponde a um padrão que identificamos: 65% das suas recaídas ocorreram após uso de redes sociais. Que tal criar uma regra: depois das 21h, Instagram desativado? Posso te ajudar a criar um ritual noturno. 🌙
-          </div>
-          <div class="bubble-time">09:41</div>
-        </div>
-      </div>
-
-      <div class="quick-chips">
-        <div class="chip">Estou com vontade agora</div>
-        <div class="chip">Preciso de ajuda</div>
-        <div class="chip">Tive uma recaída</div>
-        <div class="chip">Não consigo dormir</div>
-        <div class="chip">Estou ansioso</div>
-      </div>
-
-      <div class="chat-input-row">
-        <input class="chat-input" type="text" placeholder="Digite uma mensagem...">
-        <button class="send-btn">➤</button>
-      </div>
-
-      <div class="bottom-nav">
-        <div class="nav-item" onclick="goTo('dashboard')">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-          Início
-        </div>
-        <div class="nav-item" onclick="goTo('evolucao')">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>
-          Evolução
-        </div>
-        <div class="nav-item" onclick="goTo('metas')">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-          Metas
-        </div>
-        <div class="nav-item active">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
-          Mentor
-        </div>
-        <div class="nav-item">
-          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-          Perfil
-        </div>
-      </div>
-    </div>
-
-    <!-- ======= EMERGÊNCIA ======= -->
-    <div class="screen" id="screen-emergencia">
-      <div class="status-bar" style="padding-top:14px; color: rgba(255,255,255,0.7);">
-        <span>9:41</span>
-      </div>
-
-      <div class="emerg-header">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:24px; cursor:pointer;" onclick="goTo('dashboard')">
-          <svg fill="currentColor" viewBox="0 0 24 24" width="20" height="20" style="color:rgba(255,255,255,0.4)"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-          <span style="font-size:13px; color:rgba(255,255,255,0.4);">Voltar</span>
-        </div>
-        <div class="emerg-pulse">🆘</div>
-        <div class="emerg-title">Você não está sozinho.</div>
-        <div class="emerg-sub">Respira fundo. Escolha uma das ações abaixo para passar por esse momento.</div>
-      </div>
-
-      <div class="emerg-actions">
-        <div class="emerg-btn">
-          <span class="emerg-btn-icon">🌬️</span>
-          Respiração guiada
-        </div>
-        <div class="emerg-btn">
-          <span class="emerg-btn-icon">🧘</span>
-          Meditação 5 min
-        </div>
-        <div class="emerg-btn">
-          <span class="emerg-btn-icon">🚶</span>
-          Caminhada agora
-        </div>
-        <div class="emerg-btn">
-          <span class="emerg-btn-icon">🎥</span>
-          Vídeo motivacional
-        </div>
-        <div class="emerg-btn" style="grid-column: span 2;" onclick="goTo('ia')">
-          <span class="emerg-btn-icon">🤖</span>
-          Falar com o Mentor IA
-        </div>
-      </div>
-
-      <div class="emerg-partner">
-        <div class="partner-avatar">👨</div>
-        <div>
-          <div class="partner-name">Carlos (irmão)</div>
-          <div class="partner-role">Parceiro de responsabilidade</div>
-        </div>
-        <div class="partner-call">📞</div>
-      </div>
-    </div>
-
   </div>
 
-  <!-- TABS DE NAVEGAÇÃO -->
-  <div class="nav-tabs">
-    <div class="nav-tab active" onclick="goTo('splash')">Splash</div>
-    <div class="nav-tab" onclick="goTo('onboarding')">Onboarding</div>
-    <div class="nav-tab" onclick="goTo('dashboard')">Dashboard</div>
-    <div class="nav-tab" onclick="goTo('checkin')">Check-in</div>
-    <div class="nav-tab" onclick="goTo('evolucao')">Evolução</div>
-    <div class="nav-tab" onclick="goTo('metas')">Metas</div>
-    <div class="nav-tab" onclick="goTo('ia')">Mentor IA</div>
-    <div class="nav-tab" onclick="goTo('emergencia')">Emergência</div>
-  </div>
-</div>
+  <!-- OVERLAY MOBILE -->
+  <div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <!-- MAIN -->
+  <div id="main">
+
+    <!-- TOP BAR -->
+    <div id="topbar">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <button class="hamburger" onclick="toggleSidebar()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        </button>
+        <div class="topbar-title" id="topbar-title">Dashboard</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn tb-emg" onclick="goTo('emergencia')">🚨 Emergência</button>
+        <button class="topbar-btn tb-checkin" onclick="goTo('checkin')">✅ Check-in</button>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div id="content">
+
+      <!-- ===== SPLASH ===== -->
+      <div class="screen active" id="screen-splash">
+        <div class="splash-inner">
+          <div class="splash-logo">🌱</div>
+          <div style="font-size:42px;font-weight:800;color:var(--text);letter-spacing:-1.5px;margin-bottom:10px;">Recomeço</div>
+          <div style="font-size:16px;color:var(--muted);font-weight:300;letter-spacing:.5px;margin-bottom:28px;">Um dia de cada vez.</div>
+          <button class="btn btn-green" style="padding:16px 40px;font-size:15px;" onclick="goTo('dashboard')">Começar minha jornada →</button>
+          <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        </div>
+      </div>
+
+      <!-- ===== ONBOARDING ===== -->
+      <div class="screen" id="screen-onboarding">
+        <div class="page">
+          <div class="ob-card">
+            <div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">PASSO 2 DE 4</div>
+            <div class="pbar" style="margin-bottom:24px;"><div class="pfill" style="width:50%"></div></div>
+            <div class="page-title">Qual sua motivação principal?</div>
+            <div class="page-sub">Isso nos ajuda a personalizar sua jornada de recuperação.</div>
+            <div class="fcol gap12" style="margin-bottom:28px;">
+              <div class="ob-opt sel" onclick="selectOpt(this)"><span style="font-size:24px;">💑</span>Melhorar meu relacionamento</div>
+              <div class="ob-opt" onclick="selectOpt(this)"><span style="font-size:24px;">🧠</span>Saúde mental e foco</div>
+              <div class="ob-opt" onclick="selectOpt(this)"><span style="font-size:24px;">✝️</span>Espiritualidade</div>
+              <div class="ob-opt" onclick="selectOpt(this)"><span style="font-size:24px;">⚡</span>Produtividade</div>
+              <div class="ob-opt" onclick="selectOpt(this)"><span style="font-size:24px;">💪</span>Autocontrole</div>
+            </div>
+            <button class="btn btn-green btn-block" onclick="goTo('dashboard')">Continuar →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== DASHBOARD ===== -->
+      <div class="screen" id="screen-dashboard">
+        <div class="page">
+          <div class="hero-card">
+            <div>
+              <div class="hero-days">27</div>
+              <div class="hero-lbl">dias de progresso</div>
+              <div class="hero-stats">
+                <div class="hs"><div class="hs-val">42</div><div class="hs-lbl">Recorde</div></div>
+                <div class="hs"><div class="hs-val">87%</div><div class="hs-lbl">Sucesso</div></div>
+                <div class="hs"><div class="hs-val">2.340</div><div class="hs-lbl">XP Total</div></div>
+              </div>
+            </div>
+            <div class="hero-right">
+              <div class="hero-badge">🏆 Constância</div>
+              <div class="hero-level">4</div>
+              <div class="hero-lvl-lbl">Nível atual</div>
+            </div>
+          </div>
+
+          <div class="motiv"><span style="font-size:22px;flex-shrink:0">✨</span>"Você está melhor que 87% das pessoas que iniciam a jornada. Continue assim."</div>
+
+          <div class="quick-grid">
+            <div class="qa" onclick="goTo('checkin')"><span class="qa-ico">📋</span>Check-in diário</div>
+            <div class="qa" onclick="goTo('ia')"><span class="qa-ico">🤖</span>Mentor IA</div>
+            <div class="qa" onclick="goTo('respiracao')"><span class="qa-ico">🌬️</span>Respiração guiada</div>
+            <div class="qa qa-emg" onclick="goTo('emergencia')"><span class="qa-ico">🚨</span>Emergência</div>
+          </div>
+
+          <div class="risk-strip">
+            <div class="rs-card"><div class="rs-lbl">Risco hoje</div><div class="rs-val"><div class="rdot rdot-g"></div>Baixo</div></div>
+            <div class="rs-card"><div class="rs-lbl">Humor</div><div class="rs-val" style="font-size:20px;">😊 7/10</div></div>
+            <div class="rs-card"><div class="rs-lbl">Meta atual</div><div class="rs-val" style="font-size:14px;">30 dias · <span style="color:var(--green);">90%</span></div></div>
+          </div>
+
+          <div class="grid2" style="margin-bottom:24px;">
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                <div><div style="font-size:15px;font-weight:700;color:var(--text);">Meta: 30 dias</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">3 dias restantes</div></div>
+                <div style="font-size:22px;font-weight:800;color:var(--green);">90%</div>
+              </div>
+              <div class="pbar"><div class="pfill" style="width:90%"></div></div>
+            </div>
+            <div class="xpbar-wrap">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div><div style="font-size:15px;font-weight:700;color:var(--yellow);">🏆 Constância</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">Nível 4</div></div>
+                <div style="text-align:right;"><div style="font-size:22px;font-weight:800;color:var(--text);">2.340</div><div style="font-size:10px;color:var(--muted);">XP Total</div></div>
+              </div>
+              <div class="xpbar"><div class="xpfill" style="width:68%"></div></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);"><span>340 XP para o próximo nível</span><span>68%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CHECK-IN ===== -->
+      <div class="screen" id="screen-checkin">
+        <div class="page">
+          <div class="page-title">Check-in Diário</div>
+          <div class="page-sub">Terça-feira, 27 de maio de 2025</div>
+          <div class="sec-label">Como você está se sentindo?</div>
+          <div class="emo-grid">
+            <div class="emo-btn sel" onclick="toggleEmotion(this)"><span class="emo-icon">😊</span>Feliz</div>
+            <div class="emo-btn" onclick="toggleEmotion(this)"><span class="emo-icon">😰</span>Ansioso</div>
+            <div class="emo-btn" onclick="toggleEmotion(this)"><span class="emo-icon">😔</span>Triste</div>
+            <div class="emo-btn" onclick="toggleEmotion(this)"><span class="emo-icon">😴</span>Cansado</div>
+            <div class="emo-btn" onclick="toggleEmotion(this)"><span class="emo-icon">😡</span>Irritado</div>
+            <div class="emo-btn sel" onclick="toggleEmotion(this)"><span class="emo-icon">💪</span>Motivado</div>
+          </div>
+          <div class="slider-row">
+            <div class="slider-head"><span>Nível de ansiedade</span><span class="slider-val" id="sval">3</span></div>
+            <input type="range" min="0" max="10" value="3" oninput="document.getElementById('sval').textContent=this.value">
+          </div>
+          <div class="sec-label">Você consumiu pornografia hoje?</div>
+          <div class="yn" style="max-width:400px;">
+            <button class="btn-no">✓ Não</button>
+            <button class="btn-yes">✗ Sim</button>
+          </div>
+          <button class="btn btn-green" style="max-width:320px;" onclick="goTo('dashboard')">Salvar check-in</button>
+        </div>
+      </div>
+
+      <!-- ===== EVOLUÇÃO ===== -->
+      <div class="screen" id="screen-evolucao">
+        <div class="page">
+          <div class="page-title">Sua Evolução</div>
+          <div class="page-sub">Maio 2025 · Você está melhorando todo mês.</div>
+          <div class="stat3">
+            <div class="stat-card"><div class="stat-num">27</div><div class="stat-unit" style="color:var(--green);">dias limpos</div><div class="stat-desc">Este mês</div></div>
+            <div class="stat-card"><div class="stat-num">87%</div><div class="stat-unit" style="color:var(--accent);">taxa de sucesso</div><div class="stat-desc">Geral</div></div>
+            <div class="stat-card"><div class="stat-num">3</div><div class="stat-unit" style="color:var(--red);">recaídas</div><div class="stat-desc">Este mês</div></div>
+          </div>
+          <div class="grid2" style="margin-bottom:20px;">
+            <div class="card">
+              <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;">Últimos 7 dias</div>
+              <div style="font-size:11px;color:var(--muted);margin-bottom:16px;">21–27 mai</div>
+              <div class="bars">
+                <div class="bar-w"><div class="bar-f bar-cl" style="height:100%"></div><div class="bar-d">Seg</div></div>
+                <div class="bar-w"><div class="bar-f bar-cl" style="height:100%"></div><div class="bar-d">Ter</div></div>
+                <div class="bar-w"><div class="bar-f bar-rl" style="height:30%"></div><div class="bar-d">Qua</div></div>
+                <div class="bar-w"><div class="bar-f bar-cl" style="height:100%"></div><div class="bar-d">Qui</div></div>
+                <div class="bar-w"><div class="bar-f bar-cl" style="height:100%"></div><div class="bar-d">Sex</div></div>
+                <div class="bar-w"><div class="bar-f bar-cl" style="height:100%"></div><div class="bar-d">Sáb</div></div>
+                <div class="bar-w"><div class="bar-f bar-cl" style="height:100%"></div><div class="bar-d">Dom</div></div>
+              </div>
+            </div>
+            <div class="impr-card">
+              <div class="impr-pct">90%</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:6px;text-transform:uppercase;letter-spacing:1px;">de melhoria</div>
+              <div style="font-size:13px;color:var(--muted);margin-top:10px;">Antes: ~30x/mês<br>Hoje: 3x/mês</div>
+            </div>
+          </div>
+          <div class="fcol gap12">
+            <div class="insight ins-y"><span style="font-size:20px;flex-shrink:0;">⚠️</span><div><div class="ins-title" style="color:var(--yellow);">Padrão detectado</div><div class="ins-text">78% das recaídas ocorreram entre 22h e 01h. Considere uma rotina noturna saudável.</div></div></div>
+            <div class="insight ins-g"><span style="font-size:20px;flex-shrink:0;">📱</span><div><div class="ins-title" style="color:var(--green);">Gatilho principal</div><div class="ins-text">65% das recaídas ocorreram após uso intenso de redes sociais.</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== METAS ===== -->
+      <div class="screen" id="screen-metas">
+        <div class="page">
+          <div class="page-title">Metas & Conquistas</div>
+          <div class="page-sub">Conquiste uma etapa de cada vez.</div>
+          <div class="fcol gap12" style="margin-bottom:32px;">
+            <div class="meta-item done"><div class="meta-top"><div><div class="meta-title">✅ Primeira Semana</div><div class="meta-sub">Concluída · 100%</div></div><div><div class="meta-days" style="color:var(--accent);">7</div><div class="meta-dlbl">dias</div></div></div></div>
+            <div class="meta-item done"><div class="meta-top"><div><div class="meta-title">✅ Duas Semanas</div><div class="meta-sub">Concluída · 100%</div></div><div><div class="meta-days" style="color:var(--accent);">14</div><div class="meta-dlbl">dias</div></div></div></div>
+            <div class="meta-item act">
+              <div class="meta-top"><div><div class="meta-title">🎯 Um Mês</div><div class="meta-sub">Em andamento · 3 dias restantes</div></div><div><div class="meta-days">30</div><div class="meta-dlbl">dias</div></div></div>
+              <div class="meta-prog-row"><div class="pbar" style="flex:1"><div class="pfill" style="width:90%"></div></div><div class="meta-pct">90%</div></div>
+            </div>
+            <div class="meta-item lock"><div class="meta-top"><div><div class="meta-title">🔒 Dois Meses</div><div class="meta-sub">Bloqueado</div></div><div><div class="meta-days" style="color:var(--muted);">60</div><div class="meta-dlbl">dias</div></div></div></div>
+            <div class="meta-item lock"><div class="meta-top"><div><div class="meta-title">🔒 Noventa Dias</div><div class="meta-sub">Bloqueado</div></div><div><div class="meta-days" style="color:var(--muted);">90</div><div class="meta-dlbl">dias</div></div></div></div>
+            <div class="meta-item lock"><div class="meta-top"><div><div class="meta-title">🔒 Um Ano</div><div class="meta-sub">Bloqueado</div></div><div><div class="meta-days" style="color:var(--muted);">365</div><div class="meta-dlbl">dias</div></div></div></div>
+          </div>
+          <div class="sec-label">Conquistas</div>
+          <div class="ach-grid">
+            <div class="ach unl"><span style="font-size:28px;">🥉</span><div style="font-size:11px;font-weight:600;color:var(--text);">7 Dias</div><div style="font-size:10px;color:var(--yellow);">+100 XP</div></div>
+            <div class="ach unl"><span style="font-size:28px;">🥈</span><div style="font-size:11px;font-weight:600;color:var(--text);">14 Dias</div><div style="font-size:10px;color:var(--yellow);">+200 XP</div></div>
+            <div class="ach lck"><span style="font-size:28px;">🥇</span><div style="font-size:11px;font-weight:600;color:var(--text);">30 Dias</div><div style="font-size:10px;color:var(--yellow);">+500 XP</div></div>
+            <div class="ach lck"><span style="font-size:28px;">🏆</span><div style="font-size:11px;font-weight:600;color:var(--text);">90 Dias</div><div style="font-size:10px;color:var(--yellow);">+1000 XP</div></div>
+            <div class="ach lck"><span style="font-size:28px;">💎</span><div style="font-size:11px;font-weight:600;color:var(--text);">180 Dias</div><div style="font-size:10px;color:var(--yellow);">+2000 XP</div></div>
+            <div class="ach lck"><span style="font-size:28px;">👑</span><div style="font-size:11px;font-weight:600;color:var(--text);">365 Dias</div><div style="font-size:10px;color:var(--yellow);">+5000 XP</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== MENTOR IA ===== -->
+      <div class="screen" id="screen-ia">
+        <div class="page" style="max-width:680px;">
+          <div class="ia-header">
+            <div class="ia-av">🤖</div>
+            <div><div style="font-size:18px;font-weight:700;color:var(--text);">Mentor IA</div><div class="ia-online"><div class="ia-dot"></div>Online agora — pronto para te ajudar</div></div>
+          </div>
+          <div class="chat-box">
+            <div><div class="bubble bubble-ai">Olá, João! 👋 Você está no dia 27 da sua jornada — isso é incrível. Como você está se sentindo hoje?</div><div class="btime">09:35</div></div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;"><div class="bubble bubble-user">Estou bem hoje, mas ontem à noite foi difícil.</div><div class="btime" style="text-align:right;">09:37</div></div>
+            <div><div class="bubble bubble-ai">Entendo. Percebo que seu horário de maior vulnerabilidade costuma ser após as 22h. O que você estava fazendo quando sentiu a vontade surgir?</div><div class="btime">09:38</div></div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;"><div class="bubble bubble-user">Estava no Instagram, sozinho...</div><div class="btime" style="text-align:right;">09:39</div></div>
+            <div><div class="bubble bubble-ai">Isso confirma um padrão: 65% das suas recaídas ocorreram após uso de redes sociais. Que tal desativar o Instagram após as 21h? Posso te ajudar a criar um ritual noturno saudável. 🌙</div><div class="btime">09:41</div></div>
+          </div>
+          <div class="chips-row">
+            <div class="chip">Estou com vontade agora</div>
+            <div class="chip">Preciso de ajuda</div>
+            <div class="chip">Tive uma recaída</div>
+            <div class="chip">Não consigo dormir</div>
+            <div class="chip">Estou ansioso</div>
+          </div>
+          <div class="ci-row">
+            <input class="ci-input" type="text" placeholder="Digite uma mensagem...">
+            <button class="ci-send">➤</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== EMERGÊNCIA ===== -->
+      <div class="screen" id="screen-emergencia">
+        <div class="emg-center">
+          <div class="emg-pulse">🆘</div>
+          <div style="font-size:28px;font-weight:800;color:var(--text);margin-bottom:10px;">Você não está sozinho.</div>
+          <div style="font-size:15px;color:var(--muted);line-height:1.6;margin-bottom:32px;">Respira fundo. Escolha uma das ações abaixo para passar por esse momento com segurança.</div>
+        </div>
+        <div class="emg-acts" style="padding:0 28px;max-width:600px;margin:0 auto 20px;">
+          <div class="emg-btn" onclick="goTo('respiracao')"><span style="font-size:32px;">🌬️</span>Respiração guiada</div>
+          <div class="emg-btn"><span style="font-size:32px;">🧘</span>Meditação 5 min</div>
+          <div class="emg-btn"><span style="font-size:32px;">🚶</span>Caminhada agora</div>
+          <div class="emg-btn"><span style="font-size:32px;">🎥</span>Vídeo motivacional</div>
+          <div class="emg-btn" style="grid-column:span 2;" onclick="goTo('ia')"><span style="font-size:32px;">🤖</span>Falar com o Mentor IA</div>
+        </div>
+        <div style="padding:0 28px;max-width:600px;margin:0 auto;">
+          <div class="emg-partner">
+            <div class="ep-av">👨</div>
+            <div style="flex:1;"><div style="font-size:15px;font-weight:700;color:var(--text);">Carlos (irmão)</div><div style="font-size:12px;color:var(--muted);">Parceiro de responsabilidade</div></div>
+            <div style="font-size:24px;margin-left:auto;">📞</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== RESPIRAÇÃO ===== -->
+      <div class="screen" id="screen-respiracao">
+        <div class="breath-center">
+          <div style="font-size:26px;font-weight:800;color:var(--text);margin-bottom:6px;">Respiração Guiada</div>
+          <div style="font-size:14px;color:var(--muted);margin-bottom:40px;">Técnica 4-4-6 para reduzir a ansiedade</div>
+          <div class="br-wrap">
+            <div class="br-ring1"></div><div class="br-ring2"></div>
+            <div class="br-core">
+              <div style="font-size:15px;font-weight:700;color:var(--text);" id="br-phase">Inspire</div>
+              <div style="font-size:44px;font-weight:800;color:var(--green);line-height:1;" id="br-cnt">4</div>
+            </div>
+          </div>
+          <div class="br-steps">
+            <div class="br-step"><div style="font-size:26px;margin-bottom:6px;">🌬️</div><div style="font-size:11px;color:var(--muted);">Inspire</div><div style="font-size:14px;font-weight:700;color:var(--text);">4 seg</div></div>
+            <div class="br-step"><div style="font-size:26px;margin-bottom:6px;">⏸️</div><div style="font-size:11px;color:var(--muted);">Segure</div><div style="font-size:14px;font-weight:700;color:var(--text);">4 seg</div></div>
+            <div class="br-step"><div style="font-size:26px;margin-bottom:6px;">💨</div><div style="font-size:11px;color:var(--muted);">Expire</div><div style="font-size:14px;font-weight:700;color:var(--text);">6 seg</div></div>
+          </div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:28px;">Ciclo 1 de 5 · 48 segundos restantes</div>
+          <button class="btn btn-green" style="padding:16px 40px;" onclick="goTo('emergencia')">Concluir sessão</button>
+        </div>
+      </div>
+
+      <!-- ===== COMUNIDADE ===== -->
+      <div class="screen" id="screen-comunidade">
+        <div class="page">
+          <div class="page-title">Comunidade</div>
+          <div class="page-sub">Você não está sozinho nessa jornada.</div>
+          <div class="ctabs">
+            <div class="ctab on">Todos</div><div class="ctab">Iniciantes</div><div class="ctab">30 dias</div><div class="ctab">90 dias</div><div class="ctab">Jovens</div><div class="ctab">Casados</div><div class="ctab">Cristãos</div>
+          </div>
+          <div class="ci-row" style="margin-bottom:24px;">
+            <input class="ci-input" type="text" placeholder="Compartilhe algo com a comunidade...">
+            <button class="ci-send">➤</button>
+          </div>
+          <div class="fcol gap16">
+            <div class="post">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+                <div class="post-av" style="background:linear-gradient(135deg,#1A237E,#3949AB);">👨</div>
+                <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Marcos A.</div><div style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px;margin-top:3px;"><span>há 12 min</span><span class="badge badge-g">🔥 45 dias</span></div></div>
+              </div>
+              <div style="font-size:14px;color:var(--text);line-height:1.6;margin-bottom:16px;font-family:'Inter',sans-serif;">Acabei de bater meu recorde pessoal — 45 dias! O modo emergência me salvou mais de uma vez. Pra quem está começando: não desista depois de uma recaída. Cada dia conta. 💪</div>
+              <div style="display:flex;gap:20px;"><div class="post-act">❤️ 47</div><div class="post-act">💬 12</div><div class="post-act">🔗 Compartilhar</div></div>
+            </div>
+            <div class="post">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+                <div class="post-av" style="background:linear-gradient(135deg,#4A148C,#7B1FA2);">👩</div>
+                <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Ana R.</div><div style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px;margin-top:3px;"><span>há 2h</span><span class="badge badge-y">⭐ 8 dias</span></div></div>
+              </div>
+              <div style="font-size:14px;color:var(--text);line-height:1.6;margin-bottom:16px;font-family:'Inter',sans-serif;">O check-in emocional me ajudou a perceber que meu gatilho principal é o tédio à tarde. Agora coloco música e vou caminhar quando sinto isso chegando. Pequenas vitórias.</div>
+              <div style="display:flex;gap:20px;"><div class="post-act">❤️ 23</div><div class="post-act">💬 8</div><div class="post-act">🔗 Compartilhar</div></div>
+            </div>
+            <div class="post">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+                <div class="post-av" style="background:linear-gradient(135deg,#BF360C,#E64A19);">🧔</div>
+                <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Pedro L.</div><div style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px;margin-top:3px;"><span>há 5h</span><span class="badge badge-acc">💎 90 dias</span></div></div>
+              </div>
+              <div style="font-size:14px;color:var(--text);line-height:1.6;margin-bottom:16px;font-family:'Inter',sans-serif;">90 dias. Meu relacionamento melhorou muito. Consigo me concentrar no trabalho. Durmo melhor. Esse app mudou minha rotina de verdade. Obrigado a todos que me apoiaram aqui. 🙏</div>
+              <div style="display:flex;gap:20px;"><div class="post-act">❤️ 134</div><div class="post-act">💬 41</div><div class="post-act">🔗 Compartilhar</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== ACADEMIA ===== -->
+      <div class="screen" id="screen-academia">
+        <div class="page">
+          <div class="page-title">Academia</div>
+          <div class="page-sub">Conhecimento que transforma hábitos.</div>
+          <div class="ctabs">
+            <div class="ctab on">Todos</div><div class="ctab">Neurociência</div><div class="ctab">Psicologia</div><div class="ctab">Relacionamentos</div><div class="ctab">Espiritualidade</div>
+          </div>
+          <div class="feat-course" style="margin-bottom:24px;">
+            <div class="feat-emoji">🧠</div>
+            <div style="display:inline-flex;padding:3px 10px;background:rgba(255,255,255,.15);border-radius:10px;font-size:9px;font-weight:800;color:#fff;letter-spacing:.8px;margin-bottom:6px;">DESTAQUE</div>
+            <div style="font-size:20px;font-weight:800;color:#fff;line-height:1.2;">Dopamina e Autocontrole</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.55);margin-top:5px;">Neurociência · 8 aulas · 42 min</div>
+          </div>
+          <div class="sec-label">Em andamento</div>
+          <div class="fcol gap12" style="margin-bottom:24px;">
+            <div class="course-item">
+              <div class="course-thumb" style="background:rgba(46,125,50,.15);">🌱</div>
+              <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Construindo Novos Hábitos</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">Psicologia · 6 aulas</div><div class="pbar" style="margin-top:8px;"><div class="pfill" style="width:60%"></div></div></div>
+              <div style="font-size:13px;font-weight:700;color:var(--green);flex-shrink:0;">60%</div>
+            </div>
+            <div class="course-item">
+              <div class="course-thumb" style="background:rgba(229,57,53,.1);">❤️</div>
+              <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Intimidade e Relacionamentos</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">Relacionamentos · 10 aulas</div><div class="pbar" style="margin-top:8px;"><div class="pfill" style="width:20%"></div></div></div>
+              <div style="font-size:13px;font-weight:700;color:var(--green);flex-shrink:0;">20%</div>
+            </div>
+          </div>
+          <div class="sec-label">Biblioteca</div>
+          <div class="grid2 gap12" style="margin-bottom:24px;">
+            <div class="course-item"><div class="course-thumb" style="background:rgba(63,81,181,.15);">🔬</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Recompensa Cerebral</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">Neurociência · 5 aulas</div></div><div style="font-size:20px;color:var(--muted);">🔒</div></div>
+            <div class="course-item"><div class="course-thumb" style="background:rgba(255,193,7,.1);">✝️</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Fé, Propósito e Disciplina</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">Espiritualidade · 7 aulas</div></div><div style="font-size:20px;color:var(--muted);">🔒</div></div>
+            <div class="course-item"><div class="course-thumb" style="background:rgba(76,175,80,.1);">💪</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Autocontrole na Prática</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">Psicologia · 9 aulas</div></div><div style="font-size:20px;color:var(--muted);">🔒</div></div>
+            <div class="course-item"><div class="course-thumb" style="background:rgba(57,73,171,.1);">🧪</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Neuroplasticidade</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">Neurociência · 6 aulas</div></div><div style="font-size:20px;color:var(--muted);">🔒</div></div>
+          </div>
+          <div style="padding:20px 24px;background:linear-gradient(135deg,rgba(255,193,7,.1),rgba(255,152,0,.07));border-radius:16px;border:1px solid rgba(255,193,7,.2);display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;">
+            <div><div style="font-size:15px;font-weight:700;color:var(--yellow);margin-bottom:4px;">🔓 Academia completa no Premium</div><div style="font-size:13px;color:var(--muted);">30+ cursos e artigos exclusivos</div></div>
+            <button class="btn btn-gold" onclick="goTo('premium')">Assinar — R$19,90/mês</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PERFIL ===== -->
+      <div class="screen" id="screen-perfil">
+        <div class="page">
+          <div class="profile-hero">
+            <div class="pf-av">😊</div>
+            <div>
+              <div style="font-size:24px;font-weight:800;color:var(--text);margin-bottom:4px;">João Paulo</div>
+              <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">Em recuperação há 6 meses · São Paulo, SP · Membro desde Jan 2025</div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <span class="badge badge-g">🔥 27 dias</span>
+                <span style="background:rgba(255,193,7,.15);color:var(--yellow);border:1px solid rgba(255,193,7,.3);" class="badge">🏆 Nível 4</span>
+                <span class="badge" style="background:rgba(255,255,255,.07);color:var(--muted);border:1px solid var(--border);">FREE</span>
+              </div>
+            </div>
+            <button class="btn btn-outline" style="margin-left:auto;white-space:nowrap;padding:10px 20px;">✏️ Editar</button>
+          </div>
+          <div class="pf-stats" style="margin-bottom:28px;">
+            <div class="pf-stat"><div class="pf-sv">27</div><div class="pf-sk">Dias</div></div>
+            <div class="pf-stat"><div class="pf-sv">42</div><div class="pf-sk">Recorde</div></div>
+            <div class="pf-stat"><div class="pf-sv">2.340</div><div class="pf-sk">XP</div></div>
+            <div class="pf-stat"><div class="pf-sv">87%</div><div class="pf-sk">Sucesso</div></div>
+          </div>
+          <div class="card">
+            <div class="menu-row" onclick="goTo('metas')"><div class="menu-icon" style="background:rgba(255,193,7,.1);">🏆</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--text);">Conquistas</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">6 de 18 desbloqueadas</div></div><span style="color:var(--muted);">›</span></div>
+            <div class="menu-row"><div class="menu-icon" style="background:rgba(76,175,80,.1);">🤝</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--text);">Parceiro de Responsabilidade</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">Carlos (irmão) · Vinculado</div></div><span style="color:var(--muted);">›</span></div>
+            <div class="menu-row" onclick="goTo('premium')"><div class="menu-icon" style="background:rgba(63,81,181,.1);">💎</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--text);">Meu Plano</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">Fazer upgrade para Premium</div></div><span class="badge badge-y" style="margin-left:auto;margin-right:12px;">FREE</span><span style="color:var(--muted);">›</span></div>
+            <div class="menu-row"><div class="menu-icon" style="background:rgba(229,57,53,.1);">🔔</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--text);">Notificações</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">Alertas, lembretes e risco</div></div><span style="color:var(--muted);">›</span></div>
+            <div class="menu-row" style="border-bottom:none;"><div class="menu-icon" style="background:rgba(229,57,53,.07);">🚪</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--red);">Sair da conta</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PREMIUM ===== -->
+      <div class="screen" id="screen-premium">
+        <div class="page" style="max-width:600px;">
+          <div style="text-align:center;margin-bottom:32px;">
+            <div style="font-size:56px;margin-bottom:16px;">💎</div>
+            <div class="page-title">Recomeço Premium</div>
+            <div class="page-sub">Sua recuperação merece o melhor suporte.</div>
+          </div>
+          <div style="background:linear-gradient(135deg,rgba(255,193,7,.18),rgba(255,152,0,.1));border-radius:20px;border:1.5px solid rgba(255,193,7,.35);padding:28px;text-align:center;margin-bottom:24px;">
+            <div style="font-size:11px;font-weight:800;color:var(--yellow);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">MAIS POPULAR</div>
+            <div style="font-size:46px;font-weight:800;color:var(--text);letter-spacing:-2px;">R$19,90</div>
+            <div style="font-size:14px;color:var(--muted);margin-bottom:24px;">/mês · Cancele quando quiser</div>
+            <button class="btn btn-gold btn-block" style="font-size:15px;padding:17px;margin-bottom:12px;">Começar agora — 7 dias grátis</button>
+            <div style="font-size:12px;color:var(--muted);">Sem cartão de crédito no período de teste</div>
+          </div>
+          <div class="fcol gap10">
+            <div style="display:flex;gap:14px;align-items:center;padding:14px 18px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:14px;color:var(--text);">🤖 <span><b>IA ilimitada</b> — sem restrições de mensagens</span></div>
+            <div style="display:flex;gap:14px;align-items:center;padding:14px 18px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:14px;color:var(--text);">📚 <span><b>Academia completa</b> — 30+ cursos exclusivos</span></div>
+            <div style="display:flex;gap:14px;align-items:center;padding:14px 18px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:14px;color:var(--text);">📊 <span><b>Relatórios avançados</b> — mapas de calor e padrões</span></div>
+            <div style="display:flex;gap:14px;align-items:center;padding:14px 18px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:14px;color:var(--text);">👥 <span><b>Comunidade VIP</b> exclusiva</span></div>
+            <div style="display:flex;gap:14px;align-items:center;padding:14px 18px;background:var(--card);border-radius:12px;border:1px solid var(--border);font-size:14px;color:var(--text);">🏆 <span><b>Desafios</b> exclusivos mensais</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== ADMIN ===== -->
+      <div class="screen" id="screen-admin">
+        <div class="page">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+            <div><div class="page-title">Painel Admin</div><div class="page-sub" style="margin-bottom:0;">Recomeço · Maio 2025</div></div>
+            <div style="padding:5px 14px;background:rgba(229,57,53,.15);border:1px solid rgba(229,57,53,.3);border-radius:20px;font-size:12px;font-weight:700;color:var(--red);">● LIVE</div>
+          </div>
+          <div class="rev-card">
+            <div style="font-size:10px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;">Receita Mensal (MRR)</div>
+            <div style="font-size:36px;font-weight:800;color:var(--text);letter-spacing:-1.5px;margin:6px 0;">R$ 8.472</div>
+            <div style="font-size:12px;color:var(--muted);">Maio 2025 · <span style="color:var(--green);">↑ +23% vs. abril</span></div>
+            <div style="display:flex;gap:24px;margin-top:16px;flex-wrap:wrap;">
+              <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Premium</div><div style="font-size:16px;font-weight:700;color:var(--text);margin-top:3px;">R$ 5.970</div></div>
+              <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Psicólogos</div><div style="font-size:16px;font-weight:700;color:var(--text);margin-top:3px;">R$ 1.197</div></div>
+              <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Igrejas</div><div style="font-size:16px;font-weight:700;color:var(--text);margin-top:3px;">R$ 1.305</div></div>
+            </div>
+          </div>
+          <div class="kpi-grid">
+            <div class="kpi-card"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Usuários Ativos</div><div style="font-size:28px;font-weight:800;color:var(--text);letter-spacing:-1px;line-height:1;">2.847</div><div style="font-size:11px;color:var(--green);margin-top:5px;">↑ +312 essa semana</div></div>
+            <div class="kpi-card"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Assinantes Premium</div><div style="font-size:28px;font-weight:800;color:var(--text);letter-spacing:-1px;line-height:1;">300</div><div style="font-size:11px;color:var(--green);margin-top:5px;">↑ +28 esse mês</div></div>
+            <div class="kpi-card"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Check-ins Hoje</div><div style="font-size:28px;font-weight:800;color:var(--text);letter-spacing:-1px;line-height:1;">1.204</div><div style="font-size:11px;color:var(--green);margin-top:5px;">↑ 42% do base</div></div>
+            <div class="kpi-card"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Retenção</div><div style="font-size:28px;font-weight:800;color:var(--text);letter-spacing:-1px;line-height:1;">78%</div><div style="font-size:11px;color:var(--green);margin-top:5px;">↑ +4pp vs. anterior</div></div>
+          </div>
+          <div class="grid2" style="margin-bottom:24px;">
+            <div class="card">
+              <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;">Crescimento — 7 dias</div>
+              <div style="font-size:11px;color:var(--muted);margin-bottom:14px;">Novos usuários Seg → Dom</div>
+              <div class="mbars">
+                <div class="mbar" style="height:55%;background:rgba(76,175,80,.5);"></div>
+                <div class="mbar" style="height:70%;background:rgba(76,175,80,.6);"></div>
+                <div class="mbar" style="height:45%;background:rgba(76,175,80,.5);"></div>
+                <div class="mbar" style="height:80%;background:rgba(76,175,80,.65);"></div>
+                <div class="mbar" style="height:100%;background:var(--green);"></div>
+                <div class="mbar" style="height:90%;background:rgba(76,175,80,.8);"></div>
+                <div class="mbar" style="height:75%;background:rgba(76,175,80,.7);"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:10px;color:var(--muted);"><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span><span>Dom</span></div>
+            </div>
+            <div class="card">
+              <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px;">Usuários Recentes</div>
+              <div class="user-row"><div style="width:32px;height:32px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:14px;">😊</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text);">João Paulo</div><div style="font-size:11px;color:var(--green);">🔥 27 dias</div></div><div style="font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;background:rgba(255,255,255,.08);color:var(--muted);">FREE</div></div>
+              <div class="user-row"><div style="width:32px;height:32px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:14px;">👩</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text);">Ana Rodrigues</div><div style="font-size:11px;color:var(--green);">🔥 8 dias</div></div><div style="font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;background:rgba(255,193,7,.15);color:var(--yellow);">PREMIUM</div></div>
+              <div class="user-row"><div style="width:32px;height:32px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:14px;">🧔</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text);">Pedro Lima</div><div style="font-size:11px;color:var(--green);">💎 90 dias</div></div><div style="font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;background:rgba(255,193,7,.15);color:var(--yellow);">PREMIUM</div></div>
+              <div class="user-row" style="border:none;"><div style="width:32px;height:32px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:14px;">👨</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text);">Marcos Alves</div><div style="font-size:11px;color:var(--green);">🔥 45 dias</div></div><div style="font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;background:rgba(255,255,255,.08);color:var(--muted);">FREE</div></div>
+            </div>
+          </div>
+          <div class="sec-label">Alertas do Sistema</div>
+          <div class="fcol gap8">
+            <div class="alert-row al-r">🚨 14 usuários ativaram o Modo Emergência hoje</div>
+            <div class="alert-row al-y">⚠️ Taxa de recaída elevada entre 22h–01h (padrão persistente)</div>
+            <div class="alert-row al-g">✅ 1.204 check-ins hoje — recorde mensal</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+
+    <!-- BOTTOM NAV MOBILE -->
+    <div id="bottom-nav">
+      <div class="bn-item active" onclick="goTo('dashboard')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Início</div>
+      <div class="bn-item" onclick="goTo('evolucao')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17z"/></svg>Evolução</div>
+      <div class="bn-item" onclick="goTo('checkin')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 11l3 3L22 4M5 12l-2 2 4 4"/></svg>Check-in</div>
+      <div class="bn-item" onclick="goTo('ia')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>Mentor</div>
+      <div class="bn-item" onclick="goTo('perfil')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Perfil</div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
 
 <script>
-  function goTo(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+var titles = {
+  splash:'Início', onboarding:'Configuração', dashboard:'Dashboard',
+  checkin:'Check-in Diário', evolucao:'Evolução', metas:'Metas & Conquistas',
+  ia:'Mentor IA', emergencia:'Modo Emergência', respiracao:'Respiração Guiada',
+  comunidade:'Comunidade', academia:'Academia', perfil:'Perfil',
+  premium:'Premium', admin:'Painel Admin'
+};
 
-    const screen = document.getElementById('screen-' + id);
-    if (screen) screen.classList.add('active');
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelectorAll('.nav-link').forEach(function(l){ l.classList.remove('active'); });
+  document.querySelectorAll('.bn-item').forEach(function(b){ b.classList.remove('active'); });
 
-    const tabs = document.querySelectorAll('.nav-tab');
-    tabs.forEach(t => {
-      if (t.textContent.toLowerCase().replace(/\s+/g,'') === {
-        splash: 'splash', onboarding: 'onboarding', dashboard: 'dashboard',
-        checkin: 'check-in', evolucao: 'evolução', metas: 'metas',
-        ia: 'mentoria', emergencia: 'emergência'
-      }[id] || t.onclick?.toString().includes("'"+id+"'")) {
-        t.classList.add('active');
-      }
-    });
+  var screen = document.getElementById('screen-' + id);
+  if (screen) { screen.classList.add('active'); document.getElementById('content').scrollTop = 0; }
 
-    // Fix tab active state
-    tabs.forEach(t => {
-      const fn = t.getAttribute('onclick');
-      if (fn && fn.includes("'"+id+"'")) t.classList.add('active');
-    });
+  document.querySelectorAll('.nav-link').forEach(function(l){
+    var fn = l.getAttribute('onclick');
+    if (fn && fn.indexOf("'" + id + "'") !== -1) l.classList.add('active');
+  });
+  document.querySelectorAll('.bn-item').forEach(function(b){
+    var fn = b.getAttribute('onclick');
+    if (fn && fn.indexOf("'" + id + "'") !== -1) b.classList.add('active');
+  });
 
-    // Scroll to top
-    if (screen) screen.scrollTop = 0;
-  }
+  if (titles[id]) document.getElementById('topbar-title').textContent = titles[id];
+  if (id === 'respiracao') startBreath(); else stopBreath();
+  closeSidebar();
+}
 
-  function selectOpt(el) {
-    document.querySelectorAll('.ob-option').forEach(o => o.classList.remove('selected'));
-    el.classList.add('selected');
-  }
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('show');
+}
 
-  function toggleEmotion(el) {
-    el.classList.toggle('selected');
-  }
+function selectOpt(el) {
+  document.querySelectorAll('.ob-opt').forEach(function(o){ o.classList.remove('sel'); });
+  el.classList.add('sel');
+}
+
+function toggleEmotion(el) { el.classList.toggle('sel'); }
+
+document.querySelectorAll('.ctab').forEach(function(t){
+  t.addEventListener('click', function(){
+    var p = this.parentElement;
+    p.querySelectorAll('.ctab').forEach(function(x){ x.classList.remove('on'); });
+    this.classList.add('on');
+  });
+});
+
+var bTimer=null, bPhase=0, bCount=4;
+var phases=[{name:'Inspire',dur:4},{name:'Segure',dur:4},{name:'Expire',dur:6}];
+function startBreath(){
+  stopBreath(); bPhase=0; bCount=phases[0].dur; updateBreath();
+  bTimer=setInterval(function(){ bCount--; if(bCount<=0){bPhase=(bPhase+1)%3;bCount=phases[bPhase].dur;} updateBreath(); },1000);
+}
+function stopBreath(){ if(bTimer){clearInterval(bTimer);bTimer=null;} }
+function updateBreath(){
+  var p=document.getElementById('br-phase'), c=document.getElementById('br-cnt');
+  if(p) p.textContent=phases[bPhase].name;
+  if(c) c.textContent=bCount;
+}
 </script>
 </body>
 </html>
